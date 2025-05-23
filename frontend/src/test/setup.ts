@@ -1,16 +1,16 @@
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock environment variables
-vi.mock('../config/env', () => ({
-  API_BASE_URL: 'http://localhost:8000',
-  APP_NAME: 'LLB Test',
-}))
+vi.mock("../config/env", () => ({
+  API_BASE_URL: "http://localhost:8000",
+  APP_NAME: "LLB Test",
+}));
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -20,4 +20,4 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});

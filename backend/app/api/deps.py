@@ -3,10 +3,10 @@ Dependency injection for LLB Backend API
 Provides service dependencies for FastAPI endpoints
 """
 
+from app.core.exceptions import LLBException
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService
-from app.core.exceptions import LLBException
 
 # Global service instances (will be set by main.py)
 _ai_service: AIService = None
@@ -14,7 +14,11 @@ _audio_service: AudioService = None
 _document_service: DocumentService = None
 
 
-def set_services(ai_service: AIService, audio_service: AudioService, document_service: DocumentService):
+def set_services(
+    ai_service: AIService,
+    audio_service: AudioService,
+    document_service: DocumentService,
+):
     """Set global service instances."""
     global _ai_service, _audio_service, _document_service
     _ai_service = ai_service
@@ -40,4 +44,4 @@ def get_document_service() -> DocumentService:
     """Get document service instance."""
     if _document_service is None:
         raise LLBException("Document service not initialized")
-    return _document_service 
+    return _document_service

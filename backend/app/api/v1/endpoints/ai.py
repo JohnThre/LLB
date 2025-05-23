@@ -1,28 +1,29 @@
-from typing import Any, List
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 
 from app.api import deps
-from app.models.user import User
 from app.core.ai import get_ai_model
+from app.models.user import User
 from app.schemas.ai import (
-    TextGenerationRequest,
-    TextGenerationResponse,
     ChatCompletionRequest,
     ChatCompletionResponse,
+    EntityExtractionRequest,
+    EntityExtractionResponse,
     LanguageDetectionRequest,
     LanguageDetectionResponse,
-    TextSummarizationRequest,
-    TextSummarizationResponse,
     SentimentAnalysisRequest,
     SentimentAnalysisResponse,
     TextClassificationRequest,
     TextClassificationResponse,
-    EntityExtractionRequest,
-    EntityExtractionResponse
+    TextGenerationRequest,
+    TextGenerationResponse,
+    TextSummarizationRequest,
+    TextSummarizationResponse,
 )
 
 router = APIRouter()
+
 
 @router.post("/generate", response_model=TextGenerationResponse)
 async def generate_text(
@@ -40,14 +41,14 @@ async def generate_text(
             max_length=request.max_length,
             temperature=request.temperature,
             top_p=request.top_p,
-            top_k=request.top_k
+            top_k=request.top_k,
         )
         return TextGenerationResponse(generated_text=generated_text)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/chat", response_model=ChatCompletionResponse)
 async def chat_completion(
@@ -63,14 +64,14 @@ async def chat_completion(
         response = await ai_model.chat_completion(
             messages=request.messages,
             max_length=request.max_length,
-            temperature=request.temperature
+            temperature=request.temperature,
         )
         return ChatCompletionResponse(response=response)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/detect-language", response_model=LanguageDetectionResponse)
 async def detect_language(
@@ -85,14 +86,13 @@ async def detect_language(
         ai_model = get_ai_model()
         result = await ai_model.detect_language(request.text)
         return LanguageDetectionResponse(
-            language=result["language"],
-            confidence=result["confidence"]
+            language=result["language"], confidence=result["confidence"]
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/summarize", response_model=TextSummarizationResponse)
 async def summarize_text(
@@ -108,14 +108,14 @@ async def summarize_text(
         summary = await ai_model.summarize_text(
             text=request.text,
             max_length=request.max_length,
-            min_length=request.min_length
+            min_length=request.min_length,
         )
         return TextSummarizationResponse(summary=summary)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/analyze-sentiment", response_model=SentimentAnalysisResponse)
 async def analyze_sentiment(
@@ -132,13 +132,13 @@ async def analyze_sentiment(
         return SentimentAnalysisResponse(
             sentiment=result["sentiment"],
             score=result["score"],
-            confidence=result["confidence"]
+            confidence=result["confidence"],
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/classify", response_model=TextClassificationResponse)
 async def classify_text(
@@ -152,19 +152,18 @@ async def classify_text(
     try:
         ai_model = get_ai_model()
         result = await ai_model.classify_text(
-            text=request.text,
-            categories=request.categories
+            text=request.text, categories=request.categories
         )
         return TextClassificationResponse(
             category=result["category"],
             confidence=result["confidence"],
-            scores=result["scores"]
+            scores=result["scores"],
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 @router.post("/extract-entities", response_model=EntityExtractionResponse)
 async def extract_entities(
@@ -178,15 +177,13 @@ async def extract_entities(
     try:
         ai_model = get_ai_model()
         result = await ai_model.extract_entities(
-            text=request.text,
-            entity_types=request.entity_types
+            text=request.text, entity_types=request.entity_types
         )
         return EntityExtractionResponse(
             entities=result["entities"],
-            confidence_scores=result["confidence_scores"]
+            confidence_scores=result["confidence_scores"],
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        ) 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )

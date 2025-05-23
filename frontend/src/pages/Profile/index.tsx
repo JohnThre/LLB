@@ -1,7 +1,7 @@
-import React from 'react';
-import { Box, Typography, Tabs, Tab } from '@mui/material';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Box, Typography, Tabs, Tab } from "@mui/material";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Profile: React.FC = () => {
   const { t } = useTranslation();
@@ -15,20 +15,16 @@ const Profile: React.FC = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        {t('profile.title')}
+        {t("profile.title")}
       </Typography>
-      
-      <Tabs
-        value={location.pathname}
-        onChange={handleTabChange}
-        sx={{ mb: 3 }}
-      >
+
+      <Tabs value={location.pathname} onChange={handleTabChange} sx={{ mb: 3 }}>
         <Tab
-          label={t('profile.settings')}
+          label={t("profile.settings")}
           value="/dashboard/profile/settings"
         />
         <Tab
-          label={t('profile.security')}
+          label={t("profile.security")}
           value="/dashboard/profile/security"
         />
       </Tabs>
@@ -38,4 +34,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

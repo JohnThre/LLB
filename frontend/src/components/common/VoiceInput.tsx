@@ -1,7 +1,13 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Button, IconButton, Box, Typography, CircularProgress } from '@mui/material';
-import { Mic, Stop, Delete } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
+import React, { useState, useRef, useCallback } from "react";
+import {
+  Button,
+  IconButton,
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import { Mic, Stop, Delete } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 
 interface VoiceInputProps {
   onTranscriptionComplete: (text: string) => void;
@@ -35,20 +41,20 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
         setAudioBlob(audioBlob);
         setIsProcessing(true);
 
         // Create form data
         const formData = new FormData();
-        formData.append('file', audioBlob, 'recording.wav');
+        formData.append("file", audioBlob, "recording.wav");
         if (language) {
-          formData.append('language', language);
+          formData.append("language", language);
         }
 
         // Send to backend
-        fetch('/api/ai/transcribe', {
-          method: 'POST',
+        fetch("/api/ai/transcribe", {
+          method: "POST",
           body: formData,
         })
           .then((response) => response.json())
@@ -58,7 +64,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
             setAudioBlob(null);
           })
           .catch((error) => {
-            console.error('Transcription error:', error);
+            console.error("Transcription error:", error);
             setIsProcessing(false);
           });
 
@@ -69,7 +75,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      console.error("Error accessing microphone:", error);
     }
   }, [language, onTranscriptionComplete]);
 
@@ -91,8 +97,8 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         gap: 1,
         p: 1,
         borderRadius: 1,
@@ -139,4 +145,4 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
   );
 };
 
-export default VoiceInput; 
+export default VoiceInput;

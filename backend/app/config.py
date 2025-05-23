@@ -4,37 +4,35 @@ Handles environment variables and application settings
 """
 
 import os
-from typing import List, Optional
+from functools import lru_cache
+from typing import List
+
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
-from functools import lru_cache
 
 
 class Settings(BaseSettings):
     """Application settings with environment variable support."""
-    
+
     # Application
     app_name: str = "LLB Sexual Health Education API"
     app_version: str = "1.0.0"
     debug: bool = False
-    
+
     # Server
     host: str = "127.0.0.1"
     port: int = 8000
     reload: bool = False
-    
+
     # CORS
-    cors_origins: List[str] = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ]
-    
+    cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
     # AI Models
     ai_cache_dir: str = "../ai/cache"
     ai_temp_dir: str = "../ai/temp"
     gemma_model_path: str = "../ai/models/gemma"
     whisper_model_path: str = "../ai/models/whisper"
-    
+
     # File Upload
     upload_dir: str = "uploads"
     max_file_size: int = 50 * 1024 * 1024  # 50MB
@@ -42,33 +40,33 @@ class Settings(BaseSettings):
         "application/pdf",
         "audio/wav",
         "audio/mp3",
-        "audio/mpeg"
+        "audio/mpeg",
     ]
-    
+
     # Logging
     log_level: str = "INFO"
     log_dir: str = "logs"
     log_file: str = "llb_backend.log"
-    
+
     # Security
     secret_key: str = "your-secret-key-change-in-production"
     access_token_expire_minutes: int = 30
-    
+
     # Database
     database_url: str = "sqlite:///./llb.db"
-    
+
     # Language Support
     supported_languages: List[str] = [
         "zh-CN",  # Simplified Chinese
         "zh-CN-henan",  # Henan Dialect
         "en-US",  # American English
-        "en-GB"   # British English
+        "en-GB",  # British English
     ]
-    
+
     # Safety Settings
     default_safety_level: str = "standard"
     content_filter_enabled: bool = True
-    
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v):
@@ -76,7 +74,7 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return [i.strip() for i in v.split(",")]
         return v
-    
+
     @field_validator("supported_languages", mode="before")
     @classmethod
     def assemble_languages(cls, v):
@@ -84,16 +82,17 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return [i.strip() for i in v.split(",")]
         return v
-    
+
     model_config = {
         "env_file": ".env",
         "env_prefix": "LLB_",
-        "protected_namespaces": ()
+        "protected_namespaces": (),
     }
 
 
 class DevelopmentSettings(Settings):
     """Development environment settings."""
+
     debug: bool = True
     reload: bool = True
     log_level: str = "DEBUG"
@@ -101,6 +100,7 @@ class DevelopmentSettings(Settings):
 
 class ProductionSettings(Settings):
     """Production environment settings."""
+
     debug: bool = False
     reload: bool = False
     log_level: str = "WARNING"
@@ -108,6 +108,7 @@ class ProductionSettings(Settings):
 
 class TestingSettings(Settings):
     """Testing environment settings."""
+
     debug: bool = True
     database_url: str = "sqlite:///./test_llb.db"
     log_level: str = "DEBUG"
@@ -117,7 +118,7 @@ class TestingSettings(Settings):
 def get_settings() -> Settings:
     """Get application settings based on environment."""
     environment = os.getenv("LLB_ENVIRONMENT", "development").lower()
-    
+
     if environment == "production":
         return ProductionSettings()
     elif environment == "testing":
@@ -127,4 +128,4 @@ def get_settings() -> Settings:
 
 
 # Global settings instance
-settings = get_settings() 
+settings = get_settings()

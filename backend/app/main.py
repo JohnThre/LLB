@@ -4,24 +4,24 @@ Provides REST API endpoints for sexual health education with Gemma 3 1B
 """
 
 import sys
-import asyncio
-from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-
-# Add AI directory to path
+# Add AI directory to path before other imports
 sys.path.append(str(Path(__file__).parent.parent.parent / "ai"))
 
-from app.config import settings
-from app.core.logging import get_logger, setup_logging
-from app.core.exceptions import LLBException, LLBHTTPException
+from contextlib import asynccontextmanager
+
+from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+
+from app.api import deps
 from app.api.v1 import health
 from app.api.v1.endpoints import chat
-from app.api import deps
+from app.config import settings
+from app.core.exceptions import LLBException, LLBHTTPException
+from app.core.logging import get_logger
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService
@@ -38,47 +38,50 @@ document_service = None
 voice_router = APIRouter()
 documents_router = APIRouter()
 
+
 @voice_router.post("/voice/transcribe")
 async def transcribe_voice():
     """Placeholder for voice transcription endpoint."""
     return {"message": "Voice transcription endpoint - coming soon"}
+
 
 @documents_router.post("/documents/analyze")
 async def analyze_document():
     """Placeholder for document analysis endpoint."""
     return {"message": "Document analysis endpoint - coming soon"}
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle - startup and shutdown."""
     global ai_service, audio_service, document_service
-    
+
     logger.info("🚀 Starting LLB Backend...")
-    
+
     try:
         # Initialize services
         ai_service = AIService()
         audio_service = AudioService()
         document_service = DocumentService()
-        
+
         # Set services in deps module
         deps.set_services(ai_service, audio_service, document_service)
-        
+
         # Initialize all services
         await ai_service.initialize()
         await audio_service.initialize()
         await document_service.initialize()
-        
+
         logger.info("✅ LLB Backend started successfully!")
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to start LLB Backend: {e}")
         raise
-    
+
     yield
-    
+
     logger.info("🛑 Shutting down LLB Backend...")
-    
+
     # Cleanup services
     if ai_service:
         await ai_service.cleanup()
@@ -86,21 +89,21 @@ async def lifespan(app: FastAPI):
         await audio_service.cleanup()
     if document_service:
         await document_service.cleanup()
-    
+
     logger.info("✅ LLB Backend shutdown complete")
 
 
 def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
-    
+
     app = FastAPI(
         title=settings.app_name,
         description="Local AI-driven sexual health education system",
         version=settings.app_version,
         debug=settings.debug,
-        lifespan=lifespan
+        lifespan=lifespan,
     )
-    
+
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
@@ -109,40 +112,42 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # Serve static files
     static_path = Path(settings.upload_dir).parent / "static"
     static_path.mkdir(exist_ok=True)
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
-    
+
     # Include API routers
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
     app.include_router(voice_router, prefix="/api/v1", tags=["voice"])
     app.include_router(documents_router, prefix="/api/v1", tags=["documents"])
-    
+
     # Add legacy health endpoint for backward compatibility
     @app.get("/health")
     async def legacy_health_check():
         """Legacy health check endpoint - redirects to API health."""
         return RedirectResponse(url="/api/v1/health")
-    
+
     # Exception handlers
     @app.exception_handler(LLBException)
     async def llb_exception_handler(request, exc: LLBException):
         """Handle custom LLB exceptions."""
-        logger.error(f"LLB Exception: {exc.message}", extra={"details": exc.details})
+        logger.error(
+            f"LLB Exception: {exc.message}", extra={"details": exc.details}
+        )
         return JSONResponse(
             status_code=500,
-            content={"error": exc.message, "details": exc.details}
+            content={"error": exc.message, "details": exc.details},
         )
-    
+
     @app.exception_handler(LLBHTTPException)
     async def llb_http_exception_handler(request, exc: LLBHTTPException):
         """Handle custom LLB HTTP exceptions."""
         logger.error(f"LLB HTTP Exception: {exc.detail}")
         raise exc
-    
+
     # Root endpoint
     @app.get("/", response_class=HTMLResponse)
     async def root():
@@ -277,7 +282,7 @@ def create_app() -> FastAPI:
         </body>
         </html>
         """
-    
+
     return app
 
 
@@ -286,10 +291,11 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     print("Starting LLB API server in development mode...")
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
         port=8000,
         reload=True,
-    ) 
+    )

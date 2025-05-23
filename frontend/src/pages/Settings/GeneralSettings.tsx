@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Typography,
@@ -10,8 +10,8 @@ import {
   InputLabel,
   Grid,
   SelectChangeEvent,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const GeneralSettings: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -22,18 +22,15 @@ const GeneralSettings: React.FC = () => {
     autoUpdate: true,
   });
 
-  const handleChange = (name: string) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [name]: event.target.checked,
-    }));
-  };
+  const handleChange =
+    (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSettings((prev) => ({
+        ...prev,
+        [name]: event.target.checked,
+      }));
+    };
 
-  const handleSelectChange = (name: string) => (
-    event: SelectChangeEvent
-  ) => {
+  const handleSelectChange = (name: string) => (event: SelectChangeEvent) => {
     setSettings((prev) => ({
       ...prev,
       [name]: event.target.value,
@@ -43,17 +40,17 @@ const GeneralSettings: React.FC = () => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        {t('settings.general')}
+        {t("settings.general")}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <InputLabel>{t('settings.language')}</InputLabel>
+            <InputLabel>{t("settings.language")}</InputLabel>
             <Select
               value={settings.language}
-              onChange={handleSelectChange('language')}
-              label={t('settings.language')}
+              onChange={handleSelectChange("language")}
+              label={t("settings.language")}
             >
               <MenuItem value="en">English</MenuItem>
               <MenuItem value="es">Español</MenuItem>
@@ -68,10 +65,10 @@ const GeneralSettings: React.FC = () => {
             control={
               <Switch
                 checked={settings.darkMode}
-                onChange={handleChange('darkMode')}
+                onChange={handleChange("darkMode")}
               />
             }
-            label={t('settings.darkMode')}
+            label={t("settings.darkMode")}
           />
         </Grid>
 
@@ -80,10 +77,10 @@ const GeneralSettings: React.FC = () => {
             control={
               <Switch
                 checked={settings.notifications}
-                onChange={handleChange('notifications')}
+                onChange={handleChange("notifications")}
               />
             }
-            label={t('settings.notifications')}
+            label={t("settings.notifications")}
           />
         </Grid>
 
@@ -92,10 +89,10 @@ const GeneralSettings: React.FC = () => {
             control={
               <Switch
                 checked={settings.autoUpdate}
-                onChange={handleChange('autoUpdate')}
+                onChange={handleChange("autoUpdate")}
               />
             }
-            label={t('settings.autoUpdate')}
+            label={t("settings.autoUpdate")}
           />
         </Grid>
       </Grid>
@@ -103,4 +100,4 @@ const GeneralSettings: React.FC = () => {
   );
 };
 
-export default GeneralSettings; 
+export default GeneralSettings;

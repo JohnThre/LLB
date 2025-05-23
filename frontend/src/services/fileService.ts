@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from "../config";
 
 export interface UploadResponse {
   filename: string;
@@ -24,26 +24,26 @@ export class FileService {
 
   async uploadFile(
     file: File,
-    fileType: 'audio' | 'document' | 'image'
+    fileType: "audio" | "document" | "image",
   ): Promise<UploadResponse> {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileType', fileType);
+    formData.append("file", file);
+    formData.append("fileType", fileType);
 
     try {
       const response = await fetch(`${this.baseUrl}/upload`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Upload failed');
+        throw new Error(error.detail || "Upload failed");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('File upload error:', error);
+      console.error("File upload error:", error);
       throw error;
     }
   }
@@ -53,16 +53,16 @@ export class FileService {
       const response = await fetch(
         `${this.baseUrl}/delete/${fileType}/${filename}`,
         {
-          method: 'DELETE',
-        }
+          method: "DELETE",
+        },
       );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Delete failed');
+        throw new Error(error.detail || "Delete failed");
       }
     } catch (error) {
-      console.error('File delete error:', error);
+      console.error("File delete error:", error);
       throw error;
     }
   }
@@ -72,4 +72,4 @@ export class FileService {
   }
 }
 
-export const fileService = FileService.getInstance(); 
+export const fileService = FileService.getInstance();

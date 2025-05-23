@@ -4,6 +4,7 @@ Database session management.
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.core.config import settings
 
 # Create SQLAlchemy engine
@@ -17,11 +18,7 @@ engine = create_engine(
 )
 
 # Create session factory
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_db():
@@ -30,4 +27,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close() 
+        db.close()

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Container } from '@mui/material';
-import { Settings as SettingsComponent } from '../components/Settings/Settings';
+import React from "react";
+import { Container } from "@mui/material";
+import { Settings as SettingsComponent } from "../components/Settings/Settings";
 
 const Settings: React.FC = () => {
   return (
@@ -10,4 +10,4 @@ const Settings: React.FC = () => {
   );
 };
 
-export default Settings; 
+export default Settings;

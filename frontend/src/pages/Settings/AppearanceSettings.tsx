@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Typography,
@@ -12,32 +12,28 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const AppearanceSettings: React.FC = () => {
   const { t } = useTranslation();
   const [settings, setSettings] = React.useState({
     fontSize: 16,
-    fontFamily: 'Roboto',
-    colorScheme: 'blue',
-    density: 'comfortable',
+    fontFamily: "Roboto",
+    colorScheme: "blue",
+    density: "comfortable",
     borderRadius: 4,
   });
 
-  const handleSliderChange = (name: string) => (
-    _: Event,
-    value: number | number[]
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const handleSliderChange =
+    (name: string) => (_: Event, value: number | number[]) => {
+      setSettings((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    };
 
-  const handleSelectChange = (name: string) => (
-    event: SelectChangeEvent
-  ) => {
+  const handleSelectChange = (name: string) => (event: SelectChangeEvent) => {
     setSettings((prev) => ({
       ...prev,
       [name]: event.target.value,
@@ -47,17 +43,15 @@ const AppearanceSettings: React.FC = () => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        {t('settings.appearance')}
+        {t("settings.appearance")}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography gutterBottom>
-            {t('settings.fontSize')}
-          </Typography>
+          <Typography gutterBottom>{t("settings.fontSize")}</Typography>
           <Slider
             value={settings.fontSize}
-            onChange={handleSliderChange('fontSize')}
+            onChange={handleSliderChange("fontSize")}
             min={12}
             max={24}
             step={1}
@@ -68,11 +62,11 @@ const AppearanceSettings: React.FC = () => {
 
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <InputLabel>{t('settings.fontFamily')}</InputLabel>
+            <InputLabel>{t("settings.fontFamily")}</InputLabel>
             <Select
               value={settings.fontFamily}
-              onChange={handleSelectChange('fontFamily')}
-              label={t('settings.fontFamily')}
+              onChange={handleSelectChange("fontFamily")}
+              label={t("settings.fontFamily")}
             >
               <MenuItem value="Roboto">Roboto</MenuItem>
               <MenuItem value="Arial">Arial</MenuItem>
@@ -84,53 +78,49 @@ const AppearanceSettings: React.FC = () => {
 
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <InputLabel>{t('settings.colorScheme')}</InputLabel>
+            <InputLabel>{t("settings.colorScheme")}</InputLabel>
             <Select
               value={settings.colorScheme}
-              onChange={handleSelectChange('colorScheme')}
-              label={t('settings.colorScheme')}
+              onChange={handleSelectChange("colorScheme")}
+              label={t("settings.colorScheme")}
             >
-              <MenuItem value="blue">{t('settings.blue')}</MenuItem>
-              <MenuItem value="green">{t('settings.green')}</MenuItem>
-              <MenuItem value="purple">{t('settings.purple')}</MenuItem>
-              <MenuItem value="orange">{t('settings.orange')}</MenuItem>
+              <MenuItem value="blue">{t("settings.blue")}</MenuItem>
+              <MenuItem value="green">{t("settings.green")}</MenuItem>
+              <MenuItem value="purple">{t("settings.purple")}</MenuItem>
+              <MenuItem value="orange">{t("settings.orange")}</MenuItem>
             </Select>
           </FormControl>
         </Grid>
 
         <Grid item xs={12}>
-          <Typography gutterBottom>
-            {t('settings.density')}
-          </Typography>
+          <Typography gutterBottom>{t("settings.density")}</Typography>
           <RadioGroup
             value={settings.density}
-            onChange={handleSelectChange('density')}
+            onChange={handleSelectChange("density")}
           >
             <FormControlLabel
               value="comfortable"
               control={<Radio />}
-              label={t('settings.comfortable')}
+              label={t("settings.comfortable")}
             />
             <FormControlLabel
               value="compact"
               control={<Radio />}
-              label={t('settings.compact')}
+              label={t("settings.compact")}
             />
             <FormControlLabel
               value="spacious"
               control={<Radio />}
-              label={t('settings.spacious')}
+              label={t("settings.spacious")}
             />
           </RadioGroup>
         </Grid>
 
         <Grid item xs={12}>
-          <Typography gutterBottom>
-            {t('settings.borderRadius')}
-          </Typography>
+          <Typography gutterBottom>{t("settings.borderRadius")}</Typography>
           <Slider
             value={settings.borderRadius}
-            onChange={handleSliderChange('borderRadius')}
+            onChange={handleSliderChange("borderRadius")}
             min={0}
             max={16}
             step={1}
@@ -143,4 +133,4 @@ const AppearanceSettings: React.FC = () => {
   );
 };
 
-export default AppearanceSettings; 
+export default AppearanceSettings;

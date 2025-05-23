@@ -1,16 +1,15 @@
 """Shared test fixtures for LLB backend tests."""
 
 import pytest
-import asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.main import app
-from app.db.base_class import Base
-from app.config import get_settings
 from app.api import deps
+from app.config import get_settings
+from app.db.base_class import Base
+from app.main import app
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService
@@ -23,7 +22,9 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine
+)
 
 
 @pytest.fixture(scope="session")
@@ -52,21 +53,21 @@ async def services():
     ai_service = AIService()
     audio_service = AudioService()
     document_service = DocumentService()
-    
+
     # Initialize services
     await ai_service.initialize()
     await audio_service.initialize()
     await document_service.initialize()
-    
+
     # Set services in deps module
     deps.set_services(ai_service, audio_service, document_service)
-    
+
     yield {
         "ai_service": ai_service,
         "audio_service": audio_service,
-        "document_service": document_service
+        "document_service": document_service,
     }
-    
+
     # Cleanup
     await ai_service.cleanup()
     await audio_service.cleanup()

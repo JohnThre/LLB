@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   List,
@@ -8,10 +8,10 @@ import {
   Typography,
   Divider,
   IconButton,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { format } from 'date-fns';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { format } from "date-fns";
 
 interface ChatSession {
   id: string;
@@ -24,9 +24,9 @@ const ChatHistory: React.FC = () => {
   const { t } = useTranslation();
   const [sessions, setSessions] = React.useState<ChatSession[]>([
     {
-      id: '1',
-      title: 'General Discussion',
-      lastMessage: 'Hello, how can I help you?',
+      id: "1",
+      title: "General Discussion",
+      lastMessage: "Hello, how can I help you?",
       timestamp: new Date(),
     },
     // Add more mock data as needed
@@ -39,7 +39,7 @@ const ChatHistory: React.FC = () => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        {t('chat.history')}
+        {t("chat.history")}
       </Typography>
 
       <List>
@@ -69,8 +69,8 @@ const ChatHistory: React.FC = () => {
                       >
                         {session.lastMessage}
                       </Typography>
-                      {' — '}
-                      {format(session.timestamp, 'MMM d, yyyy HH:mm')}
+                      {" — "}
+                      {format(session.timestamp, "MMM d, yyyy HH:mm")}
                     </>
                   }
                 />
@@ -84,4 +84,4 @@ const ChatHistory: React.FC = () => {
   );
 };
 
-export default ChatHistory; 
+export default ChatHistory;

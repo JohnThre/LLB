@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ModalState {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface UIState {
   snackbar: {
     open: boolean;
     message: string;
-    severity: 'success' | 'error' | 'info' | 'warning';
+    severity: "success" | "error" | "info" | "warning";
   };
 }
 
@@ -25,13 +25,13 @@ const initialState: UIState = {
   },
   snackbar: {
     open: false,
-    message: '',
-    severity: 'info',
+    message: "",
+    severity: "info",
   },
 };
 
 const uiSlice = createSlice({
-  name: 'ui',
+  name: "ui",
   initialState,
   reducers: {
     toggleSidebar: (state) => {
@@ -42,7 +42,7 @@ const uiSlice = createSlice({
     },
     openModal: (
       state,
-      action: PayloadAction<{ type: string; props?: Record<string, any> }>
+      action: PayloadAction<{ type: string; props?: Record<string, any> }>,
     ) => {
       state.activeModal = {
         isOpen: true,
@@ -61,13 +61,13 @@ const uiSlice = createSlice({
       state,
       action: PayloadAction<{
         message: string;
-        severity?: 'success' | 'error' | 'info' | 'warning';
-      }>
+        severity?: "success" | "error" | "info" | "warning";
+      }>,
     ) => {
       state.snackbar = {
         open: true,
         message: action.payload.message,
-        severity: action.payload.severity || 'info',
+        severity: action.payload.severity || "info",
       };
     },
     hideSnackbar: (state) => {
@@ -85,4 +85,4 @@ export const {
   hideSnackbar,
 } = uiSlice.actions;
 
-export default uiSlice.reducer; 
+export default uiSlice.reducer;

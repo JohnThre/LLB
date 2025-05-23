@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -29,19 +29,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Check for existing session
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem("auth_token");
         if (token) {
           // TODO: Validate token with backend
           setIsAuthenticated(true);
           // TODO: Fetch user data
           setUser({
-            id: '1',
-            email: 'user@example.com',
-            name: 'Test User',
+            id: "1",
+            email: "user@example.com",
+            name: "Test User",
           });
         }
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error("Auth check failed:", error);
       } finally {
         setIsLoading(false);
       }
@@ -55,16 +55,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(true);
       // TODO: Implement actual login API call
       // For now, simulate successful login
-      const mockToken = 'mock_token';
-      localStorage.setItem('auth_token', mockToken);
+      const mockToken = "mock_token";
+      localStorage.setItem("auth_token", mockToken);
       setIsAuthenticated(true);
       setUser({
-        id: '1',
+        id: "1",
         email,
-        name: 'Test User',
+        name: "Test User",
       });
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -75,11 +75,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setIsLoading(true);
       // TODO: Implement actual logout API call
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem("auth_token");
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}; 
+};

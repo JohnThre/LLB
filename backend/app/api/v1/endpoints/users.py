@@ -1,19 +1,20 @@
 from typing import Any, List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api import deps
+from app.core.security import get_password_hash, verify_password
 from app.models.user import User
 from app.schemas.user import (
-    UserResponse,
-    UserUpdate,
-    UserCreate,
     UserPreferences,
-    UserSettings
+    UserResponse,
+    UserSettings,
+    UserUpdate,
 )
-from app.core.security import get_password_hash, verify_password
 
 router = APIRouter()
+
 
 @router.get("/me", response_model=UserResponse)
 def read_user_me(
@@ -23,6 +24,7 @@ def read_user_me(
     Get current user.
     """
     return current_user
+
 
 @router.put("/me", response_model=UserResponse)
 def update_user_me(
@@ -37,14 +39,15 @@ def update_user_me(
     user = db.query(User).filter(User.id == current_user.id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     for field, value in user_in.dict(exclude_unset=True).items():
         setattr(user, field, value)
-    
+
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
 
 @router.get("/{user_id}", response_model=UserResponse)
 def read_user_by_id(
@@ -60,6 +63,7 @@ def read_user_by_id(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+
 @router.get("/", response_model=List[UserResponse])
 def read_users(
     db: Session = Depends(deps.get_db),
@@ -72,6 +76,7 @@ def read_users(
     """
     users = db.query(User).offset(skip).limit(limit).all()
     return users
+
 
 @router.post("/me/change-password", response_model=UserResponse)
 def change_password(
@@ -86,15 +91,15 @@ def change_password(
     """
     if not verify_password(current_password, current_user.hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect password"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect password"
         )
-    
+
     current_user.hashed_password = get_password_hash(new_password)
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
     return current_user
+
 
 @router.delete("/me", response_model=UserResponse)
 def delete_user(
@@ -109,6 +114,7 @@ def delete_user(
     db.commit()
     return current_user
 
+
 @router.get("/me/preferences", response_model=UserPreferences)
 def get_user_preferences(
     current_user: User = Depends(deps.get_current_active_user),
@@ -117,6 +123,7 @@ def get_user_preferences(
     Get user preferences.
     """
     return current_user.preferences
+
 
 @router.put("/me/preferences", response_model=UserPreferences)
 def update_user_preferences(
@@ -134,6 +141,7 @@ def update_user_preferences(
     db.refresh(current_user)
     return current_user.preferences
 
+
 @router.get("/me/settings", response_model=UserSettings)
 def get_user_settings(
     current_user: User = Depends(deps.get_current_active_user),
@@ -142,6 +150,7 @@ def get_user_settings(
     Get user settings.
     """
     return current_user.settings
+
 
 @router.put("/me/settings", response_model=UserSettings)
 def update_user_settings(
@@ -157,4 +166,4 @@ def update_user_settings(
     db.add(current_user)
     db.commit()
     db.refresh(current_user)
-    return current_user.settings 
+    return current_user.settings

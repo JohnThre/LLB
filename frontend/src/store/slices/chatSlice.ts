@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: string;
 }
@@ -29,7 +29,7 @@ const initialState: ChatState = {
 };
 
 const chatSlice = createSlice({
-  name: 'chat',
+  name: "chat",
   initialState,
   reducers: {
     sendMessageStart: (state) => {
@@ -53,7 +53,7 @@ const chatSlice = createSlice({
     },
     updateChatHistory: (
       state,
-      action: PayloadAction<ChatState['chatHistory']>
+      action: PayloadAction<ChatState["chatHistory"]>,
     ) => {
       state.chatHistory = action.payload;
     },
@@ -74,4 +74,4 @@ export const {
   clearChat,
 } = chatSlice.actions;
 
-export default chatSlice.reducer; 
+export default chatSlice.reducer;

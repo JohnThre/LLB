@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import {
   Box,
   Typography,
   CircularProgress,
   IconButton,
   Paper,
-} from '@mui/material';
+} from "@mui/material";
 import {
   CloudUpload,
   Delete,
@@ -13,9 +13,9 @@ import {
   Image,
   Description,
   Audiotrack,
-} from '@mui/icons-material';
-import { useDropzone } from 'react-dropzone';
-import { useTheme } from '@mui/material/styles';
+} from "@mui/icons-material";
+import { useDropzone } from "react-dropzone";
+import { useTheme } from "@mui/material/styles";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -23,7 +23,7 @@ interface FileUploadProps {
   accept?: string;
   maxSize?: number;
   disabled?: boolean;
-  fileType?: 'audio' | 'document' | 'image';
+  fileType?: "audio" | "document" | "image";
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -32,7 +32,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   accept,
   maxSize = 50 * 1024 * 1024, // 50MB
   disabled = false,
-  fileType = 'document',
+  fileType = "document",
 }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -41,9 +41,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const getFileIcon = () => {
     switch (fileType) {
-      case 'audio':
+      case "audio":
         return <Audiotrack />;
-      case 'image':
+      case "image":
         return <Image />;
       default:
         return <Description />;
@@ -69,13 +69,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
       try {
         await onFileSelect(selectedFile);
       } catch (err) {
-        setError('Error uploading file');
-        console.error('Upload error:', err);
+        setError("Error uploading file");
+        console.error("Upload error:", err);
       } finally {
         setIsUploading(false);
       }
     },
-    [maxSize, onFileSelect]
+    [maxSize, onFileSelect],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -93,31 +93,29 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: "100%" }}>
       {!file ? (
         <Paper
           {...getRootProps()}
           sx={{
             p: 3,
             border: `2px dashed ${
-              isDragActive
-                ? theme.palette.primary.main
-                : theme.palette.divider
+              isDragActive ? theme.palette.primary.main : theme.palette.divider
             }`,
             borderRadius: 1,
             bgcolor: isDragActive
               ? theme.palette.action.hover
               : theme.palette.background.paper,
-            cursor: disabled ? 'not-allowed' : 'pointer',
+            cursor: disabled ? "not-allowed" : "pointer",
             opacity: disabled ? 0.7 : 1,
           }}
         >
           <input {...getInputProps()} />
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               gap: 1,
             }}
           >
@@ -129,8 +127,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
             />
             <Typography variant="body1" align="center">
               {isDragActive
-                ? 'Drop the file here'
-                : 'Drag and drop a file here, or click to select'}
+                ? "Drop the file here"
+                : "Drag and drop a file here, or click to select"}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Max file size: {maxSize / (1024 * 1024)}MB
@@ -141,14 +139,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <Paper
           sx={{
             p: 2,
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 2,
           }}
         >
-          <Box sx={{ color: theme.palette.primary.main }}>
-            {getFileIcon()}
-          </Box>
+          <Box sx={{ color: theme.palette.primary.main }}>{getFileIcon()}</Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" noWrap>
               {file.name}
@@ -160,11 +156,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           {isUploading ? (
             <CircularProgress size={24} />
           ) : (
-            <IconButton
-              onClick={handleRemove}
-              disabled={disabled}
-              size="small"
-            >
+            <IconButton onClick={handleRemove} disabled={disabled} size="small">
               <Delete />
             </IconButton>
           )}
@@ -174,7 +166,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <Typography
           variant="caption"
           color="error"
-          sx={{ mt: 1, display: 'block' }}
+          sx={{ mt: 1, display: "block" }}
         >
           {error}
         </Typography>
@@ -183,4 +175,4 @@ const FileUpload: React.FC<FileUploadProps> = ({
   );
 };
 
-export default FileUpload; 
+export default FileUpload;

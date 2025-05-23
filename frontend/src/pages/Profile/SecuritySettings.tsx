@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   TextField,
@@ -6,15 +6,15 @@ import {
   Grid,
   Typography,
   Divider,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const SecuritySettings: React.FC = () => {
   const { t } = useTranslation();
   const [passwords, setPasswords] = React.useState({
-    current: '',
-    new: '',
-    confirm: '',
+    current: "",
+    new: "",
+    confirm: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,14 +30,14 @@ const SecuritySettings: React.FC = () => {
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Typography variant="h6" gutterBottom>
-        {t('security.changePassword')}
+        {t("security.changePassword")}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('security.currentPassword')}
+            label={t("security.currentPassword")}
             name="current"
             type="password"
             value={passwords.current}
@@ -48,7 +48,7 @@ const SecuritySettings: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('security.newPassword')}
+            label={t("security.newPassword")}
             name="new"
             type="password"
             value={passwords.new}
@@ -59,7 +59,7 @@ const SecuritySettings: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('security.confirmPassword')}
+            label={t("security.confirmPassword")}
             name="confirm"
             type="password"
             value={passwords.confirm}
@@ -74,7 +74,7 @@ const SecuritySettings: React.FC = () => {
             color="primary"
             size="large"
           >
-            {t('security.updatePassword')}
+            {t("security.updatePassword")}
           </Button>
         </Grid>
       </Grid>
@@ -82,18 +82,13 @@ const SecuritySettings: React.FC = () => {
       <Divider sx={{ my: 4 }} />
 
       <Typography variant="h6" gutterBottom>
-        {t('security.twoFactor')}
+        {t("security.twoFactor")}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="large"
-            fullWidth
-          >
-            {t('security.enable2FA')}
+          <Button variant="outlined" color="primary" size="large" fullWidth>
+            {t("security.enable2FA")}
           </Button>
         </Grid>
       </Grid>
@@ -101,4 +96,4 @@ const SecuritySettings: React.FC = () => {
   );
 };
 
-export default SecuritySettings; 
+export default SecuritySettings;

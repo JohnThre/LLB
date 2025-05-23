@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   TextField,
@@ -6,17 +6,17 @@ import {
   Grid,
   Avatar,
   Typography,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../contexts/AuthContext';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ProfileSettings: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [formData, setFormData] = React.useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    bio: '',
+    name: user?.name || "",
+    email: user?.email || "",
+    bio: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,16 +33,13 @@ const ProfileSettings: React.FC = () => {
     <Box component="form" onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} display="flex" justifyContent="center">
-          <Avatar
-            sx={{ width: 100, height: 100, mb: 2 }}
-            alt={formData.name}
-          />
+          <Avatar sx={{ width: 100, height: 100, mb: 2 }} alt={formData.name} />
         </Grid>
-        
+
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('profile.name')}
+            label={t("profile.name")}
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -52,7 +49,7 @@ const ProfileSettings: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('profile.email')}
+            label={t("profile.email")}
             name="email"
             type="email"
             value={formData.email}
@@ -63,7 +60,7 @@ const ProfileSettings: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            label={t('profile.bio')}
+            label={t("profile.bio")}
             name="bio"
             multiline
             rows={4}
@@ -79,7 +76,7 @@ const ProfileSettings: React.FC = () => {
             color="primary"
             size="large"
           >
-            {t('common.save')}
+            {t("common.save")}
           </Button>
         </Grid>
       </Grid>
@@ -87,4 +84,4 @@ const ProfileSettings: React.FC = () => {
   );
 };
 
-export default ProfileSettings; 
+export default ProfileSettings;
