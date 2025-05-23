@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Dict, Any
 from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, validator
+from pydantic import AnyHttpUrl, field_validator
 from pathlib import Path
 
 class Settings(BaseSettings):
@@ -12,8 +12,9 @@ class Settings(BaseSettings):
     # CORS Configuration
     CORS_ORIGINS: List[AnyHttpUrl] = ["http://localhost:3000"]
     
-    @validator("CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: str | List[str]) -> List[str]:
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v):
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -31,10 +32,12 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "llb"
     SQLALCHEMY_DATABASE_URI: str | None = None
     
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: str | None, values: dict[str, any]) -> str:
+    @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
+    @classmethod
+    def assemble_db_connection(cls, v, info):
         if isinstance(v, str):
             return v
+        values = info.data if info else {}
         return f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}@{values.get('POSTGRES_SERVER')}/{values.get('POSTGRES_DB')}"
     
     # AI Model Settings
@@ -56,8 +59,9 @@ class Settings(BaseSettings):
         ".jpg", ".jpeg", ".png", ".gif"
     }
     
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
+    model_config = {
+        "case_sensitive": True,
+        "env_file": ".env"
+    }
 
 settings = Settings() 

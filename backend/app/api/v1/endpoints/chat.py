@@ -1,349 +1,131 @@
 """
-Chat endpoints for managing conversations and messages.
+Chat endpoints for AI conversations.
 """
 
-from typing import Any, List
+from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from pydantic import BaseModel
 
-from app.api import deps
-from app.models.user import User
-from app.models.chat import Chat, Message
-from app.schemas.chat import (
-    ChatCreate,
-    ChatResponse,
-    MessageCreate,
-    MessageResponse,
-    ChatHistoryResponse,
-    ChatUpdate
-)
+from app.api.deps import get_ai_service
+from app.services.ai_service import AIService
+from app.core.logging import get_logger
 
+logger = get_logger(__name__)
 router = APIRouter()
 
-@router.post("/", response_model=ChatResponse)
-def create_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_in: ChatCreate,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Create new chat.
-    """
-    chat = Chat(
-        title=chat_in.title,
-        user_id=current_user.id
-    )
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat
 
-@router.get("/", response_model=List[ChatResponse])
-def read_chats(
-    db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
-    archived: bool = False,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Retrieve user's chats.
-    """
-    query = db.query(Chat).filter(
-        Chat.user_id == current_user.id,
-        Chat.is_archived == archived
-    )
-    
-    # Order by pinned status and updated time
-    chats = query.order_by(
-        desc(Chat.is_pinned),
-        desc(Chat.updated_at)
-    ).offset(skip).limit(limit).all()
-    
-    return chats
+class ChatMessage(BaseModel):
+    """Chat message model."""
+    message: str
+    language: Optional[str] = "en"
+    context: Optional[Dict[str, Any]] = None
+    cultural_context: Optional[str] = None
 
-@router.get("/{chat_id}", response_model=ChatHistoryResponse)
-def read_chat(
-    chat_id: str,
-    db: Session = Depends(deps.get_db),
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Get chat by ID with messages.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    return chat
 
-@router.post("/{chat_id}/messages", response_model=MessageResponse)
-def create_message(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    message_in: MessageCreate,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Create new message in chat.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    message = Message(
-        content=message_in.content,
-        role=message_in.role,
-        chat_id=chat_id
-    )
-    db.add(message)
-    
-    # Update chat's updated_at timestamp
-    chat.updated_at = func.now()
-    db.add(chat)
-    
-    db.commit()
-    db.refresh(message)
-    return message
+class ChatResponse(BaseModel):
+    """Chat response model."""
+    response: str
+    language: str
+    language_detected: str
+    confidence: float
+    safety_score: float
+    processing_time: Optional[float] = None
 
-@router.get("/{chat_id}/messages", response_model=List[MessageResponse])
-def read_messages(
-    chat_id: str,
-    db: Session = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Retrieve chat messages.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    messages = db.query(Message).filter(
-        Message.chat_id == chat_id
-    ).order_by(
-        Message.created_at
-    ).offset(skip).limit(limit).all()
-    
-    return messages
 
-@router.put("/{chat_id}", response_model=ChatResponse)
-def update_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    chat_in: ChatUpdate,
-    current_user: User = Depends(deps.get_current_active_user),
+@router.post("/chat", response_model=ChatResponse)
+async def chat_with_ai(
+    message: ChatMessage,
+    ai_service: AIService = Depends(get_ai_service)
 ) -> Any:
     """
-    Update chat details.
+    Send a message to the AI and get a response.
+    
+    Args:
+        message: The chat message with text and optional language/context
+        ai_service: AI service dependency
+        
+    Returns:
+        AI response with confidence and safety scores
     """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
+    try:
+        logger.info(f"Processing chat message: {message.message[:50]}...")
+        
+        # Generate AI response
+        response = await ai_service.generate_response(
+            message=message.message,
+            language=message.language or "en",
+            context=message.context
         )
-    
-    update_data = chat_in.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(chat, field, value)
-    
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat
+        
+        return ChatResponse(**response)
+        
+    except Exception as e:
+        logger.error(f"Chat processing failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process chat message: {str(e)}"
+        )
 
-@router.delete("/{chat_id}", response_model=ChatResponse)
-def delete_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Delete a chat and all its messages.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    # Delete all messages in the chat
-    db.query(Message).filter(Message.chat_id == chat_id).delete()
-    
-    # Delete the chat
-    db.delete(chat)
-    db.commit()
-    return chat
 
-@router.delete("/{chat_id}/messages/{message_id}", response_model=MessageResponse)
-def delete_message(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    message_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
+@router.get("/chat/languages")
+async def get_supported_languages(
+    ai_service: AIService = Depends(get_ai_service)
+) -> Dict[str, Any]:
     """
-    Delete a specific message from a chat.
+    Get list of supported languages for chat.
+    
+    Returns:
+        List of supported language codes and names
     """
-    # Verify chat ownership
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
+    try:
+        languages = ai_service.get_supported_languages()
+        
+        # Map language codes to names
+        language_map = {
+            "en": "English",
+            "zh-CN": "Simplified Chinese",
+            "zh-TW": "Traditional Chinese"
+        }
+        
+        return {
+            "supported_languages": [
+                {
+                    "code": lang,
+                    "name": language_map.get(lang, lang)
+                }
+                for lang in languages
+            ]
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get supported languages: {e}")
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve supported languages"
         )
-    
-    # Get and delete the message
-    message = db.query(Message).filter(
-        Message.id == message_id,
-        Message.chat_id == chat_id
-    ).first()
-    if not message:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Message not found"
-        )
-    
-    db.delete(message)
-    db.commit()
-    return message
 
-@router.put("/{chat_id}/archive", response_model=ChatResponse)
-def archive_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Archive a chat.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    chat.is_archived = True
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat
 
-@router.put("/{chat_id}/unarchive", response_model=ChatResponse)
-def unarchive_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
+@router.get("/chat/status")
+async def get_chat_status(
+    ai_service: AIService = Depends(get_ai_service)
+) -> Dict[str, Any]:
     """
-    Unarchive a chat.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
+    Get chat service status and capabilities.
     
-    chat.is_archived = False
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat
-
-@router.put("/{chat_id}/pin", response_model=ChatResponse)
-def pin_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
+    Returns:
+        Chat service status and model information
     """
-    Pin a chat.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
+    try:
+        return {
+            "status": "ready" if ai_service.is_ready() else "not_ready",
+            "model_info": ai_service.get_model_info(),
+            "supported_languages": ai_service.get_supported_languages(),
+            "memory_usage": ai_service.get_memory_usage()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get chat status: {e}")
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    chat.is_pinned = True
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat
-
-@router.put("/{chat_id}/unpin", response_model=ChatResponse)
-def unpin_chat(
-    *,
-    db: Session = Depends(deps.get_db),
-    chat_id: str,
-    current_user: User = Depends(deps.get_current_active_user),
-) -> Any:
-    """
-    Unpin a chat.
-    """
-    chat = db.query(Chat).filter(
-        Chat.id == chat_id,
-        Chat.user_id == current_user.id
-    ).first()
-    if not chat:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found"
-        )
-    
-    chat.is_pinned = False
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-    return chat 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve chat status"
+        ) 

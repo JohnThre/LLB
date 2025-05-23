@@ -1,51 +1,43 @@
-from typing import Generator, Optional
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
-from pydantic import ValidationError
-from sqlalchemy.orm import Session
+"""
+Dependency injection for LLB Backend API
+Provides service dependencies for FastAPI endpoints
+"""
 
-from app.core.config import settings
-from app.core.security import verify_password
-from app.db.session import SessionLocal
-from app.models.user import User
-from app.schemas.token import TokenPayload
+from app.services.ai_service import AIService
+from app.services.audio_service import AudioService
+from app.services.document_service import DocumentService
+from app.core.exceptions import LLBException
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login"
-)
+# Global service instances (will be set by main.py)
+_ai_service: AIService = None
+_audio_service: AudioService = None
+_document_service: DocumentService = None
 
-def get_db() -> Generator:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
 
-def get_current_user(
-    db: Session = Depends(get_db),
-    token: str = Depends(reusable_oauth2)
-) -> User:
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=["HS256"]
-        )
-        token_data = TokenPayload(**payload)
-    except (JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-        )
-    user = db.query(User).filter(User.id == token_data.sub).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if not user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return user
+def set_services(ai_service: AIService, audio_service: AudioService, document_service: DocumentService):
+    """Set global service instances."""
+    global _ai_service, _audio_service, _document_service
+    _ai_service = ai_service
+    _audio_service = audio_service
+    _document_service = document_service
 
-def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user 
+
+def get_ai_service() -> AIService:
+    """Get AI service instance."""
+    if _ai_service is None:
+        raise LLBException("AI service not initialized")
+    return _ai_service
+
+
+def get_audio_service() -> AudioService:
+    """Get audio service instance."""
+    if _audio_service is None:
+        raise LLBException("Audio service not initialized")
+    return _audio_service
+
+
+def get_document_service() -> DocumentService:
+    """Get document service instance."""
+    if _document_service is None:
+        raise LLBException("Document service not initialized")
+    return _document_service 

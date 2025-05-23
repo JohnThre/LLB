@@ -5,7 +5,8 @@ Handles environment variables and application settings
 
 import os
 from typing import List, Optional
-from pydantic import BaseSettings, validator
+from pydantic import field_validator
+from pydantic_settings import BaseSettings
 from functools import lru_cache
 
 
@@ -29,8 +30,8 @@ class Settings(BaseSettings):
     ]
     
     # AI Models
-    model_cache_dir: str = "../ai/cache"
-    model_temp_dir: str = "../ai/temp"
+    ai_cache_dir: str = "../ai/cache"
+    ai_temp_dir: str = "../ai/temp"
     gemma_model_path: str = "../ai/models/gemma"
     whisper_model_path: str = "../ai/models/whisper"
     
@@ -68,23 +69,27 @@ class Settings(BaseSettings):
     default_safety_level: str = "standard"
     content_filter_enabled: bool = True
     
-    @validator("cors_origins", pre=True)
+    @field_validator("cors_origins", mode="before")
+    @classmethod
     def assemble_cors_origins(cls, v):
         """Parse CORS origins from environment variable."""
         if isinstance(v, str):
             return [i.strip() for i in v.split(",")]
         return v
     
-    @validator("supported_languages", pre=True)
+    @field_validator("supported_languages", mode="before")
+    @classmethod
     def assemble_languages(cls, v):
         """Parse supported languages from environment variable."""
         if isinstance(v, str):
             return [i.strip() for i in v.split(",")]
         return v
     
-    class Config:
-        env_file = ".env"
-        env_prefix = "LLB_"
+    model_config = {
+        "env_file": ".env",
+        "env_prefix": "LLB_",
+        "protected_namespaces": ()
+    }
 
 
 class DevelopmentSettings(Settings):

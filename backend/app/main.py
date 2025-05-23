@@ -8,10 +8,10 @@ import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 # Add AI directory to path
 sys.path.append(str(Path(__file__).parent.parent.parent / "ai"))
@@ -19,7 +19,9 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "ai"))
 from app.config import settings
 from app.core.logging import get_logger, setup_logging
 from app.core.exceptions import LLBException, LLBHTTPException
-from app.api.v1 import chat, voice, documents, health
+from app.api.v1 import health
+from app.api.v1.endpoints import chat
+from app.api import deps
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService
@@ -32,6 +34,19 @@ ai_service = None
 audio_service = None
 document_service = None
 
+# Create placeholder routers for missing endpoints
+voice_router = APIRouter()
+documents_router = APIRouter()
+
+@voice_router.post("/voice/transcribe")
+async def transcribe_voice():
+    """Placeholder for voice transcription endpoint."""
+    return {"message": "Voice transcription endpoint - coming soon"}
+
+@documents_router.post("/documents/analyze")
+async def analyze_document():
+    """Placeholder for document analysis endpoint."""
+    return {"message": "Document analysis endpoint - coming soon"}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,8 +61,13 @@ async def lifespan(app: FastAPI):
         audio_service = AudioService()
         document_service = DocumentService()
         
-        # Load AI model
+        # Set services in deps module
+        deps.set_services(ai_service, audio_service, document_service)
+        
+        # Initialize all services
         await ai_service.initialize()
+        await audio_service.initialize()
+        await document_service.initialize()
         
         logger.info("✅ LLB Backend started successfully!")
         
@@ -98,15 +118,24 @@ def create_app() -> FastAPI:
     # Include API routers
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
-    app.include_router(voice.router, prefix="/api/v1", tags=["voice"])
-    app.include_router(documents.router, prefix="/api/v1", tags=["documents"])
+    app.include_router(voice_router, prefix="/api/v1", tags=["voice"])
+    app.include_router(documents_router, prefix="/api/v1", tags=["documents"])
+    
+    # Add legacy health endpoint for backward compatibility
+    @app.get("/health")
+    async def legacy_health_check():
+        """Legacy health check endpoint - redirects to API health."""
+        return RedirectResponse(url="/api/v1/health")
     
     # Exception handlers
     @app.exception_handler(LLBException)
     async def llb_exception_handler(request, exc: LLBException):
         """Handle custom LLB exceptions."""
         logger.error(f"LLB Exception: {exc.message}", extra={"details": exc.details})
-        return {"error": exc.message, "details": exc.details}
+        return JSONResponse(
+            status_code=500,
+            content={"error": exc.message, "details": exc.details}
+        )
     
     @app.exception_handler(LLBHTTPException)
     async def llb_http_exception_handler(request, exc: LLBHTTPException):
@@ -254,28 +283,6 @@ def create_app() -> FastAPI:
 
 # Create the FastAPI app
 app = create_app()
-
-
-# Dependency injection for services
-def get_ai_service() -> AIService:
-    """Get AI service instance."""
-    if ai_service is None:
-        raise LLBException("AI service not initialized")
-    return ai_service
-
-
-def get_audio_service() -> AudioService:
-    """Get audio service instance."""
-    if audio_service is None:
-        raise LLBException("Audio service not initialized")
-    return audio_service
-
-
-def get_document_service() -> DocumentService:
-    """Get document service instance."""
-    if document_service is None:
-        raise LLBException("Document service not initialized")
-    return document_service
 
 if __name__ == "__main__":
     import uvicorn

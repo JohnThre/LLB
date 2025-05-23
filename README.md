@@ -4,102 +4,203 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Node.js 18+](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-009688.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg)](https://reactjs.org/)
 
-## 🧑‍🏫 Beginner Tutorial: How to Deploy and Use LLB (爱学伴)
+## 🚀 Quick Start Guide for Beginners
 
-Welcome! This guide will help anyone (even with no technical background) set up and use the LLB (爱学伴) sexual health education app on their own computer.
+*This guide will help you set up and run LLB (爱学伴) on your computer, even if you're not a programmer!*
 
----
+### 📋 What You'll Need
 
-### 📝 What is LLB?
-LLB (爱学伴) is a private, local web app that answers sexual health questions in English and Chinese (including Henan dialect). It works with text, voice, and PDF files—all on your own computer, with no data sent to the internet.
+Before starting, make sure your computer has:
+- **Windows 11** with WSL2 (Ubuntu 22.04) or **Ubuntu 22.04** directly
+- **At least 16GB RAM** (32GB recommended)
+- **At least 20GB free disk space**
+- **Internet connection** for downloading dependencies
 
----
+### 🎯 Step 1: Download the AI Model
 
-### 🖥️ What You Need
-- **A computer with:**
-  - Windows 11 Pro
-  - At least 16GB RAM (32GB recommended)
-  - Intel i7 8th gen or newer
-  - (Optional) NVIDIA RTX 3060 or better for faster AI
-- **Software:**
-  - [Google Chrome](https://www.google.com/chrome/)
-  - [WSL2 with Ubuntu 22.04](https://learn.microsoft.com/en-us/windows/wsl/install)
-  - [Python 3.11](https://www.python.org/downloads/release/python-3110/)
-  - [Node.js 18+](https://nodejs.org/)
-  - (Optional) Latest NVIDIA driver for your GPU
+**⚠️ Important: You must download the AI model manually before setup!**
 
----
+1. **Create a Kaggle account** at [kaggle.com](https://www.kaggle.com) (free)
+2. **Download the Gemma model**:
+   - Go to: https://www.kaggle.com/models/google/gemma/keras/gemma_1.1_instruct_2b_en
+   - Click "Download" (you may need to accept terms)
+   - Download the **1B parameter version** (about 2GB)
+3. **Extract the model**:
+   - Create folder: `ai/models/gemma3-keras-gemma3_1b-v3/`
+   - Extract all files from the download into this folder
+   - You should see files like: `config.json`, `model.weights.h5`, `tokenizer.json`, etc.
 
-### 🚀 Step 1: Download LLB
-1. Go to the [LLB GitHub page](https://github.com/your-username/llb).
-2. Click **Code > Download ZIP** (or use Git if you know how).
-3. Unzip the file to a folder (e.g., `C:\LLB` or your home directory in Ubuntu).
+### 🛠️ Step 2: Install Required Software
 
----
-
-### ⚡ Step 2: One-Click Setup (Easiest Way)
-1. Open **Ubuntu 22.04** (WSL2) on your computer.
-2. Change to the LLB folder. For example:
+1. **Install Python 3.11**:
    ```bash
-   cd ~/LLB
+   sudo apt update
+   sudo apt install python3.11 python3.11-venv python3.11-dev
    ```
-3. Make the setup script executable:
+
+2. **Install Node.js 18+**:
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   ```
+
+3. **Install Yarn**:
+   ```bash
+   npm install -g yarn
+   ```
+
+4. **Install Git** (if not already installed):
+   ```bash
+   sudo apt install git
+   ```
+
+### 🏗️ Step 3: Set Up the Project
+
+1. **Open terminal** and navigate to the project folder:
+   ```bash
+   cd /path/to/your/LLB/project
+   ```
+
+2. **Run the setup script**:
    ```bash
    chmod +x scripts/setup/setup_project.sh
-   ```
-4. Run the setup script:
-   ```bash
    ./scripts/setup/setup_project.sh
    ```
-5. **Wait**: The script will check your system, install everything, and set up the app. This may take 10–30 minutes (internet required).
 
----
+3. **Follow the prompts**:
+   - The script will check your system
+   - Install all dependencies automatically
+   - Verify your AI model is correctly placed
+   - Set up testing infrastructure
+   - When asked "Run comprehensive tests?", type `y` to verify everything works
 
-### 🟢 Step 3: Start the App
-1. In Ubuntu, start the app:
+### ⚙️ Step 4: Configure the Application
+
+1. **Update environment files**:
+   - Edit `.env` (main settings)
+   - Edit `backend/.env` (backend settings)
+   - Edit `frontend/.env` (frontend settings)
+
+2. **Key settings to check**:
    ```bash
-   ./start_llb.sh
+   # In backend/.env
+   GEMMA_MODEL_PATH=ai/models/gemma3-keras-gemma3_1b-v3
+   WHISPER_MODEL_SIZE=base
+   SUPPORTED_LANGUAGES=en,zh-CN
    ```
-2. When you see "🚀 Starting LLB System...", open **Google Chrome** and go to:
-   - [http://localhost:3000](http://localhost:3000) (main app)
-   - [http://localhost:8000/docs](http://localhost:8000/docs) (API docs)
+
+### 🚀 Step 5: Start the Application
+
+1. **Start all services**:
+   ```bash
+   make dev
+   ```
+
+2. **Or start services individually**:
+   ```bash
+   # Backend only
+   make dev-backend
+   
+   # Frontend only (in another terminal)
+   make dev-frontend
+   ```
+
+### 🌐 Step 6: Use the Application
+
+1. **Open your web browser** and go to:
+   - **Main app**: http://localhost:3000
+   - **API documentation**: http://localhost:8000/docs
+
+2. **Test the features**:
+   - Type a question in English or Chinese
+   - Try voice input (click microphone icon)
+   - Upload a PDF document for analysis
+
+### 🧪 Step 7: Run Tests (Optional but Recommended)
+
+**Test everything is working correctly**:
+
+```bash
+# Run all tests
+make test
+
+# Run specific test suites
+make test-backend    # Backend API tests
+make test-frontend   # Frontend component tests
+make test-ai         # AI module tests
+
+# Generate test coverage reports
+make coverage
+```
+
+**View test results**:
+- Coverage report: `backend/htmlcov/index.html`
+- Test logs in terminal
+
+### 🛑 Step 8: Stop the Application
+
+When you're done:
+```bash
+# Stop all services
+Ctrl+C (in the terminal where you ran make dev)
+
+# Or if running in background
+make stop
+```
+
+### 🔧 Troubleshooting
+
+**Common issues and solutions**:
+
+1. **"Gemma model not found" error**:
+   - Make sure you downloaded and extracted the model correctly
+   - Check the path: `ai/models/gemma3-keras-gemma3_1b-v3/`
+   - Verify all required files are present
+
+2. **"Port already in use" error**:
+   ```bash
+   # Kill processes on ports 3000 and 8000
+   sudo lsof -ti:3000 | xargs kill -9
+   sudo lsof -ti:8000 | xargs kill -9
+   ```
+
+3. **Python/Node.js version issues**:
+   - Make sure you have Python 3.11 and Node.js 18+
+   - Run: `python3.11 --version` and `node --version`
+
+4. **Memory issues**:
+   - Close other applications
+   - Use smaller Whisper model: set `WHISPER_MODEL_SIZE=tiny` in backend/.env
+
+5. **Tests failing**:
+   ```bash
+   # Clean and reinstall
+   make clean
+   ./scripts/setup/setup_project.sh
+   ```
+
+### 📞 Getting Help
+
+- **Check logs**: Look in `backend/logs/` for error messages
+- **GitHub Issues**: Report bugs at [project repository]
+- **Documentation**: See `docs/` folder for detailed guides
+- **Community**: Join our discussion forums
+
+### 🎉 You're All Set!
+
+Congratulations! You now have LLB (爱学伴) running on your computer. The app provides:
+- ✅ AI-powered sexual health education
+- ✅ Support for English and Chinese
+- ✅ Voice interaction capabilities
+- ✅ PDF document processing
+- ✅ Culturally sensitive responses
+- ✅ Complete privacy (everything runs locally)
 
 ---
 
-### 💬 Step 4: Using LLB
-- **Text Chat:** Type your question and press send.
-- **Voice Input:** Click the microphone button and speak (first time, allow browser microphone access).
-- **PDF Upload:** Click the upload button and select a PDF to analyze.
-- **Language:** You can ask questions in English, Simplified Chinese, or Henan dialect. The app will detect the language automatically.
-
----
-
-### 🛑 Step 5: Stopping and Restarting
-- To **stop** the app: Press `Ctrl+C` in the Ubuntu window.
-- To **restart**: Run `./start_llb.sh` again.
-
----
-
-### 🆘 Troubleshooting
-- If you see errors, check the file `TROUBLESHOOTING.md` in the LLB folder.
-- For common problems (like missing Python, Node.js, or GPU issues), the setup script will give hints.
-- If you get stuck, email: **support@llb-project.com** or open an issue on [GitHub Issues](https://github.com/your-username/llb/issues).
-
----
-
-### ❓ FAQ
-- **Is my data private?** Yes! All processing is local. Nothing is sent to the internet.
-- **Can I use LLB offline?** Yes, after setup, no internet is needed.
-- **Do I need a GPU?** No, but it will be faster with an NVIDIA GPU.
-- **Can I use it on Mac or other Linux?** Not officially supported, but advanced users may try.
-
----
-
-Enjoy learning with LLB (爱学伴)! If you have feedback, please let us know.
-
-## 🌟 Overview
+## Overview
 
 LLB (爱学伴) is a comprehensive, privacy-focused sexual health education web application that leverages Google's Gemma 3 1B AI model for local processing. The application provides multi-modal educational content through text, voice, and document analysis while maintaining complete privacy through local AI processing.
 

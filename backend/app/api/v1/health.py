@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from app.config import settings
 from app.core.logging import get_logger
-from app.main import get_ai_service, get_audio_service, get_document_service
+from app.api.deps import get_ai_service, get_audio_service, get_document_service
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService

@@ -20,7 +20,7 @@ const StyledButton = styled(MuiButton)(({ theme }) => ({
   },
 }));
 
-export const Button = ({
+const Button = ({
   children,
   variant = 'contained',
   color = 'primary',
@@ -37,4 +37,7 @@ export const Button = ({
       {children}
     </StyledButton>
   );
-}; 
+};
+
+export default Button;
+export { Button }; 
