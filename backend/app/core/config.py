@@ -1,0 +1,63 @@
+from typing import List
+from pydantic_settings import BaseSettings
+from pydantic import AnyHttpUrl, validator
+from pathlib import Path
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "LLB API"
+    VERSION: str = "0.1.0"
+    DESCRIPTION: str = "Local AI-Driven Education Web Application API"
+    API_V1_STR: str = "/api/v1"
+    
+    # CORS Configuration
+    CORS_ORIGINS: List[AnyHttpUrl] = ["http://localhost:3000"]
+    
+    @validator("CORS_ORIGINS", pre=True)
+    def assemble_cors_origins(cls, v: str | List[str]) -> List[str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",")]
+        elif isinstance(v, (list, str)):
+            return v
+        raise ValueError(v)
+    
+    # Security
+    SECRET_KEY: str = "your-secret-key-here"  # Change in production
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
+    
+    # Database
+    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_DB: str = "llb"
+    SQLALCHEMY_DATABASE_URI: str | None = None
+    
+    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
+    def assemble_db_connection(cls, v: str | None, values: dict[str, any]) -> str:
+        if isinstance(v, str):
+            return v
+        return f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}@{values.get('POSTGRES_SERVER')}/{values.get('POSTGRES_DB')}"
+    
+    # AI Model Settings
+    MODEL_PATH: str = "models/gemma-2b-it"
+    MODEL_DEVICE: str = "cuda"  # or "cpu"
+    MAX_LENGTH: int = 2048
+    TEMPERATURE: float = 0.7
+    
+    # Storage Settings
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
+    UPLOAD_DIR: Path = BASE_DIR / "uploads"
+    MAX_UPLOAD_SIZE: int = 50 * 1024 * 1024  # 50MB
+    ALLOWED_EXTENSIONS: set[str] = {
+        # Audio
+        ".mp3", ".wav", ".ogg", ".m4a",
+        # Documents
+        ".pdf", ".doc", ".docx", ".txt",
+        # Images
+        ".jpg", ".jpeg", ".png", ".gif"
+    }
+    
+    class Config:
+        case_sensitive = True
+        env_file = ".env"
+
+settings = Settings() 

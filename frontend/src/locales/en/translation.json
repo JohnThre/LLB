@@ -1,0 +1,26 @@
+{
+  "chat": {
+    "inputPlaceholder": "Type your message here...",
+    "send": "Send"
+  },
+  "modelStatus": {
+    "title": "Model Status",
+    "loading": "Loading",
+    "ready": "Ready",
+    "error": "Error"
+  },
+  "settings": {
+    "title": "Model Settings",
+    "temperature": "Temperature",
+    "maxTokens": "Max Tokens",
+    "topP": "Top P",
+    "topK": "Top K",
+    "useQuantization": "Use Quantization",
+    "save": "Save Settings"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backHome": "Back to Home"
+  }
+} 

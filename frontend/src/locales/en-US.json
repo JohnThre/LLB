@@ -1,0 +1,43 @@
+{
+  "app": {
+    "name": "LLB",
+    "description": "Local AI-Driven Sex Education Web Application"
+  },
+  "nav": {
+    "chat": "Chat",
+    "settings": "Settings"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "loginError": "Invalid email or password"
+  },
+  "chat": {
+    "send": "Send",
+    "typeMessage": "Type your message...",
+    "voiceInput": "Voice Input",
+    "uploadFile": "Upload File",
+    "processing": "Processing..."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy"
+  }
+} 
