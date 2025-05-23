@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation structure
 - Contributing guidelines and code of conduct
 - Project structure documentation
+- License header templates for source code files
 
 ### Changed
 - Reorganized backend into modular FastAPI structure
@@ -25,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced error handling and logging
 - Updated README with comprehensive setup instructions
 - Restructured requirements files for better dependency management
+- **BREAKING**: Changed project license from MIT to GNU General Public License v3.0
+- Updated all documentation to reflect GPL v3 licensing
+- Updated package.json to specify GPL-3.0 license
+- Updated CONTRIBUTING.md to reflect GPL v3 contribution terms
 
 ### Fixed
 - Improved project organization and file structure

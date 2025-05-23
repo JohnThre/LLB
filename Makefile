@@ -121,7 +121,7 @@ test-backend:
 
 test-frontend:
 	@echo "🧪 Running frontend tests..."
-	cd $(FRONTEND_DIR) && $(YARN) test --coverage
+	cd $(FRONTEND_DIR) && $(YARN) test --run --coverage
 
 test-ai:
 	@echo "🧪 Running AI tests..."

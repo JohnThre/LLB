@@ -16,25 +16,25 @@ sqlalchemy==2.0.23
 alembic==1.13.0
 
 # AI and ML
-torch==2.1.1
-transformers==4.36.0
-tokenizers==0.15.0
-accelerate==0.25.0
-bitsandbytes==0.41.3
+torch>=2.1.0,<2.2.0
+transformers>=4.36.0,<4.37.0
+tokenizers>=0.15.0,<0.16.0
+accelerate>=0.25.0,<0.26.0
+bitsandbytes>=0.41.0,<0.42.0
 
 # Audio Processing
-librosa==0.10.1
-soundfile==0.12.1
-whisper==1.1.10
+librosa>=0.10.0,<0.11.0
+soundfile>=0.12.0,<0.13.0
+openai-whisper>=20231117
 
 # Document Processing
-PyPDF2==3.0.1
-python-docx==1.1.0
-pypdf==3.17.1
+PyPDF2>=3.0.0,<4.0.0
+python-docx>=1.1.0,<2.0.0
+pypdf>=3.17.0,<4.0.0
 
 # Language Processing
-langdetect==1.0.9
-polyglot==16.7.4
+langdetect>=1.0.9,<2.0.0
+polyglot>=16.7.0,<17.0.0
 
 # Utilities
 python-dotenv==1.0.0
@@ -46,7 +46,7 @@ loguru==0.7.2
 structlog==23.2.0
 
 # Security
-cryptography==41.0.8
+cryptography>=41.0.0,<42.0.0
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 

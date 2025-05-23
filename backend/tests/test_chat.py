@@ -1,9 +1,15 @@
 import pytest
+import sys
+import os
 from datetime import datetime
 from sqlalchemy.orm import Session
-from backend.app.models.chat import Chat, Message
-from backend.app.schemas.chat import ChatCreate, MessageCreate
-from backend.app.crud.chat import (
+
+# Add the backend directory to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+from app.models.chat import Chat, Message
+from app.schemas.chat import ChatCreate, MessageCreate
+from app.crud.chat import (
     create_chat,
     get_chat,
     get_chats,

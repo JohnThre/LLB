@@ -237,4 +237,4 @@ For issues or questions:
 
 ## License
 
-This project uses Google's Gemma model under the Gemma Terms of Use. 
+This project is licensed under the GNU General Public License v3.0. The project uses Google's Gemma model under the Gemma Terms of Use. 

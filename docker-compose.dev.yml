@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Development)
+  db:
+    image: postgres:15-alpine
+    container_name: llb_db_dev
+    environment:
+      POSTGRES_DB: llb_db_dev
+      POSTGRES_USER: llb_user
+      POSTGRES_PASSWORD: llb_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+    networks:
+      - llb_dev_network
+
+  # Redis Cache (Development)
+  redis:
+    image: redis:7-alpine
+    container_name: llb_redis_dev
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - llb_dev_network
+
+  # Backend API Service (Development with hot reload)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: llb_backend_dev
+    environment:
+      - DATABASE_URL=postgresql://llb_user:llb_password@db:5432/llb_db_dev
+      - REDIS_URL=redis://redis:6379
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - SECRET_KEY=dev-secret-key-not-for-production
+      - GEMMA_MODEL_PATH=/app/models/gemma-3-1b
+      - WHISPER_MODEL_PATH=/app/models/whisper
+      - PYTHONPATH=/app
+    volumes:
+      - ./backend:/app
+      - ./ai/models:/app/models:ro
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - llb_dev_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend React Application (Development with hot reload)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: llb_frontend_dev
+    environment:
+      - REACT_APP_API_URL=http://localhost:8001/api
+      - REACT_APP_ENVIRONMENT=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - llb_dev_network
+    command: npm start
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  llb_dev_network:
+    driver: bridge 

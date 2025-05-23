@@ -261,7 +261,7 @@ run_tests() {
     cd $FRONTEND_DIR
     if [[ -f "package.json" ]] && command_exists yarn; then
         print_status "Running frontend tests..."
-        yarn test --watchAll=false || print_warning "Some frontend tests failed"
+        yarn test --run || print_warning "Some frontend tests failed"
     else
         print_warning "Frontend tests not available"
     fi
