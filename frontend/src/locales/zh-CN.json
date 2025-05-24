@@ -1,7 +1,19 @@
 {
   "app": {
-    "name": "LLB",
-    "description": "本地AI驱动的性教育网络应用"
+    "name": "爱学伴 (LLB)",
+    "description": "本地AI驱动的性健康教育平台"
+  },
+  "nav": {
+    "chat": "聊天",
+    "chatHistory": "聊天记录",
+    "chatSettings": "聊天设置",
+    "profile": "个人资料",
+    "profileSettings": "个人设置",
+    "security": "安全设置",
+    "generalSettings": "设置",
+    "appearance": "外观",
+    "notifications": "通知",
+    "settings": "设置"
   },
   "common": {
     "loading": "加载中...",
@@ -11,7 +23,9 @@
     "save": "保存",
     "delete": "删除",
     "edit": "编辑",
-    "search": "搜索"
+    "search": "搜索",
+    "online": "在线",
+    "offline": "离线"
   },
   "auth": {
     "login": "登录",
@@ -24,20 +38,57 @@
   },
   "chat": {
     "send": "发送",
+    "inputPlaceholder": "在这里输入您的消息...",
     "typeMessage": "输入您的消息...",
     "voiceInput": "语音输入",
     "uploadFile": "上传文件",
-    "processing": "处理中..."
+    "processing": "处理中...",
+    "welcome": "欢迎使用爱学伴！",
+    "welcomeMessage": "我是您的性健康教育AI助手，有任何问题都可以问我！",
+    "subtitle": "您的AI性健康教育助手",
+    "online": "在线",
+    "clearChat": "清空聊天",
+    "attachFile": "附加文件",
+    "errorMessage": "抱歉，遇到了错误，请重试。"
+  },
+  "profile": {
+    "title": "个人资料",
+    "settings": "设置",
+    "security": "安全"
   },
   "settings": {
     "title": "设置",
     "language": "语言",
     "theme": "主题",
     "notifications": "通知",
-    "privacy": "隐私"
+    "privacy": "隐私",
+    "fontSize": "字体大小",
+    "fontFamily": "字体",
+    "colorScheme": "配色方案",
+    "density": "密度",
+    "borderRadius": "圆角",
+    "blue": "蓝色",
+    "green": "绿色",
+    "purple": "紫色",
+    "orange": "橙色",
+    "comfortable": "舒适",
+    "compact": "紧凑",
+    "spacious": "宽松",
+    "appearance": "外观"
   },
-  "nav": {
-    "chat": "聊天",
-    "settings": "设置"
+  "modelStatus": {
+    "title": "模型状态",
+    "loading": "加载中",
+    "ready": "就绪",
+    "error": "错误",
+    "lastUpdated": "最后更新",
+    "refresh": "刷新状态",
+    "memoryUsage": "内存使用",
+    "responseTime": "响应时间"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您要查找的页面不存在或已被移动。",
+    "backHome": "返回首页"
   }
 } 

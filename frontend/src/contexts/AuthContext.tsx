@@ -39,6 +39,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             email: "user@example.com",
             name: "Test User",
           });
+        } else {
+          // Auto-login for development
+          localStorage.setItem("auth_token", "dev_token");
+          setIsAuthenticated(true);
+          setUser({
+            id: "1",
+            email: "dev@llb.com",
+            name: "Development User",
+          });
         }
       } catch (error) {
         console.error("Auth check failed:", error);

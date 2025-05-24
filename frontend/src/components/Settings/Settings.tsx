@@ -32,7 +32,10 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch("/api/model/settings");
+        const response = await fetch("/api/ai/model/settings");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setSettings(data);
       } catch (error) {
@@ -45,13 +48,17 @@ export const Settings: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      await fetch("/api/model/settings", {
+      const response = await fetch("/api/ai/model/settings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(settings),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     } catch (error) {
       console.error("Error saving settings:", error);
     }

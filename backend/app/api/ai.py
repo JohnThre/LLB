@@ -3,9 +3,6 @@ FastAPI routes for AI functionality in the LLB application.
 """
 
 from typing import Any, Dict, List, Optional
-
-# Import AI factory and models
-from ai.factory import AIFactory
 from fastapi import (
     APIRouter,
     Depends,
@@ -20,22 +17,15 @@ from pydantic import BaseModel, Field
 # Create router
 router = APIRouter(prefix="/api/ai", tags=["AI"])
 
-# Global AI factory instance
-_ai_factory = None
-
-
-def get_ai_factory():
+# Placeholder for AI functionality
+def get_ai_service():
     """
-    Get or create the global AI factory instance.
-
+    Placeholder for AI service.
+    
     Returns:
-        AIFactory: The global AIFactory instance
+        dict: Mock AI service
     """
-    global _ai_factory
-    if _ai_factory is None:
-        logger.info("Creating new AIFactory")
-        _ai_factory = AIFactory()
-    return _ai_factory
+    return {"status": "mock"}
 
 
 # === Models for requests and responses ===
@@ -114,33 +104,131 @@ class DocumentProcessingResponse(BaseModel):
     )
 
 
+class ModelStatusResponse(BaseModel):
+    """Response model for model status."""
+
+    status: str = Field(..., description="Model status (loading, ready, error)")
+    modelName: str = Field(..., description="Name of the AI model")
+    lastUpdated: Optional[str] = Field(None, description="Last update timestamp")
+
+
+class ModelSettingsRequest(BaseModel):
+    """Request model for model settings."""
+
+    temperature: float = Field(0.7, description="Temperature for sampling")
+    maxTokens: int = Field(2048, description="Maximum tokens to generate")
+    topP: float = Field(0.95, description="Top-p sampling parameter")
+    topK: int = Field(40, description="Top-k sampling parameter")
+    useQuantization: bool = Field(True, description="Whether to use quantization")
+
+
+class ModelSettingsResponse(BaseModel):
+    """Response model for model settings."""
+
+    temperature: float = Field(..., description="Temperature for sampling")
+    maxTokens: int = Field(..., description="Maximum tokens to generate")
+    topP: float = Field(..., description="Top-p sampling parameter")
+    topK: int = Field(..., description="Top-k sampling parameter")
+    useQuantization: bool = Field(..., description="Whether to use quantization")
+
+
 # === API Routes ===
+
+
+@router.get("/model/status", response_model=ModelStatusResponse)
+async def get_model_status():
+    """
+    Get the current status of the AI model.
+
+    Returns:
+        ModelStatusResponse: The model status information
+    """
+    try:
+        # Return mock status for now
+        return ModelStatusResponse(
+            status="ready",
+            modelName="Gemma 3 1B",
+            lastUpdated=None
+        )
+    except Exception as e:
+        logger.error(f"Model status check error: {str(e)}")
+        return ModelStatusResponse(
+            status="error",
+            modelName="Gemma 3 1B",
+            lastUpdated=None
+        )
+
+
+@router.get("/model/settings", response_model=ModelSettingsResponse)
+async def get_model_settings():
+    """
+    Get the current model settings.
+
+    Returns:
+        ModelSettingsResponse: The current model settings
+    """
+    try:
+        # Return default settings for now
+        return ModelSettingsResponse(
+            temperature=0.7,
+            maxTokens=2048,
+            topP=0.95,
+            topK=40,
+            useQuantization=True
+        )
+    except Exception as e:
+        logger.error(f"Model settings fetch error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to fetch model settings: {str(e)}"
+        )
+
+
+@router.post("/model/settings", response_model=ModelSettingsResponse)
+async def update_model_settings(
+    request: ModelSettingsRequest
+):
+    """
+    Update the model settings.
+
+    Args:
+        request: Model settings to update
+
+    Returns:
+        ModelSettingsResponse: The updated model settings
+    """
+    try:
+        # For now, just return the settings that were sent
+        # In a real implementation, these would be saved and applied to the model
+        return ModelSettingsResponse(
+            temperature=request.temperature,
+            maxTokens=request.maxTokens,
+            topP=request.topP,
+            topK=request.topK,
+            useQuantization=request.useQuantization
+        )
+    except Exception as e:
+        logger.error(f"Model settings update error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update model settings: {str(e)}"
+        )
 
 
 @router.post("/generate", response_model=TextGenerationResponse)
 async def generate_text(
     request: TextGenerationRequest,
-    ai_factory: AIFactory = Depends(get_ai_factory),
 ):
     """
     Generate text based on the provided prompt.
 
     Args:
         request: Text generation parameters
-        ai_factory: AIFactory instance
 
     Returns:
         TextGenerationResponse: The generated text
     """
     try:
-        generated_text = ai_factory.generate_text(
-            prompt=request.prompt,
-            max_length=request.max_length,
-            temperature=request.temperature,
-            top_p=request.top_p,
-            top_k=request.top_k,
-        )
-
+        # Mock response for now
+        generated_text = f"Mock response to: {request.prompt[:50]}..."
         return TextGenerationResponse(generated_text=generated_text)
 
     except Exception as e:
@@ -152,30 +240,21 @@ async def generate_text(
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat_completion(
-    request: ChatRequest, ai_factory: AIFactory = Depends(get_ai_factory)
+    request: ChatRequest
 ):
     """
     Generate a response in a conversational context.
 
     Args:
         request: Chat parameters
-        ai_factory: AIFactory instance
 
     Returns:
         ChatResponse: The generated response
     """
     try:
-        # Convert messages to the format expected by the AI factory
-        messages = [
-            {"role": msg.role, "content": msg.content}
-            for msg in request.messages
-        ]
-
-        response = ai_factory.chat(
-            messages=messages,
-            max_length=request.max_length,
-            temperature=request.temperature,
-        )
+        # Mock response for now
+        last_message = request.messages[-1].content if request.messages else "Hello"
+        response = f"Mock AI response to: {last_message[:50]}..."
 
         return ChatResponse(response=response)
 
@@ -189,28 +268,22 @@ async def chat_completion(
 @router.post("/detect-language", response_model=LanguageDetectionResponse)
 async def detect_language(
     request: LanguageDetectionRequest,
-    ai_factory: AIFactory = Depends(get_ai_factory),
 ):
     """
     Detect the language of the provided text.
 
     Args:
         request: Language detection parameters
-        ai_factory: AIFactory instance
 
     Returns:
         LanguageDetectionResponse: The detected language
     """
     try:
-        result = ai_factory.detect_language(request.text)
-
-        if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
-
+        # Mock language detection
         return LanguageDetectionResponse(
-            language=result["language"],
-            confidence=result.get("confidence", 0.0),
-            supported=result.get("supported", False),
+            language="en",
+            confidence=0.95,
+            supported=True,
         )
 
     except Exception as e:
@@ -224,7 +297,6 @@ async def detect_language(
 async def transcribe_audio(
     file: UploadFile = File(...),
     language: Optional[str] = Form(None),
-    ai_factory: AIFactory = Depends(get_ai_factory),
 ):
     """
     Transcribe audio from an uploaded file.
@@ -232,7 +304,6 @@ async def transcribe_audio(
     Args:
         file: Audio file
         language: Optional language code
-        ai_factory: AIFactory instance
 
     Returns:
         TranscriptionResponse: The transcription result
@@ -244,19 +315,10 @@ async def transcribe_audio(
         if not audio_bytes:
             raise HTTPException(status_code=400, detail="Empty file")
 
-        # Process the audio
-        result = ai_factory.transcribe_audio(
-            audio_data=audio_bytes,
-            is_file_path=False,
-            language=language,
-        )
-
-        if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
-
+        # Mock transcription
         return TranscriptionResponse(
-            text=result.get("text", ""),
-            language=result.get("language", "unknown"),
+            text="Mock transcription of uploaded audio file",
+            language=language or "en",
         )
 
     except Exception as e:
@@ -269,14 +331,12 @@ async def transcribe_audio(
 @router.post("/process-document", response_model=DocumentProcessingResponse)
 async def process_document(
     file: UploadFile = File(...),
-    ai_factory: AIFactory = Depends(get_ai_factory),
 ):
     """
     Process a PDF document.
 
     Args:
         file: PDF file
-        ai_factory: AIFactory instance
 
     Returns:
         DocumentProcessingResponse: The extracted content
@@ -294,20 +354,12 @@ async def process_document(
         if not pdf_bytes:
             raise HTTPException(status_code=400, detail="Empty file")
 
-        # Process the document
-        result = ai_factory.process_document(
-            document_data=pdf_bytes,
-            is_file_path=False,
-        )
-
-        if "error" in result:
-            raise HTTPException(status_code=500, detail=result["error"])
-
+        # Mock document processing
         return DocumentProcessingResponse(
-            title=result.get("title", "Untitled"),
-            author=result.get("author", "Unknown"),
-            num_pages=result.get("num_pages", 0),
-            pages=result.get("pages", []),
+            title="Mock Document Title",
+            author="Mock Author",
+            num_pages=1,
+            pages=[{"page": 1, "content": "Mock document content"}],
         )
 
     except Exception as e:

@@ -6,6 +6,9 @@
 # Default target
 .DEFAULT_GOAL := help
 
+# Use bash shell explicitly
+SHELL := /bin/bash
+
 # Colors for output
 BLUE := \033[0;34m
 GREEN := \033[0;32m
@@ -47,7 +50,7 @@ setup: ## Run the complete project setup
 install-deps: ## Install all dependencies
 	@echo "$(BLUE)Installing dependencies...$(NC)"
 	@echo "$(YELLOW)Installing backend dependencies...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && pip install -r requirements.txt
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && pip install -r requirements.txt
 	@echo "$(YELLOW)Installing frontend dependencies...$(NC)"
 	cd $(FRONTEND_DIR) && yarn install
 
@@ -86,7 +89,7 @@ dev: ## Start all services in development mode
 	@echo ""
 	@echo "$(YELLOW)Press Ctrl+C to stop all services$(NC)"
 	@trap 'echo "$(RED)Stopping services...$(NC)"; kill 0' INT; \
-	(cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000) & \
+	(cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000) & \
 	(cd $(FRONTEND_DIR) && yarn dev --host 0.0.0.0 --port 3000) & \
 	wait
 
@@ -94,7 +97,7 @@ dev-backend: ## Start only the backend service
 	@echo "$(BLUE)Starting backend service...$(NC)"
 	@echo "$(YELLOW)Backend API: http://localhost:8000$(NC)"
 	@echo "$(YELLOW)API docs: http://localhost:8000/docs$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 dev-frontend: ## Start only the frontend service
 	@echo "$(BLUE)Starting frontend service...$(NC)"
@@ -153,25 +156,25 @@ test-ai: ## Run AI module tests
 
 test-unit: ## Run unit tests only
 	@echo "$(BLUE)Running unit tests...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m pytest tests/unit/ -v -m unit
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m pytest tests/unit/ -v -m unit
 	cd $(FRONTEND_DIR) && yarn test --run src/**/*.test.tsx
 
 test-integration: ## Run integration tests only
 	@echo "$(BLUE)Running integration tests...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m pytest tests/integration/ -v -m integration
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m pytest tests/integration/ -v -m integration
 
 test-e2e: ## Run end-to-end tests
 	@echo "$(BLUE)Running end-to-end tests...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m pytest tests/e2e/ -v -m e2e
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m pytest tests/e2e/ -v -m e2e
 
 test-performance: ## Run performance tests
 	@echo "$(BLUE)Running performance tests...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m pytest tests/performance/ -v -m slow
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m pytest tests/performance/ -v -m slow
 
 coverage: ## Generate test coverage reports
 	@echo "$(BLUE)Generating coverage reports...$(NC)"
 	# Backend coverage
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python -m pytest --cov=app --cov-report=html --cov-report=term-missing
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python -m pytest --cov=app --cov-report=html --cov-report=term-missing
 	# Frontend coverage
 	cd $(FRONTEND_DIR) && yarn test --coverage --run
 	@echo "$(GREEN)✅ Coverage reports generated$(NC)"
@@ -182,8 +185,8 @@ coverage: ## Generate test coverage reports
 lint: ## Run code linting
 	@echo "$(BLUE)Running code linting...$(NC)"
 	# Backend linting
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && flake8 app/ tests/
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && mypy app/
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && flake8 app/ tests/
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && mypy app/
 	# Frontend linting
 	cd $(FRONTEND_DIR) && yarn lint
 	@echo "$(GREEN)✅ Linting complete$(NC)"
@@ -191,8 +194,8 @@ lint: ## Run code linting
 format: ## Format code
 	@echo "$(BLUE)Formatting code...$(NC)"
 	# Backend formatting
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && black app/ tests/
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && isort app/ tests/
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && black app/ tests/
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && isort app/ tests/
 	# Frontend formatting
 	cd $(FRONTEND_DIR) && yarn format
 	@echo "$(GREEN)✅ Code formatting complete$(NC)"
@@ -203,7 +206,7 @@ build: ## Build the application for production
 	# Build frontend
 	cd $(FRONTEND_DIR) && yarn build
 	# Prepare backend
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && pip freeze > requirements-freeze.txt
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && pip freeze > requirements-freeze.txt
 	@echo "$(GREEN)✅ Build complete$(NC)"
 
 build-frontend: ## Build frontend only
@@ -235,13 +238,13 @@ docker-logs: ## View Docker logs
 # Database Commands
 db-migrate: ## Run database migrations
 	@echo "$(BLUE)Running database migrations...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && alembic upgrade head
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && alembic upgrade head
 	@echo "$(GREEN)✅ Database migrations complete$(NC)"
 
 db-reset: ## Reset database
 	@echo "$(BLUE)Resetting database...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && alembic downgrade base
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && alembic upgrade head
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && alembic downgrade base
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && alembic upgrade head
 	@echo "$(GREEN)✅ Database reset complete$(NC)"
 
 # AI Model Commands
@@ -254,7 +257,7 @@ download-models: ## Download AI models (manual step required)
 
 benchmark-ai: ## Run AI performance benchmarks
 	@echo "$(BLUE)Running AI performance benchmarks...$(NC)"
-	cd $(AI_DIR) && source ../$(BACKEND_DIR)/$(VENV_NAME)/bin/activate && python scripts/benchmark_ai.py
+	cd $(AI_DIR) && . ../$(BACKEND_DIR)/$(VENV_NAME)/bin/activate && python scripts/benchmark_ai.py
 	@echo "$(GREEN)✅ AI benchmarks complete$(NC)"
 
 # Deployment Commands
@@ -299,8 +302,8 @@ monitor: ## Monitor system resources
 update: ## Update dependencies
 	@echo "$(BLUE)Updating dependencies...$(NC)"
 	# Update backend dependencies
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && pip install --upgrade pip
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && pip list --outdated
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && pip install --upgrade pip
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && pip list --outdated
 	# Update frontend dependencies
 	cd $(FRONTEND_DIR) && yarn upgrade
 	@echo "$(GREEN)✅ Dependencies updated$(NC)"
@@ -326,7 +329,7 @@ docs: ## Generate documentation
 # Development helpers
 shell-backend: ## Open backend shell
 	@echo "$(BLUE)Opening backend shell...$(NC)"
-	cd $(BACKEND_DIR) && source $(VENV_NAME)/bin/activate && python
+	cd $(BACKEND_DIR) && . $(VENV_NAME)/bin/activate && python
 
 shell-frontend: ## Open frontend shell
 	@echo "$(BLUE)Opening frontend shell...$(NC)"

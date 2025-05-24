@@ -141,16 +141,8 @@ class PromptManager:
                template.language == language
         ]
         
-        if not candidates:
-            # Fallback to English if no template found for the language
-            candidates = [
-                template for template in self.templates.values()
-                if template.prompt_type == prompt_type and 
-                   template.language == "en"
-            ]
-        
-        # For now, return the first candidate
-        # In the future, this could include more sophisticated selection logic
+        # Return the first candidate or None if no exact match found
+        # No fallback to other languages - require exact language match
         return candidates[0] if candidates else None
     
     def create_dynamic_prompt(

@@ -5,14 +5,22 @@ import { ModelStatus } from "../components/ModelStatus/ModelStatus";
 
 const Chat: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ height: "100vh", py: 2 }}>
-      <Box sx={{ mb: 2 }}>
-        <ModelStatus />
-      </Box>
-      <Box sx={{ height: "calc(100vh - 120px)" }}>
-        <ChatComponent />
-      </Box>
-    </Container>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        py: 3,
+      }}
+    >
+      <Container maxWidth="lg" sx={{ height: "calc(100vh - 48px)" }}>
+        <Box sx={{ mb: 3 }}>
+          <ModelStatus />
+        </Box>
+        <Box sx={{ height: "calc(100vh - 200px)" }}>
+          <ChatComponent />
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

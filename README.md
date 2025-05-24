@@ -30,7 +30,12 @@ Before starting, make sure your computer has:
 3. **Extract the model**:
    - Create folder: `ai/models/gemma3-keras-gemma3_1b-v3/`
    - Extract all files from the download into this folder
-   - You should see files like: `config.json`, `model.weights.h5`, `tokenizer.json`, etc.
+   - You should see files like: `config.json`, `model.weights.h5`, `tokenizer.json`, `task.json`, `assets/tokenizer/vocabulary.spm`, etc.
+
+**🔧 For CUDA 12.8 Users**: If you have CUDA 12.8 installed, run the clean setup script after model extraction:
+```bash
+./clean_setup_keras.sh
+```
 
 ### 🛠️ Step 2: Install Required Software
 
@@ -107,6 +112,16 @@ Before starting, make sure your computer has:
    make dev-frontend
    ```
 
+3. **Manual startup (if make commands fail)**:
+   ```bash
+   # Activate virtual environment and start backend
+   source backend/llb-env/bin/activate
+   cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   
+   # In another terminal, start frontend
+   cd frontend && npm run dev
+   ```
+
 ### 🌐 Step 6: Use the Application
 
 1. **Open your web browser** and go to:
@@ -157,24 +172,58 @@ make stop
 1. **"Gemma model not found" error**:
    - Make sure you downloaded and extracted the model correctly
    - Check the path: `ai/models/gemma3-keras-gemma3_1b-v3/`
-   - Verify all required files are present
+   - Verify all required files are present: `config.json`, `tokenizer.json`, `task.json`, `assets/tokenizer/vocabulary.spm`
 
 2. **"Port already in use" error**:
    ```bash
+   # Check what's using the ports
+   lsof -ti:3000
+   lsof -ti:8000
+   
    # Kill processes on ports 3000 and 8000
    sudo lsof -ti:3000 | xargs kill -9
    sudo lsof -ti:8000 | xargs kill -9
    ```
 
-3. **Python/Node.js version issues**:
+3. **"No module named uvicorn" error**:
+   ```bash
+   # Make sure virtual environment is activated
+   source backend/llb-env/bin/activate
+   
+   # Then run the backend
+   cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+4. **CUDA/TensorFlow conflicts**:
+   ```bash
+   # Run the clean setup script for CUDA 12.8 compatibility
+   ./clean_setup_keras.sh
+   
+   # Verify GPU setup
+   cd ai/datasets && python test_keras_setup.py
+   ```
+
+   **Note**: Warnings like "Unable to register cuFFT factory" are normal and don't affect functionality.
+
+5. **Python/Node.js version issues**:
    - Make sure you have Python 3.11 and Node.js 18+
    - Run: `python3.11 --version` and `node --version`
 
-4. **Memory issues**:
+6. **Memory issues**:
    - Close other applications
    - Use smaller Whisper model: set `WHISPER_MODEL_SIZE=tiny` in backend/.env
+   - For AI training: use `batch_size=1` and `float16` precision
 
-5. **Tests failing**:
+7. **Virtual environment issues**:
+   ```bash
+   # Recreate virtual environment if corrupted
+   rm -rf backend/llb-env
+   cd backend && python3.11 -m venv llb-env
+   source llb-env/bin/activate
+   pip install -r requirements.txt
+   ```
+
+8. **Tests failing**:
    ```bash
    # Clean and reinstall
    make clean
@@ -425,6 +474,22 @@ make docker-up
 ## 📄 License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](./LICENSE) file for details.
+
+## 🔄 Recent Updates & Improvements
+
+### ✅ **Latest Fixes (December 2024)**
+- **CUDA 12.8 Compatibility**: Fixed TensorFlow/CUDA conflicts with clean setup script
+- **Keras Integration**: Improved Gemma 3 1B model loading with KerasHub
+- **Virtual Environment**: Enhanced setup and activation procedures
+- **Port Conflict Resolution**: Better handling of port conflicts during startup
+- **Memory Optimization**: Improved settings for 16GB RAM systems
+- **Troubleshooting**: Expanded troubleshooting guide with common solutions
+
+### 🛠️ **Available Scripts**
+- `./clean_setup_keras.sh` - Clean setup for CUDA 12.8 systems
+- `./setup_keras_env.sh` - Automated Keras environment setup
+- `ai/datasets/test_keras_setup.py` - Verify AI model setup
+- `check_services.sh` - Check running services and ports
 
 ## 🙏 Acknowledgments
 

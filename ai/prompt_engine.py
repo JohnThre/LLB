@@ -294,11 +294,7 @@ class PromptEngine:
         """Format the final prompt using the selected template."""
         
         if not template:
-            # Fallback prompt
-            return (
-                f"Please provide helpful, accurate information about "
-                f"sexual health in response to: {request.content}"
-            )
+            raise RuntimeError(f"No template available for topic '{topic}' and language '{request.language}'")
         
         # Prepare template variables
         variables = {
@@ -316,8 +312,7 @@ class PromptEngine:
         try:
             return template.format(**variables)
         except KeyError as e:
-            # Handle missing variables gracefully
-            return template.template.replace(f"{{{e.args[0]}}}", request.content)
+            raise RuntimeError(f"Template formatting failed: missing variable '{e.args[0]}'") from e
     
     def _calculate_confidence(
         self,

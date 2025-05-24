@@ -17,6 +17,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api import deps
+from app.api import ai
 from app.api.v1 import health
 from app.api.v1.endpoints import chat
 from app.config import settings
@@ -121,6 +122,7 @@ def create_app() -> FastAPI:
     # Include API routers
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
+    app.include_router(ai.router, tags=["ai"])
     app.include_router(voice_router, prefix="/api/v1", tags=["voice"])
     app.include_router(documents_router, prefix="/api/v1", tags=["documents"])
 

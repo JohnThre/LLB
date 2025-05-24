@@ -11,7 +11,7 @@ import {
   Typography,
   Collapse,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -43,9 +43,7 @@ const isMenuItem = (item: MenuItemType): item is MenuItem => {
   return "path" in item;
 };
 
-const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const DashboardLayout: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -205,7 +203,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
             minHeight: "calc(100vh - 64px)",
           }}
         >
-          {children}
+          <Outlet />
         </Paper>
       </motion.div>
     </Layout>

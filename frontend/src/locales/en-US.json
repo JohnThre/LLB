@@ -1,10 +1,18 @@
 {
   "app": {
-    "name": "LLB",
-    "description": "Local AI-Driven Sex Education Web Application"
+    "name": "LLB (爱学伴)",
+    "description": "Local AI-Driven Sexual Health Education Platform"
   },
   "nav": {
     "chat": "Chat",
+    "chatHistory": "Chat History",
+    "chatSettings": "Chat Settings",
+    "profile": "Profile",
+    "profileSettings": "Profile Settings",
+    "security": "Security",
+    "generalSettings": "Settings",
+    "appearance": "Appearance",
+    "notifications": "Notifications",
     "settings": "Settings"
   },
   "common": {
@@ -15,7 +23,9 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "search": "Search"
+    "search": "Search",
+    "online": "Online",
+    "offline": "Offline"
   },
   "auth": {
     "login": "Login",
@@ -28,16 +38,57 @@
   },
   "chat": {
     "send": "Send",
+    "inputPlaceholder": "Type your message here...",
     "typeMessage": "Type your message...",
     "voiceInput": "Voice Input",
     "uploadFile": "Upload File",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "welcome": "Welcome to LLB!",
+    "welcomeMessage": "I'm here to help you with sexual health education. Ask me anything!",
+    "subtitle": "Your AI Sexual Health Education Assistant",
+    "online": "Online",
+    "clearChat": "Clear Chat",
+    "attachFile": "Attach File",
+    "errorMessage": "Sorry, I encountered an error. Please try again."
+  },
+  "profile": {
+    "title": "Profile",
+    "settings": "Settings",
+    "security": "Security"
   },
   "settings": {
     "title": "Settings",
     "language": "Language",
     "theme": "Theme",
     "notifications": "Notifications",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "fontSize": "Font Size",
+    "fontFamily": "Font Family",
+    "colorScheme": "Color Scheme",
+    "density": "Density",
+    "borderRadius": "Border Radius",
+    "blue": "Blue",
+    "green": "Green",
+    "purple": "Purple",
+    "orange": "Orange",
+    "comfortable": "Comfortable",
+    "compact": "Compact",
+    "spacious": "Spacious",
+    "appearance": "Appearance"
+  },
+  "modelStatus": {
+    "title": "Model Status",
+    "loading": "Loading",
+    "ready": "Ready",
+    "error": "Error",
+    "lastUpdated": "Last updated",
+    "refresh": "Refresh Status",
+    "memoryUsage": "Memory Usage",
+    "responseTime": "Response Time"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backHome": "Back to Home"
   }
 } 

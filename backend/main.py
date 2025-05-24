@@ -163,47 +163,35 @@ async def health_check():
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     """Main chat endpoint for sexual health education."""
-    try:
-        logger.info(f"📝 Received chat request: {request.message[:50]}...")
-        
-        # Create prompt request
-        prompt_request = PromptRequest(
-            content=request.message,
-            input_type=InputType.TEXT,
-            language=request.language,
-            cultural_context=request.cultural_context,
-            user_age_group=request.user_age_group,
-            safety_level=request.safety_level
-        )
-        
-        # Process with prompt engine
-        result = prompt_engine.process_request(prompt_request)
-        
-        # Generate response with model service, passing topic information
-        response = await model_service.generate_response_with_topic(
-            result.formatted_prompt, 
-            topic=result.metadata.get("topic", "basic_education")
-        )
-        
-        return ChatResponse(
-            response=response,
-            language_detected=result.language_detected,
-            topic=result.metadata.get("topic", "basic_education"),
-            safety_flags=result.safety_flags,
-            confidence_score=result.confidence_score,
-            metadata=result.metadata
-        )
-        
-    except Exception as e:
-        logger.error(f"❌ Chat error: {e}")
-        return ChatResponse(
-            response="I apologize, but I'm having trouble processing your request right now. Please try again or consult with a healthcare professional for sexual health information.",
-            language_detected="en",
-            topic="error",
-            safety_flags=["system_error"],
-            confidence_score=0.0,
-            metadata={"error": str(e)}
-        )
+    logger.info(f"📝 Received chat request: {request.message[:50]}...")
+    
+    # Create prompt request
+    prompt_request = PromptRequest(
+        content=request.message,
+        input_type=InputType.TEXT,
+        language=request.language,
+        cultural_context=request.cultural_context,
+        user_age_group=request.user_age_group,
+        safety_level=request.safety_level
+    )
+    
+    # Process with prompt engine
+    result = prompt_engine.process_request(prompt_request)
+    
+    # Generate response with model service, passing topic information
+    response = await model_service.generate_response_with_topic(
+        result.formatted_prompt, 
+        topic=result.metadata.get("topic", "basic_education")
+    )
+    
+    return ChatResponse(
+        response=response,
+        language_detected=result.language_detected,
+        topic=result.metadata.get("topic", "basic_education"),
+        safety_flags=result.safety_flags,
+        confidence_score=result.confidence_score,
+        metadata=result.metadata
+    )
 
 
 @app.post("/api/voice")

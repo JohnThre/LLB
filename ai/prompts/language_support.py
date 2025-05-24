@@ -259,11 +259,12 @@ class LanguagePrompts:
     def detect_language(self, text: str) -> str:
         """Detect the language of input text."""
         template = self.manager.get_template("language_detection")
-        if template:
-            prompt = template.format(input_text=text)
-            # This would be processed by the AI model
-            return prompt
-        return "en"  # Default fallback
+        if not template:
+            raise RuntimeError("Language detection template not available")
+        
+        prompt = template.format(input_text=text)
+        # This would be processed by the AI model
+        return prompt
     
     def get_culturally_appropriate_template(
         self, 
