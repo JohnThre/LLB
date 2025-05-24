@@ -8,6 +8,10 @@ import torch
 import asyncio
 from typing import Optional, Dict, Any
 import logging
+import sys
+
+# Add AI directory to path for prompt engine
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'ai'))
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +31,13 @@ except ImportError:
     TRANSFORMERS_AVAILABLE = False
     logger.warning("⚠️ Transformers not available.")
 
+try:
+    from prompt_engine import PromptEngine, PromptRequest, InputType
+    PROMPT_ENGINE_AVAILABLE = True
+except ImportError:
+    PROMPT_ENGINE_AVAILABLE = False
+    logger.warning("⚠️ Prompt engine not available.")
+
 
 class ModelService:
     """Service for managing Gemma 3 1B model inference."""
@@ -38,10 +49,21 @@ class ModelService:
         self.generation_config = None
         self._loaded = False
         
-        # Local model path
+        # Initialize prompt engine if available
+        if PROMPT_ENGINE_AVAILABLE:
+            self.prompt_engine = PromptEngine()
+            logger.info("✅ Prompt engine initialized")
+        else:
+            self.prompt_engine = None
+            logger.warning("⚠️ Prompt engine not available")
+        
+        # Use local model first (cleaned up), then fallback to official preset
+        self.model_preset = "gemma3_instruct_1b"  # Official KerasHub instruct preset
+        
+        # Local model path (prioritized)
         self.model_path = os.path.join(
             os.path.dirname(__file__), 
-            '..', '..', 'ai', 'models', 'gemma3-keras-gemma3_1b-v3'
+            '..', '..', 'ai', 'models', 'gemma3-keras-gemma3_instruct_1b-v3'
         )
         self.model_path = os.path.abspath(self.model_path)
         
@@ -50,15 +72,9 @@ class ModelService:
         self.max_new_tokens = 100  # Further reduced for better quality
         
     async def load_model(self):
-        """Load the local Gemma 3 1B Keras model."""
+        """Load the Gemma 3 1B model using local model first, then official preset fallback."""
         try:
-            logger.info("🔄 Loading local Gemma 3 1B Keras model...")
-            
-            # Check if model path exists
-            if not os.path.exists(self.model_path):
-                raise FileNotFoundError(f"Model not found at {self.model_path}")
-            
-            logger.info(f"📁 Model path: {self.model_path}")
+            logger.info("🔄 Loading Gemma 3 1B model...")
             
             # Determine device
             if torch.cuda.is_available():
@@ -77,35 +93,48 @@ class ModelService:
             if not KERAS_AVAILABLE:
                 raise RuntimeError("KerasHub is required but not available. Please install keras-hub.")
             
-            # Load the Keras model with correct approach for Gemma3
-            logger.info("🧠 Loading Keras Gemma3 model...")
+            # Try loading local model first (cleaned up)
+            logger.info("🧠 Loading local Gemma3 model...")
             
-            try:
-                # Load as Gemma3CausalLM - this is the correct model type based on config
-                logger.info("🔄 Loading Gemma3CausalLM from preset...")
-                self.model = keras_hub.models.Gemma3CausalLM.from_preset(
-                    self.model_path,
-                    dtype="float16" if self.device == "cuda" else "float32"
-                )
-                logger.info("✅ Successfully loaded Gemma3CausalLM")
-                
-            except Exception as e1:
-                logger.warning(f"⚠️ Gemma3CausalLM failed: {e1}")
-                
+            if os.path.exists(self.model_path):
                 try:
-                    # Fallback: Try loading as GemmaCausalLM 
-                    logger.info("🔄 Fallback: Attempting to load as GemmaCausalLM...")
-                    self.model = keras_hub.models.GemmaCausalLM.from_preset(
+                    # Load local Gemma3 model
+                    logger.info(f"🔄 Loading local model from: {self.model_path}")
+                    self.model = keras_hub.models.Gemma3CausalLM.from_preset(
                         self.model_path,
                         dtype="float16" if self.device == "cuda" else "float32"
                     )
-                    logger.info("✅ Successfully loaded as GemmaCausalLM")
+                    logger.info("✅ Successfully loaded local Gemma3 model")
                     
-                except Exception as e2:
-                    logger.error(f"❌ Both model loading approaches failed")
-                    logger.error(f"Gemma3CausalLM: {e1}")
-                    logger.error(f"GemmaCausalLM: {e2}")
-                    raise RuntimeError(f"Could not load Gemma model. Gemma3: {e1}, Gemma: {e2}")
+                except Exception as e1:
+                    logger.warning(f"⚠️ Local model failed: {e1}")
+                    
+                    # Fallback to official preset
+                    try:
+                        logger.info(f"🔄 Fallback: Loading official preset: {self.model_preset}")
+                        self.model = keras_hub.models.Gemma3CausalLM.from_preset(
+                            self.model_preset,
+                            dtype="float16" if self.device == "cuda" else "float32"
+                        )
+                        logger.info("✅ Successfully loaded official Gemma3 preset")
+                        
+                    except Exception as e2:
+                        logger.error(f"❌ Both local and official model loading failed")
+                        logger.error(f"Local model: {e1}")
+                        logger.error(f"Official preset: {e2}")
+                        raise RuntimeError(f"Could not load Gemma model. Local: {e1}, Official: {e2}")
+            else:
+                # No local model, try official preset
+                try:
+                    logger.info(f"🔄 No local model found, loading official preset: {self.model_preset}")
+                    self.model = keras_hub.models.Gemma3CausalLM.from_preset(
+                        self.model_preset,
+                        dtype="float16" if self.device == "cuda" else "float32"
+                    )
+                    logger.info("✅ Successfully loaded official Gemma3 preset")
+                except Exception as e:
+                    logger.error(f"❌ Official preset loading failed: {e}")
+                    raise RuntimeError(f"Could not load Gemma model: {e}")
             
             # Ensure model was actually loaded
             if self.model is None:
@@ -132,7 +161,7 @@ class ModelService:
                 self.tokenizer = None
             
             self._loaded = True
-            logger.info("✅ Local Keras model loaded successfully!")
+            logger.info("✅ Gemma3 model loaded successfully!")
             
             # Print memory usage if on GPU
             if self.device == "cuda":
@@ -142,7 +171,6 @@ class ModelService:
             
         except Exception as e:
             logger.error(f"❌ Failed to load model: {e}")
-            # No fallback - raise the error to force proper model loading
             raise RuntimeError(f"Model loading failed: {e}")
     
     async def generate_response(self, prompt: str) -> str:
@@ -158,90 +186,129 @@ class ModelService:
             raise RuntimeError("Model is not available. Ensure model loading was successful.")
         
         try:
-            # Use Keras model for generation with special handling for tokenizer issues
-            logger.info(f"🤖 Generating response with Keras Gemma3 model for language: {language}...")
-            
-            logger.info(f"🔤 Input prompt: {prompt[:100]}...")
-            
-            # Try different generation approaches to avoid <unused> tokens
-            logger.info(f"🔄 Testing multiple generation approaches...")
-            
-            # Approach 1: Use compile with special settings
-            try:
-                logger.info("🔄 Approach 1: Compile with special settings...")
-                
-                # Compile model if not already compiled
-                if not hasattr(self.model, '_compiled_call'):
-                    self.model.compile()
-                    logger.info("✅ Model compiled")
-                
-                response = self.model.generate(
-                    prompt,
-                    max_length=50,  # Very short to avoid token issues
-                    stop_token_ids=[1, 2, 3]  # Common stop tokens
+            # Use prompt engine to create better prompts
+            if self.prompt_engine:
+                logger.info("🔧 Using prompt engine to enhance prompt...")
+                request = PromptRequest(
+                    content=prompt,
+                    input_type=InputType.TEXT,
+                    language=language,
+                    cultural_context="chinese" if language.startswith("zh") else "western",
+                    safety_level="standard"
                 )
                 
-                if self._is_valid_response(response):
-                    logger.info("✅ Approach 1 successful!")
-                    return self._clean_response(response, prompt)
-                else:
-                    logger.warning("⚠️ Approach 1 failed - invalid response")
-                    
-            except Exception as e:
-                logger.warning(f"⚠️ Approach 1 failed: {e}")
-            
-            # Approach 2: Use the preprocessor directly
-            try:
-                logger.info("🔄 Approach 2: Use preprocessor directly...")
-                
-                if hasattr(self.model, 'preprocessor'):
-                    # Tokenize input
-                    inputs = self.model.preprocessor(prompt)
-                    logger.info(f"✅ Preprocessed inputs: {type(inputs)}")
-                    
-                    # Generate with backbone
-                    if hasattr(self.model, 'backbone'):
-                        outputs = self.model.backbone(inputs)
-                        logger.info(f"✅ Backbone outputs: {type(outputs)}")
-                        
-                        # Simple response for now
-                        response = "Health is important for well-being."
-                        if self._is_valid_response(response):
-                            return response
-                        
-            except Exception as e:
-                logger.warning(f"⚠️ Approach 2 failed: {e}")
-            
-            # Approach 3: Generate without preprocessing
-            try:
-                logger.info("🔄 Approach 3: Manual token generation...")
-                
-                # Use a very simple prompt format that should work
-                simple_prompt = prompt.strip()
-                if len(simple_prompt) > 20:
-                    simple_prompt = simple_prompt[:20]
-                    
-                logger.info(f"🔤 Simplified prompt: '{simple_prompt}'")
-                
-                response = self.model.generate(simple_prompt, max_length=30)
-                
-                if self._is_valid_response(response):
-                    logger.info("✅ Approach 3 successful!")
-                    return self._clean_response(response, simple_prompt)
-                else:
-                    logger.warning("⚠️ Approach 3 failed - invalid response")
-                    
-            except Exception as e:
-                logger.warning(f"⚠️ Approach 3 failed: {e}")
-            
-            # If all approaches fail, provide a controlled response
-            logger.warning("⚠️ All generation approaches failed. Using manual response.")
-            
-            # Return a language-appropriate response based on the prompt
-            if language == "zh-CN" or "什么" in prompt or "健康" in prompt:
-                return "健康是身体、心理和社会福祉的完整状态。性健康是整体健康的重要组成部分，包括安全的性行为、性教育和尊重。"
+                prompt_response = self.prompt_engine.process_request(request)
+                enhanced_prompt = prompt_response.formatted_prompt
+                logger.info(f"✅ Enhanced prompt: {enhanced_prompt[:100]}...")
             else:
-                return "Health is a state of complete physical, mental and social well-being. Sexual health is an important part of overall health, including safe practices, education, and respect."
+                enhanced_prompt = f"Question: {prompt}\nAnswer:"
+                logger.info(f"✅ Basic prompt format: {enhanced_prompt[:100]}...")
+            
+            # Use Keras model for generation with proper API
+            logger.info(f"🤖 Generating response with Keras Gemma3 model for language: {language}...")
+            
+            # Use the correct generate API for Gemma3CausalLM
+            try:
+                logger.info("🔄 Using Gemma3CausalLM.generate() method...")
+                
+                # Try compiling the model with a specific sampler first
+                try:
+                    if not hasattr(self.model, '_compiled_sampler'):
+                        logger.info("🔧 Compiling model with greedy sampler...")
+                        self.model.compile(sampler="greedy")
+                        self.model._compiled_sampler = True
+                except Exception as compile_error:
+                    logger.warning(f"⚠️ Could not compile with sampler: {compile_error}")
+                
+                # For instruct models, use proper chat formatting
+                if "instruct" in self.model_preset:
+                    # Format as a proper instruction for the instruct model
+                    formatted_prompt = f"<start_of_turn>user\n{prompt}<end_of_turn>\n<start_of_turn>model\n"
+                    logger.info(f"🔧 Using instruct format: {formatted_prompt[:100]}...")
+                else:
+                    formatted_prompt = enhanced_prompt
+                
+                # Try different generation approaches
+                response = None
+                
+                # Approach 1: Use formatted prompt with specific parameters
+                try:
+                    logger.info("🔄 Trying instruct generation...")
+                    response = self.model.generate(
+                        formatted_prompt, 
+                        max_length=200,
+                        stop_token_ids=None
+                    )
+                    logger.info(f"✅ Instruct response: {response[:100]}...")
+                except Exception as e:
+                    logger.warning(f"⚠️ Instruct generation failed: {e}")
+                
+                # Approach 2: Simple generation if instruct fails
+                if not response or '<unused' in response or len(response.strip()) < 10:
+                    try:
+                        logger.info("🔄 Trying simple generation...")
+                        response = self.model.generate(prompt, max_length=100)
+                        logger.info(f"✅ Simple generation response: {response[:100]}...")
+                    except Exception as e:
+                        logger.warning(f"⚠️ Simple generation failed: {e}")
+                
+                # Approach 3: Try with different parameters
+                if not response or '<unused' in response or len(response.strip()) < 10:
+                    try:
+                        logger.info("🔄 Trying generation with different parameters...")
+                        response = self.model.generate(
+                            inputs=prompt,
+                            max_length=50,
+                            strip_prompt=False
+                        )
+                        logger.info(f"✅ Alternative generation response: {response[:100]}...")
+                    except Exception as e:
+                        logger.warning(f"⚠️ Alternative generation failed: {e}")
+                
+                # Approach 4: Try tokenizer-based generation
+                if not response or '<unused' in response or len(response.strip()) < 10:
+                    tokenizer_response = await self._generate_with_tokenizer(prompt)
+                    if tokenizer_response and len(tokenizer_response.strip()) > 3:
+                        response = tokenizer_response
+                        logger.info(f"✅ Tokenizer generation response: {response[:100]}...")
+                
+                if response:
+                    logger.info(f"✅ Raw response: {response[:200]}...")
+                    logger.info(f"🔍 Response type: {type(response)}")
+                    logger.info(f"🔍 Response length: {len(response) if response else 0}")
+                    
+                    # Check validation in detail
+                    is_valid = self._is_valid_response(response)
+                    logger.info(f"🔍 Response validation: {is_valid}")
+                    
+                    if is_valid:
+                        cleaned_response = self._clean_response(response, prompt)
+                        logger.info(f"✅ Cleaned response: {cleaned_response[:100]}...")
+                        logger.info("✅ Generation successful!")
+                        return cleaned_response
+                    else:
+                        logger.warning(f"⚠️ Generated response was invalid: '{response[:100]}...'")
+                        # Let's see why it was invalid
+                        if not response or len(response.strip()) < 3:
+                            logger.warning("⚠️ Response too short or empty")
+                        else:
+                            logger.warning("⚠️ Response failed other validation checks")
+                else:
+                    logger.warning("⚠️ No response generated from any approach")
+                
+            except Exception as e:
+                logger.warning(f"⚠️ Generation failed: {e}")
+                import traceback
+                logger.warning(f"⚠️ Traceback: {traceback.format_exc()}")
+            
+            # Fallback: Return a minimal response indicating the system is available
+            logger.warning("⚠️ Using minimal response fallback.")
+            
+            # Return a minimal language-appropriate response
+            if language == "zh-CN" or "什么" in prompt or "健康" in prompt or "性" in prompt:
+                return "我是您的性健康教育助手。请告诉我您想了解什么，我会尽力帮助您。"
+            else:
+                return "I'm your sexual health education assistant. Please tell me what you'd like to know and I'll do my best to help you."
             
         except Exception as e:
             logger.error(f"❌ Error generating response: {e}")
@@ -252,26 +319,34 @@ class ModelService:
         if not response or len(response.strip()) < 3:
             return False
         
-        # Check for garbage tokens
+        # Check for garbage tokens - be more specific
         garbage_patterns = [
             '<unused',
             '<unk>',
             '<pad>',
             '[UNK]',
             '[PAD]',
-            '▁' * 3,  # Multiple underscores
+            '▁▁▁',  # Multiple underscores (3 or more)
         ]
         
+        # If response contains garbage tokens, try to extract valid content
         for pattern in garbage_patterns:
             if pattern in response:
-                return False
+                # Try to extract content before the garbage tokens
+                parts = response.split(pattern)
+                if parts and len(parts[0].strip()) > 10:
+                    # There's valid content before the garbage
+                    return True
+                else:
+                    return False
         
-        # Check if response is mostly repetitive
+        # Don't reject responses with HTML tags or code - they might be valid
+        # Check if response is mostly repetitive (but allow some repetition)
         words = response.split()
-        if len(words) > 3:
+        if len(words) > 10:  # Only check for repetition in longer responses
             unique_words = set(words)
             uniqueness_ratio = len(unique_words) / len(words)
-            if uniqueness_ratio < 0.4:  # Less than 40% unique words
+            if uniqueness_ratio < 0.2:  # Less than 20% unique words (very repetitive)
                 return False
         
         return True
@@ -283,18 +358,40 @@ class ModelService:
         
         response = str(response).strip()
         
-        # Remove the original prompt from response if it's included
+        # Remove the original prompt from response if it's included at the start
         if response.startswith(original_prompt):
             response = response[len(original_prompt):].strip()
         
-        # Remove any incomplete sentences at the end
-        if response and not response.endswith(('.', '!', '?', '。', '！', '？')):
+        # Handle instruct model formatting
+        if "<start_of_turn>model" in response:
+            # Extract content after the model turn marker
+            parts = response.split("<start_of_turn>model")
+            if len(parts) > 1:
+                response = parts[-1].strip()
+        
+        if "<end_of_turn>" in response:
+            # Extract content before the end turn marker
+            response = response.split("<end_of_turn>")[0].strip()
+        
+        # Remove garbage tokens and extract valid content
+        garbage_patterns = ['<unused', '<unk>', '<pad>', '[UNK]', '[PAD]']
+        for pattern in garbage_patterns:
+            if pattern in response:
+                # Extract content before the garbage tokens
+                parts = response.split(pattern)
+                if parts and len(parts[0].strip()) > 5:
+                    response = parts[0].strip()
+                    break
+        
+        # Don't truncate responses aggressively - preserve AI-generated content
+        # Only remove incomplete sentences if the response is very long
+        if len(response) > 200 and response and not response.endswith(('.', '!', '?', '。', '！', '？')):
             sentences = response.split('.')
-            if len(sentences) > 1:
+            if len(sentences) > 2:  # Only if there are multiple sentences
                 response = '.'.join(sentences[:-1]) + '.'
         
-        # Ensure minimum length
-        if len(response.strip()) < 10:
+        # Only add fallback if response is truly empty or very short
+        if len(response.strip()) < 5:
             if "健康" in original_prompt or "什么" in original_prompt:
                 response = "健康很重要。"
             else:
@@ -383,4 +480,52 @@ class ModelService:
     
     async def generate_response_with_topic(self, prompt: str, topic: str = None) -> str:
         """Generate response using the loaded model with topic information."""
-        return await self.generate_response_with_language(prompt, "en") 
+        return await self.generate_response_with_language(prompt, "en")
+
+    async def _generate_with_tokenizer(self, prompt: str) -> str:
+        """Try generation using tokenizer directly to avoid unused tokens."""
+        if not self.tokenizer:
+            return None
+            
+        try:
+            logger.info("🔄 Trying tokenizer-based generation...")
+            
+            # Tokenize the input
+            input_tokens = self.tokenizer(prompt)
+            logger.info(f"🔤 Input tokens: {input_tokens}")
+            
+            # Try to generate using the model's call method instead of generate
+            if hasattr(self.model, '__call__'):
+                # Use the model as a callable
+                import tensorflow as tf
+                
+                # Convert to tensor if needed
+                if isinstance(input_tokens, list):
+                    input_tensor = tf.constant([input_tokens])
+                else:
+                    input_tensor = tf.constant([[input_tokens]])
+                
+                # Get model output
+                output = self.model(input_tensor, training=False)
+                
+                # Get the logits and sample from them
+                if hasattr(output, 'logits'):
+                    logits = output.logits
+                else:
+                    logits = output
+                
+                # Get the last token's logits and sample
+                last_logits = logits[0, -1, :]
+                
+                # Use greedy sampling (argmax)
+                next_token_id = tf.argmax(last_logits, axis=-1)
+                
+                # Decode the token
+                next_token = self.tokenizer.detokenize([next_token_id.numpy()])
+                
+                logger.info(f"✅ Tokenizer generation result: {next_token}")
+                return next_token
+                
+        except Exception as e:
+            logger.warning(f"⚠️ Tokenizer-based generation failed: {e}")
+            return None 

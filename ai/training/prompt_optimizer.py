@@ -1,23 +1,26 @@
 """
-Prompt Optimizer for LLB Gemma 3 1B Model
-Optimizes prompts to avoid <unused> tokens and improve response quality
+Prompt optimization system for LLB sexual health education.
+Optimizes prompts for better model performance using the main prompt system.
 """
 
-import os
-import sys
-import json
 import asyncio
-from typing import List, Dict, Any, Tuple
-from dataclasses import dataclass
+import json
 import logging
+from dataclasses import dataclass
+from typing import Dict, List, Any, Optional
+import sys
+import os
 
-# Add parent directories to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Add the ai directory to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from prompts.sexual_health import SexualHealthPrompts
+from prompt_engine import PromptEngine, PromptRequest, InputType
+
+# Add the services directory to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backend', 'services'))
-
 from model_service import ModelService
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -32,49 +35,12 @@ class PromptTemplate:
 
 
 class PromptOptimizer:
-    """Optimizes prompts for better model responses."""
+    """Optimizes prompts for sexual health education using the main prompt system."""
     
     def __init__(self):
         self.model_service = ModelService()
-        self.optimized_prompts = {}
-        
-        # Define base prompt templates
-        self.base_templates = {
-            "en": [
-                {
-                    "name": "direct_instruction",
-                    "template": "You are a sexual health educator. Answer this question: {question}",
-                    "expected_quality": 0.7
-                },
-                {
-                    "name": "conversational",
-                    "template": "Human: I have a question about sexual health: {question}\n\nAssistant:",
-                    "expected_quality": 0.8
-                },
-                {
-                    "name": "structured",
-                    "template": "Question: {question}\n\nAs a sexual health expert, I will provide accurate information:\n\nAnswer:",
-                    "expected_quality": 0.9
-                }
-            ],
-            "zh-CN": [
-                {
-                    "name": "direct_instruction",
-                    "template": "你是性健康教育专家。请回答这个问题：{question}",
-                    "expected_quality": 0.7
-                },
-                {
-                    "name": "conversational", 
-                    "template": "Human: 我有一个关于性健康的问题：{question}\n\nAssistant:",
-                    "expected_quality": 0.8
-                },
-                {
-                    "name": "structured",
-                    "template": "问题：{question}\n\n作为性健康专家，我将提供准确的信息：\n\n回答：",
-                    "expected_quality": 0.9
-                }
-            ]
-        }
+        self.prompt_engine = PromptEngine()
+        self.sexual_health_prompts = SexualHealthPrompts()
         
         # Test questions for evaluation
         self.test_questions = {
@@ -83,14 +49,20 @@ class PromptOptimizer:
                 "How do condoms work?",
                 "What are STIs?",
                 "How to communicate about consent?",
-                "What is reproductive anatomy?"
+                "What is reproductive anatomy?",
+                "What is sexual orientation?",
+                "How to discuss sexual health with a partner?",
+                "What is emergency contraception?"
             ],
             "zh-CN": [
                 "什么是性健康？",
                 "安全套如何工作？",
                 "什么是性传播疾病？",
                 "如何沟通同意问题？",
-                "什么是生殖解剖学？"
+                "什么是生殖解剖学？",
+                "什么是性取向？",
+                "如何与伴侣讨论性健康？",
+                "什么是紧急避孕？"
             ]
         }
     
@@ -100,12 +72,25 @@ class PromptOptimizer:
         await self.model_service.load_model()
         logger.info("✅ Model service initialized")
     
-    async def test_prompt_template(self, template: Dict[str, Any], language: str) -> Dict[str, Any]:
+    async def test_prompt_template(self, template_name: str, language: str) -> Dict[str, Any]:
         """Test a prompt template with multiple questions."""
-        logger.info(f"Testing template '{template['name']}' for language '{language}'")
+        logger.info(f"Testing template '{template_name}' for language '{language}'")
+        
+        # Get the template from the main prompt system
+        template = self.sexual_health_prompts.get_template(template_name, language)
+        if not template:
+            logger.error(f"Template '{template_name}' not found for language '{language}'")
+            return {
+                "template_name": template_name,
+                "language": language,
+                "test_results": [],
+                "average_quality": 0.0,
+                "success_rate": 0.0,
+                "error": "Template not found"
+            }
         
         results = {
-            "template": template,
+            "template_name": template_name,
             "language": language,
             "test_results": [],
             "average_quality": 0.0,
@@ -117,8 +102,15 @@ class PromptOptimizer:
         
         for question in self.test_questions[language]:
             try:
-                # Format the prompt
-                formatted_prompt = template["template"].format(question=question)
+                # Create a prompt request
+                request = PromptRequest(
+                    content=question,
+                    language=language,
+                    input_type=InputType.TEXT
+                )
+                
+                # Generate prompt using the prompt engine
+                formatted_prompt = self.prompt_engine.generate_prompt(request)
                 
                 # Generate response
                 response = await self.model_service.generate_response_with_language(
@@ -148,7 +140,7 @@ class PromptOptimizer:
                 logger.error(f"  Failed for question '{question}': {e}")
                 results["test_results"].append({
                     "question": question,
-                    "prompt": formatted_prompt,
+                    "prompt": formatted_prompt if 'formatted_prompt' in locals() else "",
                     "response": None,
                     "quality_score": 0.0,
                     "success": False,
@@ -160,7 +152,7 @@ class PromptOptimizer:
         results["success_rate"] = successful_tests / total_tests if total_tests > 0 else 0.0
         results["average_quality"] = total_quality / successful_tests if successful_tests > 0 else 0.0
         
-        logger.info(f"  Template '{template['name']}': Success rate: {results['success_rate']:.2f}, Avg quality: {results['average_quality']:.2f}")
+        logger.info(f"  Template '{template_name}': Success rate: {results['success_rate']:.2f}, Avg quality: {results['average_quality']:.2f}")
         
         return results
     
@@ -197,8 +189,8 @@ class PromptOptimizer:
         
         # Sexual health keywords
         health_keywords = {
-            "en": ["health", "sexual", "safe", "protection", "education", "body", "anatomy"],
-            "zh-CN": ["健康", "性", "安全", "保护", "教育", "身体", "解剖"]
+            "en": ["health", "sexual", "safe", "protection", "education", "body", "anatomy", "consent", "relationship"],
+            "zh-CN": ["健康", "性", "安全", "保护", "教育", "身体", "解剖", "同意", "关系"]
         }
         
         keyword_matches = sum(1 for keyword in health_keywords.get(language, []) 
@@ -209,14 +201,17 @@ class PromptOptimizer:
         return min(1.0, quality_score)
     
     async def optimize_prompts(self) -> Dict[str, Any]:
-        """Optimize prompts for all languages."""
-        logger.info("Starting prompt optimization...")
+        """Optimize prompts for all languages using the main prompt system."""
+        logger.info("Starting prompt optimization using main prompt system...")
         
         optimization_results = {
             "timestamp": asyncio.get_event_loop().time(),
             "languages": {},
             "best_templates": {}
         }
+        
+        # Get available templates from the main prompt system
+        available_templates = self.sexual_health_prompts.get_all_templates()
         
         for language in ["en", "zh-CN"]:
             logger.info(f"\n🔄 Optimizing prompts for language: {language}")
@@ -227,79 +222,93 @@ class PromptOptimizer:
                 "best_score": 0.0
             }
             
-            # Test all templates for this language
-            for template in self.base_templates[language]:
-                result = await self.test_prompt_template(template, language)
+            # Test templates for this language
+            template_names = [name for name in available_templates.keys() if name.endswith(f"_{language}")]
+            
+            for template_name in template_names:
+                # Extract the base name (remove language suffix)
+                base_name = template_name.replace(f"_{language}", "")
+                result = await self.test_prompt_template(base_name, language)
                 language_results["templates"].append(result)
                 
                 # Track best template
                 combined_score = (result["success_rate"] + result["average_quality"]) / 2
                 if combined_score > language_results["best_score"]:
                     language_results["best_score"] = combined_score
-                    language_results["best_template"] = template
+                    language_results["best_template"] = {
+                        "name": base_name,
+                        "score": combined_score
+                    }
             
             optimization_results["languages"][language] = language_results
             optimization_results["best_templates"][language] = language_results["best_template"]
             
-            logger.info(f"✅ Best template for {language}: '{language_results['best_template']['name']}' (score: {language_results['best_score']:.2f})")
+            logger.info(f"✅ Best template for {language}: {language_results['best_template']}")
         
         return optimization_results
     
     async def save_optimized_prompts(self, results: Dict[str, Any], filepath: str = None):
-        """Save optimized prompts to file."""
+        """Save optimization results to file."""
         if filepath is None:
-            filepath = os.path.join(os.path.dirname(__file__), "optimized_prompts.json")
+            filepath = os.path.join(os.path.dirname(__file__), "optimization_results.json")
         
-        # Create simplified output for saving
-        output = {
+        # Convert results to JSON-serializable format
+        serializable_results = {
             "timestamp": results["timestamp"],
-            "optimized_templates": {}
+            "languages": {},
+            "best_templates": results["best_templates"],
+            "summary": {
+                "total_languages": len(results["languages"]),
+                "total_templates_tested": sum(len(lang_data["templates"]) for lang_data in results["languages"].values())
+            }
         }
         
-        for language, template in results["best_templates"].items():
-            output["optimized_templates"][language] = {
-                "name": template["name"],
-                "template": template["template"],
-                "expected_quality": template["expected_quality"]
+        for lang, lang_data in results["languages"].items():
+            serializable_results["languages"][lang] = {
+                "best_template": lang_data["best_template"],
+                "best_score": lang_data["best_score"],
+                "template_count": len(lang_data["templates"]),
+                "templates": [
+                    {
+                        "name": t["template_name"],
+                        "success_rate": t["success_rate"],
+                        "average_quality": t["average_quality"]
+                    }
+                    for t in lang_data["templates"]
+                ]
             }
         
         with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(output, f, indent=2, ensure_ascii=False)
+            json.dump(serializable_results, f, indent=2, ensure_ascii=False)
         
-        logger.info(f"✅ Optimized prompts saved to: {filepath}")
+        logger.info(f"💾 Optimization results saved to {filepath}")
     
     async def cleanup(self):
-        """Cleanup resources."""
+        """Clean up resources."""
         if self.model_service:
             await self.model_service.cleanup()
+        logger.info("🧹 Prompt optimizer cleanup complete")
 
 
 async def main():
-    """Main optimization function."""
+    """Main function for prompt optimization."""
     optimizer = PromptOptimizer()
     
     try:
-        # Initialize
         await optimizer.initialize()
-        
-        # Optimize prompts
         results = await optimizer.optimize_prompts()
-        
-        # Save results
         await optimizer.save_optimized_prompts(results)
         
         # Print summary
-        print("\n" + "="*60)
+        print("\n" + "="*50)
         print("PROMPT OPTIMIZATION SUMMARY")
-        print("="*60)
+        print("="*50)
         
-        for language, template in results["best_templates"].items():
-            print(f"\n🌍 Language: {language}")
-            print(f"📝 Best Template: {template['name']}")
-            print(f"📊 Expected Quality: {template['expected_quality']}")
-            print(f"🔤 Template: {template['template'][:100]}...")
-        
-        print("\n✅ Optimization complete!")
+        for language, best_template in results["best_templates"].items():
+            if best_template:
+                print(f"{language}: {best_template['name']} (score: {best_template['score']:.3f})")
+            else:
+                print(f"{language}: No suitable template found")
         
     except Exception as e:
         logger.error(f"❌ Optimization failed: {e}")
@@ -309,4 +318,5 @@ async def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main()) 

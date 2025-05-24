@@ -128,4 +128,21 @@ logs/
 *.dump
 
 # Unusual artifact files (these look like pip install errors)
-=*.*.* 
+=*.*.*
+
+# Prevent test files in root directory
+test_*.py
+*_test.py
+*_test_*.py
+
+# Prevent report files in root directory
+*_report.json
+*_summary.md
+*_results.md
+
+# Temporary and debug files
+*.tmp
+*.temp
+debug_*.py
+fix_*.py
+temp_*.py 

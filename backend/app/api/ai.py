@@ -3,6 +3,7 @@ FastAPI routes for AI functionality in the LLB application.
 """
 
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 from fastapi import (
     APIRouter,
     Depends,
@@ -13,6 +14,15 @@ from fastapi import (
 )
 from loguru import logger
 from pydantic import BaseModel, Field
+
+from app.api import deps
+from app.services.audio_service import AudioService
+from app.core.exceptions import (
+    AudioFormatException,
+    AudioServiceUnavailableException,
+    AudioTranscriptionException,
+    AudioTTSException,
+)
 
 # Create router
 router = APIRouter(prefix="/api/ai", tags=["AI"])
@@ -91,6 +101,27 @@ class TranscriptionResponse(BaseModel):
 
     text: str = Field(..., description="Transcribed text")
     language: str = Field(..., description="Detected or specified language")
+    confidence: float = Field(..., description="Transcription confidence score")
+    duration: float = Field(..., description="Audio duration in seconds")
+    segments: List[Dict[str, Any]] = Field(default=[], description="Transcription segments")
+    filename: Optional[str] = Field(None, description="Original filename")
+
+
+class TextToSpeechRequest(BaseModel):
+    """Request model for text-to-speech."""
+
+    text: str = Field(..., description="Text to convert to speech")
+    language: Optional[str] = Field("en", description="Language code (zh, en)")
+    voice_settings: Optional[Dict[str, Any]] = Field(None, description="Voice configuration")
+
+
+class TextToSpeechResponse(BaseModel):
+    """Response model for text-to-speech."""
+
+    success: bool = Field(..., description="Whether TTS was successful")
+    audio_url: Optional[str] = Field(None, description="URL to download audio file")
+    duration: Optional[float] = Field(None, description="Audio duration in seconds")
+    language: str = Field(..., description="Language used for TTS")
 
 
 class DocumentProcessingResponse(BaseModel):
@@ -297,35 +328,152 @@ async def detect_language(
 async def transcribe_audio(
     file: UploadFile = File(...),
     language: Optional[str] = Form(None),
+    audio_service: AudioService = Depends(deps.get_audio_service),
 ):
     """
-    Transcribe audio from an uploaded file.
+    Transcribe audio from an uploaded file using Whisper.
 
     Args:
-        file: Audio file
-        language: Optional language code
+        file: Audio file (wav, mp3, m4a, ogg, flac, aac)
+        language: Optional language code (zh, en, auto)
+        audio_service: Audio service dependency
 
     Returns:
-        TranscriptionResponse: The transcription result
+        TranscriptionResponse: The transcription result with confidence and segments
     """
     try:
-        # Read the file
-        audio_bytes = await file.read()
-
-        if not audio_bytes:
-            raise HTTPException(status_code=400, detail="Empty file")
-
-        # Mock transcription
+        logger.info(f"Transcribing audio file: {file.filename}")
+        
+        # Validate file
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No filename provided")
+            
+        # Check if audio service is ready
+        if not audio_service.is_ready():
+            raise HTTPException(
+                status_code=503, 
+                detail="Audio service not ready. Please try again later."
+            )
+        
+        # Use the audio service's file transcription method
+        result = await audio_service.transcribe_upload_file(file, language)
+        
         return TranscriptionResponse(
-            text="Mock transcription of uploaded audio file",
-            language=language or "en",
+            text=result["text"],
+            language=result["language"],
+            confidence=result["confidence"],
+            duration=result["duration"],
+            segments=result["segments"],
+            filename=result.get("filename")
         )
 
-    except Exception as e:
+    except AudioFormatException as e:
+        logger.warning(f"Audio format error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except AudioServiceUnavailableException as e:
+        logger.error(f"Audio service unavailable: {str(e)}")
+        raise HTTPException(status_code=503, detail=str(e))
+    except AudioTranscriptionException as e:
         logger.error(f"Transcription error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected transcription error: {str(e)}")
         raise HTTPException(
             status_code=500, detail=f"Transcription failed: {str(e)}"
         )
+
+
+@router.post("/text-to-speech", response_model=TextToSpeechResponse)
+async def text_to_speech(
+    request: TextToSpeechRequest,
+    audio_service: AudioService = Depends(deps.get_audio_service),
+):
+    """
+    Convert text to speech using TTS engine.
+
+    Args:
+        request: Text-to-speech parameters
+        audio_service: Audio service dependency
+
+    Returns:
+        TextToSpeechResponse: The TTS result with audio URL
+    """
+    try:
+        logger.info(f"Converting text to speech: {request.text[:50]}...")
+        
+        # Check if TTS service is ready
+        if not audio_service.is_tts_ready():
+            raise HTTPException(
+                status_code=503, 
+                detail="Text-to-speech service not ready. Please try again later."
+            )
+        
+        # Generate speech audio
+        audio_bytes = await audio_service.text_to_speech(
+            request.text, 
+            request.language,
+            request.voice_settings
+        )
+        
+        # Save audio to temporary file and create URL
+        import uuid
+        audio_id = str(uuid.uuid4())
+        audio_filename = f"tts_{audio_id}.wav"
+        
+        # Create uploads directory if it doesn't exist
+        uploads_dir = Path("uploads/audio")
+        uploads_dir.mkdir(parents=True, exist_ok=True)
+        
+        audio_path = uploads_dir / audio_filename
+        with open(audio_path, 'wb') as f:
+            f.write(audio_bytes)
+        
+        # Calculate duration (rough estimate)
+        duration = len(audio_bytes) / (16000 * 2)  # Assuming 16kHz, 16-bit
+        
+        return TextToSpeechResponse(
+            success=True,
+            audio_url=f"/static/audio/{audio_filename}",
+            duration=duration,
+            language=request.language or "en"
+        )
+
+    except AudioTTSException as e:
+        logger.warning(f"TTS error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except AudioServiceUnavailableException as e:
+        logger.error(f"TTS service unavailable: {str(e)}")
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected TTS error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Text-to-speech failed: {str(e)}"
+        )
+
+
+@router.get("/voices", response_model=List[Dict[str, str]])
+async def get_available_voices(
+    audio_service: AudioService = Depends(deps.get_audio_service),
+):
+    """
+    Get list of available TTS voices.
+
+    Args:
+        audio_service: Audio service dependency
+
+    Returns:
+        List of available voices with their information
+    """
+    try:
+        if not audio_service.is_tts_ready():
+            return []
+        
+        voices = audio_service.get_available_voices()
+        return voices
+
+    except Exception as e:
+        logger.error(f"Error getting voices: {str(e)}")
+        return []
 
 
 @router.post("/process-document", response_model=DocumentProcessingResponse)

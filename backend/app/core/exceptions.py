@@ -158,17 +158,53 @@ class AudioProcessingException(LLBException):
         )
 
 
-class AudioFormatException(LLBHTTPException):
-    """Raised when audio format is not supported."""
+class AudioPermissionException(LLBException):
+    """Raised when audio permission is denied or unavailable."""
 
-    def __init__(self, format_type: str, supported_formats: list):
+    def __init__(self, error: str, permission_info: Optional[Dict] = None):
         super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message=f"Audio format '{format_type}' is not supported",
-            details={
-                "format_type": format_type,
-                "supported_formats": supported_formats,
-            },
+            f"Audio permission error: {error}",
+            {"error": error, "permission_info": permission_info or {}},
+        )
+
+
+class AudioFormatException(LLBException):
+    """Raised when audio format is invalid or unsupported."""
+
+    def __init__(self, error: str, format_info: Optional[Dict] = None):
+        super().__init__(
+            f"Audio format error: {error}",
+            {"error": error, "format_info": format_info or {}},
+        )
+
+
+class AudioServiceUnavailableException(LLBException):
+    """Raised when audio service is not available or not initialized."""
+
+    def __init__(self, error: str, service_info: Optional[Dict] = None):
+        super().__init__(
+            f"Audio service unavailable: {error}",
+            {"error": error, "service_info": service_info or {}},
+        )
+
+
+class AudioTranscriptionException(LLBException):
+    """Raised when audio transcription fails."""
+
+    def __init__(self, error: str, transcription_info: Optional[Dict] = None):
+        super().__init__(
+            f"Audio transcription failed: {error}",
+            {"error": error, "transcription_info": transcription_info or {}},
+        )
+
+
+class AudioTTSException(LLBException):
+    """Raised when text-to-speech generation fails."""
+
+    def __init__(self, error: str, tts_info: Optional[Dict] = None):
+        super().__init__(
+            f"Text-to-speech failed: {error}",
+            {"error": error, "tts_info": tts_info or {}},
         )
 
 

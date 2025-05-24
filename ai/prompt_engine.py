@@ -373,6 +373,11 @@ class PromptEngine:
         """Get list of supported languages."""
         return ["en", "zh-CN", "zh-CN-henan"]
     
+    def generate_prompt(self, request: PromptRequest) -> str:
+        """Generate a formatted prompt from a request (simplified interface)."""
+        response = self.process_request(request)
+        return response.formatted_prompt
+    
     def export_all_templates(self, filepath: str) -> None:
         """Export all templates to a file."""
         all_templates = {}
