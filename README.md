@@ -503,7 +503,7 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 For support and questions:
 
-- 📧 **Email**: support@llb-project.com
+- 📧 **Email**: jnc@freew.org
 - 🐛 **Issues**: [GitHub Issues](https://github.com/your-username/llb/issues)
 - 📖 **Documentation**: [Project Wiki](https://github.com/your-username/llb/wiki)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/your-username/llb/discussions)
