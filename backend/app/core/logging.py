@@ -48,9 +48,9 @@ def setup_logging(
         Configured logger instance
     """
     # Use settings defaults if not provided
-    log_level = log_level or settings.log_level
-    log_file = log_file or settings.log_file
-    log_dir = log_dir or settings.log_dir
+    log_level = log_level or getattr(settings, 'LOG_LEVEL', 'INFO')
+    log_file = log_file or getattr(settings, 'LOG_FILE', 'app.log')
+    log_dir = log_dir or getattr(settings, 'LOG_DIR', 'logs')
 
     # Create log directory if it doesn't exist
     log_path = Path(log_dir)

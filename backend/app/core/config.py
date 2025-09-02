@@ -43,6 +43,9 @@ class Settings(BaseSettings):
         values = info.data if info else {}
         return f"postgresql://{values.get('POSTGRES_USER')}:{values.get('POSTGRES_PASSWORD')}@{values.get('POSTGRES_SERVER')}/{values.get('POSTGRES_DB')}"
 
+    # Logging
+    LOG_LEVEL: str = "INFO"
+    
     # AI Model Settings
     MODEL_PATH: str = "models/gemma-2b-it"
     MODEL_DEVICE: str = "cuda"  # or "cpu"

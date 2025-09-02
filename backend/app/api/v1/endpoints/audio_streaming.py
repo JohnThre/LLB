@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from app.api import deps
 from app.services.audio_streaming_service import AudioStreamingService
 from app.core.logging import get_logger
+from app.core.sanitizer import sanitize_html, sanitize_log_input
 
 logger = get_logger(__name__)
 
@@ -223,8 +224,7 @@ async def websocket_audio_stream(
                 
                 else:
                     # Sanitize message_type to prevent XSS
-                    import html
-                    safe_message_type = html.escape(str(message_type))
+                    safe_message_type = sanitize_html(str(message_type))
                     await websocket.send_text(json.dumps({
                         "type": "error",
                         "message": f"Unknown message type: {safe_message_type}",
@@ -233,8 +233,7 @@ async def websocket_audio_stream(
             
             except json.JSONDecodeError as e:
                 # Sanitize exception message to prevent XSS
-                import html
-                safe_error = html.escape(str(e))
+                safe_error = sanitize_html(str(e))
                 await websocket.send_text(json.dumps({
                     "type": "error",
                     "message": f"Invalid JSON format: {safe_error}",

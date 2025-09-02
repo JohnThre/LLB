@@ -39,3 +39,10 @@ class UserResponse(UserInDBBase):
 # Additional properties stored in DB
 class UserInDB(UserInDBBase):
     hashed_password: str
+
+
+# User preferences
+class UserPreferences(BaseModel):
+    language: str = "en"
+    theme: str = "light"
+    notifications: bool = True

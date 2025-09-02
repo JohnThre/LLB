@@ -12,7 +12,8 @@ from fastapi import (
     HTTPException,
     UploadFile,
 )
-from loguru import logger
+import logging
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel, Field
 
 from app.api import deps

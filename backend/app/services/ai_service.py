@@ -8,14 +8,33 @@ import sys
 import os
 from typing import Any, Dict, List, Optional
 
-# Add the services directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'services'))
-# Add the ai directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'ai'))
-
 from app.core.logging import get_logger
-from model_service import ModelService
-from prompt_engine import PromptEngine, PromptRequest, InputType
+
+# Lazy imports to avoid circular dependencies
+ModelService = None
+PromptEngine = None
+
+def _get_model_service():
+    global ModelService
+    if ModelService is None:
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'services'))
+            from model_service import ModelService as MS
+            ModelService = MS
+        except ImportError:
+            pass
+    return ModelService
+
+def _get_prompt_engine():
+    global PromptEngine
+    if PromptEngine is None:
+        try:
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'ai'))
+            from prompts import PromptEngine as PE
+            PromptEngine = PE
+        except ImportError:
+            pass
+    return PromptEngine
 
 logger = get_logger(__name__)
 
@@ -25,17 +44,30 @@ class AIService:
 
     def __init__(self):
         """Initialize AI service."""
-        self.model_service = ModelService()
-        self.prompt_engine = PromptEngine()
+        self.model_service = None
+        self.prompt_engine = None
         self.is_initialized = False
         logger.info("AI Service initialized")
+    
+    def _ensure_services(self):
+        """Lazy load services when needed."""
+        if self.model_service is None:
+            MS = _get_model_service()
+            if MS:
+                self.model_service = MS()
+        
+        if self.prompt_engine is None:
+            PE = _get_prompt_engine()
+            if PE:
+                self.prompt_engine = PE()
 
     async def initialize(self):
         """Initialize AI model and prompt system."""
         try:
             logger.info("Initializing AI model and prompt system...")
-            await self.model_service.load_model()
-            # Prompt engine is initialized in constructor
+            self._ensure_services()
+            if self.model_service:
+                await self.model_service.load_model()
             self.is_initialized = True
             logger.info("✅ AI model and prompt system initialized successfully")
         except Exception as e:
@@ -128,16 +160,12 @@ class AIService:
         logger.info(f"Detected language: {detected_language}, Topic: {topic}")
 
         try:
-            # Create a prompt request for the prompt engine
-            prompt_request = PromptRequest(
-                content=message,
-                language=response_language,
-                input_type=InputType.TEXT,
-                cultural_context="mainland_china" if response_language.startswith("zh-CN") else "western"
-            )
-            
+            self._ensure_services()
             # Generate the optimized prompt using the prompt engine
-            optimized_prompt = self.prompt_engine.generate_prompt(prompt_request)
+            if self.prompt_engine:
+                optimized_prompt = self.prompt_engine.generate_prompt(message)
+            else:
+                optimized_prompt = message
             
             logger.info(f"Generated prompt length: {len(optimized_prompt)}")
             

@@ -8,9 +8,11 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from fastapi import UploadFile
-from loguru import logger
-
+import logging
 from .config import Settings
+from .sanitizer import sanitize_path, sanitize_log_input
+
+logger = logging.getLogger(__name__)
 
 settings = Settings()
 
@@ -94,9 +96,19 @@ class StorageService:
         Returns:
             Full file path
         """
+        # Sanitize filename to prevent path traversal
+        safe_filename = Path(filename).name  # Only keep filename, remove path components
+        
         if file_type == "temp":
-            return self.temp_dir / filename
-        return self.base_dir / file_type / filename
+            base_dir = self.temp_dir
+        else:
+            base_dir = self.base_dir / file_type
+        
+        # Construct and validate path
+        file_path = base_dir / safe_filename
+        sanitized_path = sanitize_path(str(file_path), str(base_dir))
+        
+        return Path(sanitized_path)
 
     def delete_file(self, filename: str, file_type: str = "temp"):
         """

@@ -28,6 +28,7 @@ except ImportError:
     TTS_AVAILABLE = False
 
 from app.core.logging import get_logger
+from app.core.sanitizer import sanitize_log_input
 from app.config import settings
 from app.core.exceptions import (
     AudioProcessingException,
@@ -102,7 +103,7 @@ class AudioBuffer:
             self.chunks.remove(chunk)
             self.total_size -= len(chunk.data)
         
-        logger.debug(f"Cleaned up {len(chunks_to_remove)} chunks, freed {removed_size} bytes")
+        logger.debug(f"Cleaned up {sanitize_log_input(len(chunks_to_remove))} chunks, freed {sanitize_log_input(removed_size)} bytes")
 
 
 class ConversationSession:
@@ -308,7 +309,7 @@ class AudioStreamingService:
                     except asyncio.TimeoutError:
                         continue
                     except Exception as e:
-                        logger.error(f"Error in transcription worker {worker_id}: {e}")
+                        logger.error(f"Error in transcription worker {sanitize_log_input(worker_id)}: {sanitize_log_input(e)}")
                 
                 await asyncio.sleep(0.01)  # Small delay to prevent busy waiting
                 

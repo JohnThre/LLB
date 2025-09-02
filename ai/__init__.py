@@ -1,1 +1,1 @@
-# AI module for LLB sexual health education
+# AI package
