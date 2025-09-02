@@ -8,6 +8,7 @@ import App from './App'
 import { store } from './store'
 import theme from './theme'
 import './i18n'
+import './bauhaus.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

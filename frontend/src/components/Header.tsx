@@ -8,8 +8,6 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
-  Breadcrumbs,
-  Link,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -17,6 +15,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth } from "../contexts/AuthContext";
+import { bauhausColors } from "../theme";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -48,102 +47,107 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     }
   };
 
-  const generateBreadcrumbs = () => {
-    const paths = location.pathname.split("/").filter(Boolean);
-    const breadcrumbs = paths.map((path, index) => {
-      const url = `/${paths.slice(0, index + 1).join("/")}`;
-      const label = t(`nav.${path}`, { defaultValue: path });
-      return { label, url };
-    });
-
-    return breadcrumbs;
-  };
-
   return (
     <AppBar
       position="static"
-      color="primary"
       elevation={0}
       sx={{
-        borderBottom: 1,
-        borderColor: "divider",
+        backgroundColor: bauhausColors.white,
+        color: bauhausColors.black,
+        borderBottom: `4px solid ${bauhausColors.blue}`,
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ minHeight: "80px !important", px: 3 }}>
         {isMobile && (
           <IconButton
-            color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={onMenuClick}
-            sx={{ mr: 2 }}
+            sx={{ 
+              mr: 2,
+              color: bauhausColors.black,
+              border: `2px solid ${bauhausColors.black}`,
+              borderRadius: 0,
+              "&:hover": {
+                backgroundColor: bauhausColors.yellow,
+              },
+            }}
           >
             <MenuIcon />
           </IconButton>
         )}
 
-        <Typography
-          variant="h6"
-          component="div"
+        <Box
           sx={{
-            flexGrow: 1,
-            cursor: "pointer",
             display: "flex",
             alignItems: "center",
-            gap: 2,
+            cursor: "pointer",
+            "&:hover": {
+              "& .logo-text": {
+                color: bauhausColors.red,
+              },
+            },
           }}
           onClick={() => navigate("/dashboard")}
         >
-          LLB
-          {!isMobile && (
-            <Breadcrumbs
-              aria-label="breadcrumb"
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              backgroundColor: bauhausColors.red,
+              mr: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: `2px solid ${bauhausColors.black}`,
+            }}
+          >
+            <Typography
+              variant="h6"
               sx={{
-                color: "inherit",
-                "& .MuiBreadcrumbs-separator": {
-                  color: "inherit",
-                },
+                color: bauhausColors.white,
+                fontWeight: 700,
+                fontSize: "1.2rem",
               }}
             >
-              {generateBreadcrumbs().map((crumb, index) => (
-                <Link
-                  key={crumb.url}
-                  color="inherit"
-                  underline="hover"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(crumb.url);
-                  }}
-                  sx={{
-                    cursor: "pointer",
-                    opacity: 0.8,
-                    "&:hover": {
-                      opacity: 1,
-                    },
-                  }}
-                >
-                  {crumb.label}
-                </Link>
-              ))}
-            </Breadcrumbs>
-          )}
-        </Typography>
+              L
+            </Typography>
+          </Box>
+          <Typography
+            variant="h4"
+            component="div"
+            className="logo-text"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              color: bauhausColors.black,
+              transition: "color 0.15s ease",
+            }}
+          >
+            LLB
+          </Typography>
+        </Box>
+
+        <Box sx={{ flexGrow: 1 }} />
 
         {!isMobile && (
-          <Box sx={{ display: "flex", gap: 2 }}>
-            {navItems.map((item) => (
+          <Box sx={{ display: "flex", gap: 0 }}>
+            {navItems.map((item, index) => (
               <Button
                 key={item.path}
-                color="inherit"
                 startIcon={item.icon}
                 onClick={() => navigate(item.path)}
                 sx={{
                   backgroundColor:
                     location.pathname === item.path
-                      ? "rgba(255, 255, 255, 0.1)"
+                      ? bauhausColors.yellow
                       : "transparent",
+                  color: bauhausColors.black,
+                  border: `2px solid ${bauhausColors.black}`,
+                  borderRadius: 0,
+                  borderLeft: index > 0 ? "none" : `2px solid ${bauhausColors.black}`,
                   "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backgroundColor: bauhausColors.yellow,
                   },
                 }}
               >
@@ -154,12 +158,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         )}
 
         <Button
-          color="inherit"
           onClick={handleLogout}
           sx={{
             ml: 2,
+            backgroundColor: bauhausColors.red,
+            color: bauhausColors.white,
+            border: `2px solid ${bauhausColors.black}`,
+            borderRadius: 0,
             "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              backgroundColor: bauhausColors.black,
+              color: bauhausColors.white,
             },
           }}
         >

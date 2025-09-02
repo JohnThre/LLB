@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Header from "../Header";
+import { bauhausColors } from "../../theme";
 
 const DRAWER_WIDTH = 240;
 
@@ -53,6 +54,9 @@ const Layout: React.FC<LayoutProps> = ({
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: DRAWER_WIDTH,
+                backgroundColor: bauhausColors.gray[50],
+                borderRight: `4px solid ${bauhausColors.blue}`,
+                borderRadius: 0,
               },
             }}
           >
@@ -77,18 +81,25 @@ const Layout: React.FC<LayoutProps> = ({
         <Box
           component="footer"
           sx={{
-            py: 3,
+            py: 4,
             px: 2,
             mt: "auto",
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[200]
-                : theme.palette.grey[800],
+            backgroundColor: bauhausColors.black,
+            borderTop: `4px solid ${bauhausColors.yellow}`,
           }}
         >
           <Container maxWidth="sm">
-            <Typography variant="body2" color="text.secondary" align="center">
-              © {new Date().getFullYear()} {t("app.name")}
+            <Typography 
+              variant="body2" 
+              sx={{
+                color: bauhausColors.white,
+                textAlign: "center",
+                fontWeight: 600,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+              }}
+            >
+              © {new Date().getFullYear()} {t("app.name")} - BAUHAUS DESIGN
             </Typography>
           </Container>
         </Box>

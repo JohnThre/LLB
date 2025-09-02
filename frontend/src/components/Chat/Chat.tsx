@@ -23,6 +23,7 @@ import {
 import { Button } from "../common/Button";
 import VoiceInput from "../common/VoiceInput";
 import { useTranslation } from "react-i18next";
+import { bauhausColors } from "../../theme";
 
 interface Message {
   role: "user" | "assistant";
@@ -133,8 +134,7 @@ export const Chat: React.FC = () => {
         height: "100%", 
         display: "flex", 
         flexDirection: "column",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        borderRadius: 3,
+        backgroundColor: bauhausColors.white,
         overflow: "hidden",
       }}
     >
@@ -143,34 +143,64 @@ export const Chat: React.FC = () => {
         elevation={0}
         sx={{
           p: 3,
-          background: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+          backgroundColor: bauhausColors.blue,
+          color: bauhausColors.white,
+          borderRadius: 0,
+          borderBottom: `4px solid ${bauhausColors.black}`,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar sx={{ bgcolor: "primary.main" }}>
-              <BotIcon />
-            </Avatar>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                backgroundColor: bauhausColors.red,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `2px solid ${bauhausColors.black}`,
+              }}
+            >
+              <BotIcon sx={{ color: bauhausColors.white, fontSize: 28 }} />
+            </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: "text.primary" }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: bauhausColors.white }}>
                 {t("app.name", "爱学伴 LLB")}
               </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              <Typography variant="body2" sx={{ color: bauhausColors.white, opacity: 0.8 }}>
                 {t("chat.subtitle", "Your AI Sexual Health Education Assistant")}
               </Typography>
             </Box>
           </Box>
           <Box sx={{ display: "flex", gap: 1 }}>
-            <Chip 
-              label={t("chat.online", "Online")} 
-              color="success" 
-              size="small" 
-              variant="outlined"
-            />
+            <Box
+              sx={{
+                px: 2,
+                py: 1,
+                backgroundColor: bauhausColors.yellow,
+                color: bauhausColors.black,
+                border: `2px solid ${bauhausColors.black}`,
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {t("chat.online", "Online")}
+            </Box>
             <Tooltip title={t("chat.clearChat", "Clear Chat")}>
-              <IconButton onClick={clearChat} size="small">
+              <IconButton 
+                onClick={clearChat} 
+                sx={{
+                  color: bauhausColors.white,
+                  border: `2px solid ${bauhausColors.white}`,
+                  borderRadius: 0,
+                  "&:hover": {
+                    backgroundColor: bauhausColors.red,
+                  },
+                }}
+              >
                 <ClearIcon />
               </IconButton>
             </Tooltip>
@@ -183,12 +213,11 @@ export const Chat: React.FC = () => {
         sx={{
           flex: 1,
           overflow: "auto",
-          p: 2,
-          background: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(10px)",
+          p: 3,
+          backgroundColor: bauhausColors.gray[50],
           display: "flex",
           flexDirection: "column",
-          gap: 1
+          gap: 2
         }}
       >
         {messages.length === 0 && (
@@ -200,12 +229,23 @@ export const Chat: React.FC = () => {
               justifyContent: "center",
               height: "100%",
               textAlign: "center",
-              color: "white",
+              color: bauhausColors.gray[600],
             }}
           >
-            <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: "rgba(255, 255, 255, 0.2)" }}>
-              <BotIcon sx={{ fontSize: 40 }} />
-            </Avatar>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                mb: 2,
+                backgroundColor: bauhausColors.blue,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `3px solid ${bauhausColors.black}`,
+              }}
+            >
+              <BotIcon sx={{ fontSize: 40, color: bauhausColors.white }} />
+            </Box>
             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
               {t("chat.welcome", "Welcome to LLB!")}
             </Typography>
@@ -227,9 +267,19 @@ export const Chat: React.FC = () => {
               }}
             >
               {message.role === "assistant" && (
-                <Avatar sx={{ bgcolor: "rgba(255, 255, 255, 0.2)", width: 32, height: 32 }}>
-                  <BotIcon sx={{ fontSize: 18 }} />
-                </Avatar>
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: bauhausColors.blue,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: `2px solid ${bauhausColors.black}`,
+                  }}
+                >
+                  <BotIcon sx={{ fontSize: 16, color: bauhausColors.white }} />
+                </Box>
               )}
               
               <Box sx={{ maxWidth: "70%", minWidth: "200px" }}>
@@ -237,19 +287,15 @@ export const Chat: React.FC = () => {
                   elevation={3}
                   sx={{
                     p: 2,
-                    bgcolor: message.role === "user" 
-                      ? "primary.main" 
-                      : "rgba(255, 255, 255, 0.95)",
+                    backgroundColor: message.role === "user" 
+                      ? bauhausColors.red
+                      : bauhausColors.white,
                     color: message.role === "user" 
-                      ? "primary.contrastText" 
-                      : "text.primary",
-                    borderRadius: message.role === "user" 
-                      ? "20px 20px 4px 20px" 
-                      : "20px 20px 20px 4px",
-                    backdropFilter: "blur(10px)",
-                    border: message.role === "assistant" 
-                      ? "1px solid rgba(0, 0, 0, 0.1)" 
-                      : "none",
+                      ? bauhausColors.white
+                      : bauhausColors.black,
+                    borderRadius: 0,
+                    border: `2px solid ${bauhausColors.black}`,
+                    boxShadow: `3px 3px 0px ${bauhausColors.gray[200]}`,
                     width: "fit-content",
                     maxHeight: "none",
                     overflow: "visible"
@@ -281,9 +327,19 @@ export const Chat: React.FC = () => {
               </Box>
 
               {message.role === "user" && (
-                <Avatar sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}>
-                  <PersonIcon sx={{ fontSize: 18 }} />
-                </Avatar>
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    backgroundColor: bauhausColors.yellow,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: `2px solid ${bauhausColors.black}`,
+                  }}
+                >
+                  <PersonIcon sx={{ fontSize: 16, color: bauhausColors.black }} />
+                </Box>
               )}
             </Box>
           </Grow>
@@ -293,17 +349,27 @@ export const Chat: React.FC = () => {
         {isTyping && (
           <Fade in={isTyping}>
             <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1, mb: 2 }}>
-              <Avatar sx={{ bgcolor: "rgba(255, 255, 255, 0.2)", width: 32, height: 32 }}>
-                <BotIcon sx={{ fontSize: 18 }} />
-              </Avatar>
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: bauhausColors.blue,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: `2px solid ${bauhausColors.black}`,
+                }}
+              >
+                <BotIcon sx={{ fontSize: 16, color: bauhausColors.white }} />
+              </Box>
               <Paper
-                elevation={3}
+                elevation={0}
                 sx={{
                   p: 2,
-                  bgcolor: "rgba(255, 255, 255, 0.95)",
-                  borderRadius: "20px 20px 20px 4px",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(0, 0, 0, 0.1)",
+                  backgroundColor: bauhausColors.white,
+                  borderRadius: 0,
+                  border: `2px solid ${bauhausColors.black}`,
+                  boxShadow: `3px 3px 0px ${bauhausColors.gray[200]}`,
                 }}
               >
                 <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
@@ -312,7 +378,7 @@ export const Chat: React.FC = () => {
                       width: 8,
                       height: 8,
                       borderRadius: "50%",
-                      bgcolor: "primary.main",
+                      bgcolor: bauhausColors.blue,
                       animation: "pulse 1.5s ease-in-out infinite",
                       "@keyframes pulse": {
                         "0%, 80%, 100%": { opacity: 0.3 },
@@ -325,7 +391,7 @@ export const Chat: React.FC = () => {
                       width: 8,
                       height: 8,
                       borderRadius: "50%",
-                      bgcolor: "primary.main",
+                      bgcolor: bauhausColors.blue,
                       animation: "pulse 1.5s ease-in-out infinite 0.2s",
                     }}
                   />
@@ -334,7 +400,7 @@ export const Chat: React.FC = () => {
                       width: 8,
                       height: 8,
                       borderRadius: "50%",
-                      bgcolor: "primary.main",
+                      bgcolor: bauhausColors.blue,
                       animation: "pulse 1.5s ease-in-out infinite 0.4s",
                     }}
                   />
@@ -349,14 +415,26 @@ export const Chat: React.FC = () => {
 
       {/* Loading Progress */}
       {isLoading && (
-        <LinearProgress 
-          sx={{ 
-            height: 2,
-            bgcolor: "rgba(255, 255, 255, 0.2)",
-            "& .MuiLinearProgress-bar": {
-              bgcolor: "secondary.main",
+        <Box
+          sx={{
+            height: 4,
+            backgroundColor: bauhausColors.gray[200],
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              height: "100%",
+              width: "30%",
+              backgroundColor: bauhausColors.red,
+              animation: "loading 1.5s ease-in-out infinite",
+              "@keyframes loading": {
+                "0%": { left: "-30%" },
+                "100%": { left: "100%" },
+              },
             },
-          }} 
+          }}
         />
       )}
 
@@ -365,9 +443,9 @@ export const Chat: React.FC = () => {
         elevation={0}
         sx={{
           p: 2,
-          background: "rgba(255, 255, 255, 0.95)",
-          backdropFilter: "blur(10px)",
-          borderTop: "1px solid rgba(0, 0, 0, 0.1)",
+          backgroundColor: bauhausColors.white,
+          borderRadius: 0,
+          borderTop: `4px solid ${bauhausColors.yellow}`,
         }}
       >
         <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
@@ -390,9 +468,17 @@ export const Chat: React.FC = () => {
             disabled={isLoading}
             sx={{
               "& .MuiOutlinedInput-root": {
-                bgcolor: "background.paper",
+                backgroundColor: bauhausColors.gray[50],
+                borderRadius: 0,
                 "& fieldset": {
-                  borderColor: "rgba(0, 0, 0, 0.1)",
+                  borderWidth: "2px",
+                  borderColor: bauhausColors.gray[300],
+                },
+                "&:hover fieldset": {
+                  borderColor: bauhausColors.gray[400],
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: bauhausColors.blue,
                 },
               },
             }}
@@ -400,11 +486,15 @@ export const Chat: React.FC = () => {
           
           <Tooltip title={t("chat.attachFile", "Attach File")}>
             <IconButton 
-              color="primary" 
               disabled={isLoading}
               sx={{ 
-                bgcolor: "rgba(25, 118, 210, 0.1)",
-                "&:hover": { bgcolor: "rgba(25, 118, 210, 0.2)" },
+                backgroundColor: bauhausColors.gray[100],
+                color: bauhausColors.black,
+                border: `2px solid ${bauhausColors.black}`,
+                borderRadius: 0,
+                "&:hover": { 
+                  backgroundColor: bauhausColors.yellow,
+                },
               }}
             >
               <AttachFileIcon />
@@ -418,16 +508,35 @@ export const Chat: React.FC = () => {
             sx={{
               minWidth: 56,
               height: 56,
-              borderRadius: "50%",
+              borderRadius: 0,
               p: 0,
-              background: "linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)",
+              backgroundColor: bauhausColors.red,
+              color: bauhausColors.white,
+              border: `2px solid ${bauhausColors.black}`,
               "&:hover": {
-                background: "linear-gradient(45deg, #1565c0 30%, #1976d2 90%)",
+                backgroundColor: bauhausColors.black,
+              },
+              "&:disabled": {
+                backgroundColor: bauhausColors.gray[300],
+                color: bauhausColors.gray[500],
               },
             }}
           >
             {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
+              <Box
+                sx={{
+                  width: 24,
+                  height: 24,
+                  border: `3px solid ${bauhausColors.white}`,
+                  borderTop: `3px solid transparent`,
+                  borderRadius: 0,
+                  animation: "spin 1s linear infinite",
+                  "@keyframes spin": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" },
+                  },
+                }}
+              />
             ) : (
               <SendIcon />
             )}
