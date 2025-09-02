@@ -17,7 +17,6 @@ NC='\033[0m' # No Color
 # Project configuration
 PROJECT_NAME="LLB (爱学伴)"
 PYTHON_VERSION="3.11"
-NODE_VERSION="18"
 BACKEND_DIR="backend"
 FRONTEND_DIR="frontend"
 AI_DIR="ai"

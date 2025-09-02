@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -39,6 +39,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const [error, setError] = useState<string | null>(null);
   const theme = useTheme();
 
+  const maxSizeMB = useMemo(() => maxSize / (1024 * 1024), [maxSize]);
+
   const getFileIcon = () => {
     switch (fileType) {
       case "audio":
@@ -59,7 +61,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       // Check file size
       if (selectedFile.size > maxSize) {
-        setError(`File size exceeds ${maxSize / (1024 * 1024)}MB limit`);
+        setError(`File size exceeds ${maxSizeMB}MB limit`);
         return;
       }
 
@@ -131,7 +133,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 : "Drag and drop a file here, or click to select"}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Max file size: {maxSize / (1024 * 1024)}MB
+              Max file size: {maxSizeMB}MB
             </Typography>
           </Box>
         </Paper>

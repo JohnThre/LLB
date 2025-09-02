@@ -1,3 +1,4 @@
+import secrets
 from pathlib import Path
 from typing import List
 
@@ -24,13 +25,13 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # Security
-    SECRET_KEY: str = "dev-secret-key-change-in-production"
+    SECRET_KEY: str = secrets.token_urlsafe(32)  # Generate secure random key
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
 
     # Database
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_PASSWORD: str = ""  # Must be set via environment variable
     POSTGRES_DB: str = "llb"
     SQLALCHEMY_DATABASE_URI: str | None = None
 

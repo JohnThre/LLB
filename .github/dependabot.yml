@@ -9,9 +9,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "deps"
       prefix-development: "deps-dev"
@@ -38,9 +38,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "deps"
       prefix-development: "deps-dev"
@@ -69,9 +69,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "docker"
       include: "scope"
@@ -88,9 +88,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "docker"
       include: "scope"
@@ -107,9 +107,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "docker"
       include: "scope"
@@ -127,9 +127,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "maintainer-username"
+      - "onej"
     assignees:
-      - "maintainer-username"
+      - "onej"
     commit-message:
       prefix: "ci"
       include: "scope"

@@ -220,7 +220,7 @@ class PromptOptimizer:
         # Get available templates from the main prompt system
         available_templates = self.sexual_health_prompts.get_all_templates()
         
-        # Validate supported languages to prevent unauthorized access
+        # Use server-controlled supported languages only
         supported_languages = ["en", "zh-CN"]
         for language in supported_languages:
             logger.info(f"\n🔄 Optimizing prompts for language: {language}")
@@ -235,8 +235,12 @@ class PromptOptimizer:
             template_names = [name for name in available_templates.keys() if name.endswith(f"_{language}")]
             
             for template_name in template_names:
-                # Extract the base name (remove language suffix)
+                # Validate template access - only allow predefined templates
+                allowed_templates = ["basic", "detailed", "educational", "conversational"]
                 base_name = template_name.replace(f"_{language}", "")
+                if base_name not in allowed_templates:
+                    logger.warning(f"Skipping unauthorized template: {base_name}")
+                    continue
                 result = await self.test_prompt_template(base_name, language)
                 language_results["templates"].append(result)
                 

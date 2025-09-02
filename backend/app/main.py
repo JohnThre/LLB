@@ -30,10 +30,7 @@ from app.services.document_service import DocumentService
 # Initialize logging
 logger = get_logger(__name__)
 
-# Global services
-ai_service = None
-audio_service = None
-document_service = None
+# Services will be managed through dependency injection
 
 # Create placeholder routers for missing endpoints
 voice_router = APIRouter()
@@ -55,23 +52,32 @@ async def analyze_document():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle - startup and shutdown."""
-    global ai_service, audio_service, document_service
-
     logger.info("🚀 Starting LLB Backend...")
+
+    # Initialize services locally
+    services = {
+        'ai_service': None,
+        'audio_service': None,
+        'document_service': None
+    }
 
     try:
         # Initialize services
-        ai_service = AIService()
-        audio_service = AudioService()
-        document_service = DocumentService()
+        services['ai_service'] = AIService()
+        services['audio_service'] = AudioService()
+        services['document_service'] = DocumentService()
 
         # Set services in deps module
-        deps.set_services(ai_service, audio_service, document_service)
+        deps.set_services(
+            services['ai_service'], 
+            services['audio_service'], 
+            services['document_service']
+        )
 
         # Initialize all services
-        await ai_service.initialize()
-        await audio_service.initialize()
-        await document_service.initialize()
+        await services['ai_service'].initialize()
+        await services['audio_service'].initialize()
+        await services['document_service'].initialize()
 
         logger.info("✅ LLB Backend started successfully!")
 
@@ -84,12 +90,9 @@ async def lifespan(app: FastAPI):
     logger.info("🛑 Shutting down LLB Backend...")
 
     # Cleanup services
-    if ai_service:
-        await ai_service.cleanup()
-    if audio_service:
-        await audio_service.cleanup()
-    if document_service:
-        await document_service.cleanup()
+    for service in services.values():
+        if service:
+            await service.cleanup()
 
     logger.info("✅ LLB Backend shutdown complete")
 

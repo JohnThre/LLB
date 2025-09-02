@@ -30,8 +30,23 @@ class Settings(BaseSettings):
     # AI Models
     ai_cache_dir: str = "../ai/cache"
     ai_temp_dir: str = "../ai/temp"
-    gemma_model_path: str = "../ai/models/gemma"
     whisper_model_path: str = "../ai/models/whisper"
+    
+    # AI Provider API Keys
+    openai_api_key: str = ""
+    anthropic_api_key: str = ""
+    google_api_key: str = ""
+    
+    # AI Provider Models
+    openai_model: str = "gpt-3.5-turbo"
+    claude_model: str = "claude-3-haiku-20240307"
+    gemini_model: str = "gemini-pro"
+    
+    # Local AI
+    ollama_enabled: bool = False
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama2"
+    chrome_web_ai_enabled: bool = False
 
     # File Upload
     upload_dir: str = "uploads"
