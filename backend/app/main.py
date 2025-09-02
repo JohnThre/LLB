@@ -20,12 +20,14 @@ from app.api import deps
 from app.api import ai
 from app.api.v1 import health
 from app.api.v1.endpoints import chat
+from app.api.v1 import api
 from app.config import settings
 from app.core.exceptions import LLBException, LLBHTTPException
 from app.core.logging import get_logger
 from app.services.ai_service import AIService
 from app.services.audio_service import AudioService
 from app.services.document_service import DocumentService
+from app.services.scheduler_service import SchedulerService
 
 # Initialize logging
 logger = get_logger(__name__)
@@ -58,7 +60,8 @@ async def lifespan(app: FastAPI):
     services = {
         'ai_service': None,
         'audio_service': None,
-        'document_service': None
+        'document_service': None,
+        'scheduler_service': None
     }
 
     try:
@@ -66,6 +69,7 @@ async def lifespan(app: FastAPI):
         services['ai_service'] = AIService()
         services['audio_service'] = AudioService()
         services['document_service'] = DocumentService()
+        services['scheduler_service'] = SchedulerService()
 
         # Set services in deps module
         deps.set_services(
@@ -78,6 +82,10 @@ async def lifespan(app: FastAPI):
         await services['ai_service'].initialize()
         await services['audio_service'].initialize()
         await services['document_service'].initialize()
+        
+        # Start scheduler in background
+        import asyncio
+        asyncio.create_task(services['scheduler_service'].start_scheduler())
 
         logger.info("✅ LLB Backend started successfully!")
 
@@ -123,8 +131,8 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
     # Include API routers
+    app.include_router(api.api_router, prefix="/api/v1")
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
-    app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
     app.include_router(ai.router, tags=["ai"])
     app.include_router(voice_router, prefix="/api/v1", tags=["voice"])
     app.include_router(documents_router, prefix="/api/v1", tags=["documents"])
