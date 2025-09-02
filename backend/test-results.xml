@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="15" failures="10" skipped="0" tests="50" time="1.702" timestamp="2025-09-02T20:57:15.886596" hostname="OnedeMacBook-Pro.local"><testcase classname="tests.test_api_chat" name="test_chat_endpoint" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721424656'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_chat" name="test_chat_chinese_message" time="0.004"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721202384'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_chat" name="test_chat_with_context" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4704308688'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_chat" name="test_chat_empty_message" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721209808'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_chat" name="test_get_supported_languages" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721646160'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_chat" name="test_get_chat_status" time="0.004"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4712930896'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_health" name="test_health_check" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721414288'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_health" name="test_legacy_health_redirect" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721111248'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_api_health" name="test_root_endpoint" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4735850512'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_core_config" name="test_settings_defaults" time="0.001" /><testcase classname="tests.test_core_config" name="test_cors_origins_string" time="0.001" /><testcase classname="tests.test_core_config" name="test_cors_origins_list" time="0.001" /><testcase classname="tests.test_core_config" name="test_database_uri_assembly" time="0.001" /><testcase classname="tests.test_core_config" name="test_allowed_extensions" time="0.001" /><testcase classname="tests.test_core_config" name="test_upload_settings" time="0.001" /><testcase classname="tests.test_health" name="test_basic_functionality" time="0.000" /><testcase classname="tests.test_health" name="test_imports" time="0.000" /><testcase classname="tests.test_integration" name="test_full_chat_workflow" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721005840'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_integration" name="test_multilingual_support" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721486480'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_integration" name="test_api_documentation_endpoints" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4721073744'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_integration" name="test_error_handling" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4735652688'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_integration" name="test_cors_headers" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4720861648'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_integration" name="test_static_file_serving" time="0.005"><error message="failed on setup with &quot;AttributeError: Mock object has no attribute 'extract_text'&quot;">@pytest.fixture
+    def mock_document_service():
+        """Mock document service for testing."""
+        service = AsyncMock(spec=DocumentService)
+        service.is_initialized = True
+&gt;       service.extract_text.return_value = {
+            "text": "Test document content",
+            "metadata": {"pages": 1}
+        }
+
+tests/conftest.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;AsyncMock spec='DocumentService' id='4735857296'&gt;, name = 'extract_text'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+&gt;               raise AttributeError("Mock object has no attribute %r" % name)
+E               AttributeError: Mock object has no attribute 'extract_text'
+
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:653: AttributeError</error></testcase><testcase classname="tests.test_services_ai" name="test_ai_service_initialization" time="0.004" /><testcase classname="tests.test_services_ai" name="test_ai_service_cleanup" time="0.003" /><testcase classname="tests.test_services_ai" name="test_detect_language_english" time="0.003" /><testcase classname="tests.test_services_ai" name="test_detect_language_chinese" time="0.001" /><testcase classname="tests.test_services_ai" name="test_detect_language_henan_dialect" time="0.001" /><testcase classname="tests.test_services_ai" name="test_classify_topic_anatomy" time="0.001" /><testcase classname="tests.test_services_ai" name="test_classify_topic_contraception" time="0.001" /><testcase classname="tests.test_services_ai" name="test_classify_topic_chinese" time="0.001" /><testcase classname="tests.test_services_ai" name="test_generate_response_success" time="0.003" /><testcase classname="tests.test_services_ai" name="test_generate_response_not_initialized" time="0.001" /><testcase classname="tests.test_services_ai" name="test_is_ready" time="0.001" /><testcase classname="tests.test_services_ai" name="test_get_supported_languages" time="0.001" /><testcase classname="tests.test_services_ai" name="test_get_model_info" time="0.001" /><testcase classname="tests.test_services_ai" name="test_get_available_topics" time="0.001" /><testcase classname="tests.test_services_audio" name="test_audio_service_initialization" time="0.002"><failure message="AttributeError: 'Settings' object has no attribute 'whisper_model_path'">audio_service = &lt;app.services.audio_service.AudioService object at 0x11a4958d0&gt;
+
+    @pytest.mark.asyncio
+    async def test_audio_service_initialization(audio_service):
+        """Test audio service initialization."""
+&gt;       await audio_service.initialize()
+
+tests/test_services_audio.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+app/services/audio_service.py:64: in initialize
+    self.whisper_model = await loop.run_in_executor(
+../../../.pyenv/versions/3.11.11/lib/python3.11/concurrent/futures/thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+app/services/audio_service.py:92: in _load_whisper_model
+    download_root=settings.whisper_model_path
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = Settings(app_name='LLB Sexual Health Education API', debug=False, host='127.0.0.1', port=8000, cors_origins=['http://l...lama_enabled=False, ollama_base_url='http://localhost:11434', ollama_model='llama2', database_url='sqlite:///./llb.db')
+item = 'whisper_model_path'
+
+    def __getattr__(self, item: str) -&gt; Any:
+        private_attributes = object.__getattribute__(self, '__private_attributes__')
+        if item in private_attributes:
+            attribute = private_attributes[item]
+            if hasattr(attribute, '__get__'):
+                return attribute.__get__(self, type(self))  # type: ignore
+    
+            try:
+                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items
+                return self.__pydantic_private__[item]  # type: ignore
+            except KeyError as exc:
+                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+        else:
+            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.
+            # See `BaseModel.__repr_args__` for more details
+            try:
+                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')
+            except AttributeError:
+                pydantic_extra = None
+    
+            if pydantic_extra is not None:
+                try:
+                    return pydantic_extra[item]
+                except KeyError as exc:
+                    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc
+            else:
+                if hasattr(self.__class__, item):
+                    return super().__getattribute__(item)  # Raises AttributeError if appropriate
+                else:
+                    # this is the current error
+&gt;                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E                   AttributeError: 'Settings' object has no attribute 'whisper_model_path'
+
+llb-env/lib/python3.11/site-packages/pydantic/main.py:761: AttributeError</failure></testcase><testcase classname="tests.test_services_audio" name="test_audio_service_cleanup" time="0.001" /><testcase classname="tests.test_services_audio" name="test_transcribe_audio_success" time="0.003"><failure message="app.core.exceptions.AudioServiceUnavailableException: Audio service unavailable: Audio service not initialized">audio_service = &lt;app.services.audio_service.AudioService object at 0x11a258d50&gt;
+
+    @pytest.mark.asyncio
+    async def test_transcribe_audio_success(audio_service):
+        """Test successful audio transcription."""
+        audio_service.is_initialized = True
+    
+        # Mock the transcription
+        with patch('whisper.load_model') as mock_load:
+            mock_model = MagicMock()
+            mock_model.transcribe.return_value = {
+                'text': 'Hello world',
+                'language': 'en'
+            }
+            mock_load.return_value = mock_model
+    
+            # Create a mock audio file
+            mock_file = MagicMock()
+            mock_file.filename = 'test.wav'
+            mock_file.read = AsyncMock(return_value=b'fake audio data')
+    
+&gt;           result = await audio_service.transcribe_audio(mock_file)
+
+tests/test_services_audio.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.services.audio_service.AudioService object at 0x11a258d50&gt;
+audio_data = &lt;MagicMock id='4736366672'&gt;, language = None, task = 'transcribe'
+
+    async def transcribe_audio(
+        self,
+        audio_data: bytes,
+        language: Optional[str] = None,
+        task: str = "transcribe"
+    ) -&gt; Dict[str, Any]:
+        """
+        Transcribe audio to text using Whisper.
+    
+        Args:
+            audio_data: Raw audio bytes
+            language: Language code (zh, en, or auto for auto-detect)
+            task: Task type ('transcribe' or 'translate')
+    
+        Returns:
+            Transcription result with text, language, and metadata
+        """
+        if not self.is_initialized or self.whisper_model is None:
+&gt;           raise AudioServiceUnavailableException(
+                "Audio service not initialized",
+                {"is_initialized": self.is_initialized, "model_loaded": self.whisper_model is not None}
+            )
+E           app.core.exceptions.AudioServiceUnavailableException: Audio service unavailable: Audio service not initialized
+
+app/services/audio_service.py:177: AudioServiceUnavailableException</failure></testcase><testcase classname="tests.test_services_audio" name="test_is_supported_format" time="0.001"><failure message="AttributeError: 'AudioService' object has no attribute 'is_supported_format'">audio_service = &lt;app.services.audio_service.AudioService object at 0x119636110&gt;
+
+    def test_is_supported_format(audio_service):
+        """Test audio format validation."""
+&gt;       assert audio_service.is_supported_format('test.wav') is True
+E       AttributeError: 'AudioService' object has no attribute 'is_supported_format'
+
+tests/test_services_audio.py:61: AttributeError</failure></testcase><testcase classname="tests.test_services_audio" name="test_get_supported_formats" time="0.001"><failure message="AssertionError: assert '.wav' in ['wav', 'mp3', 'ogg', 'm4a', 'flac', 'aac']">audio_service = &lt;app.services.audio_service.AudioService object at 0x11a4cd710&gt;
+
+    def test_get_supported_formats(audio_service):
+        """Test get supported formats."""
+        formats = audio_service.get_supported_formats()
+        assert isinstance(formats, list)
+&gt;       assert '.wav' in formats
+E       AssertionError: assert '.wav' in ['wav', 'mp3', 'ogg', 'm4a', 'flac', 'aac']
+
+tests/test_services_audio.py:70: AssertionError</failure></testcase><testcase classname="tests.test_services_audio" name="test_transcribe_audio_not_initialized" time="0.001"><failure message="app.core.exceptions.AudioServiceUnavailableException: Audio service unavailable: Audio service not initialized">audio_service = &lt;app.services.audio_service.AudioService object at 0x11a4cd650&gt;
+
+    @pytest.mark.asyncio
+    async def test_transcribe_audio_not_initialized(audio_service):
+        """Test transcription when service not initialized."""
+        audio_service.is_initialized = False
+    
+        mock_file = MagicMock()
+    
+        with pytest.raises(RuntimeError, match="Audio service not initialized"):
+&gt;           await audio_service.transcribe_audio(mock_file)
+
+tests/test_services_audio.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;app.services.audio_service.AudioService object at 0x11a4cd650&gt;
+audio_data = &lt;MagicMock id='4736214608'&gt;, language = None, task = 'transcribe'
+
+    async def transcribe_audio(
+        self,
+        audio_data: bytes,
+        language: Optional[str] = None,
+        task: str = "transcribe"
+    ) -&gt; Dict[str, Any]:
+        """
+        Transcribe audio to text using Whisper.
+    
+        Args:
+            audio_data: Raw audio bytes
+            language: Language code (zh, en, or auto for auto-detect)
+            task: Task type ('transcribe' or 'translate')
+    
+        Returns:
+            Transcription result with text, language, and metadata
+        """
+        if not self.is_initialized or self.whisper_model is None:
+&gt;           raise AudioServiceUnavailableException(
+                "Audio service not initialized",
+                {"is_initialized": self.is_initialized, "model_loaded": self.whisper_model is not None}
+            )
+E           app.core.exceptions.AudioServiceUnavailableException: Audio service unavailable: Audio service not initialized
+
+app/services/audio_service.py:177: AudioServiceUnavailableException</failure></testcase><testcase classname="tests.test_services_document" name="test_document_service_initialization" time="0.001" /><testcase classname="tests.test_services_document" name="test_document_service_cleanup" time="0.001" /><testcase classname="tests.test_services_document" name="test_extract_text_pdf_success" time="0.001"><failure message="ModuleNotFoundError: No module named 'PyPDF2'">document_service = &lt;app.services.document_service.DocumentService object at 0x11a2c9d90&gt;
+
+    @pytest.mark.asyncio
+    async def test_extract_text_pdf_success(document_service):
+        """Test successful PDF text extraction."""
+        document_service.is_initialized = True
+    
+        # Mock PDF processing
+&gt;       with patch('PyPDF2.PdfReader') as mock_reader:
+
+tests/test_services_document.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1430: in __enter__
+    self.target = self.getter()
+../../../.pyenv/versions/3.11.11/lib/python3.11/pkgutil.py:700: in resolve_name
+    mod = importlib.import_module(modname)
+../../../.pyenv/versions/3.11.11/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+&lt;frozen importlib._bootstrap&gt;:1204: in _gcd_import
+    ???
+&lt;frozen importlib._bootstrap&gt;:1176: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'PyPDF2', import_ = &lt;function _gcd_import at 0x1005f3d80&gt;
+
+&gt;   ???
+E   ModuleNotFoundError: No module named 'PyPDF2'
+
+&lt;frozen importlib._bootstrap&gt;:1140: ModuleNotFoundError</failure></testcase><testcase classname="tests.test_services_document" name="test_is_supported_format" time="0.001"><failure message="AttributeError: 'DocumentService' object has no attribute 'is_supported_format'">document_service = &lt;app.services.document_service.DocumentService object at 0x119699510&gt;
+
+    def test_is_supported_format(document_service):
+        """Test document format validation."""
+&gt;       assert document_service.is_supported_format('test.pdf') is True
+E       AttributeError: 'DocumentService' object has no attribute 'is_supported_format'
+
+tests/test_services_document.py:57: AttributeError</failure></testcase><testcase classname="tests.test_services_document" name="test_get_supported_formats" time="0.001"><failure message="AssertionError: assert '.pdf' in ['pdf', 'doc', 'docx', 'txt', 'rtf']">document_service = &lt;app.services.document_service.DocumentService object at 0x11a653990&gt;
+
+    def test_get_supported_formats(document_service):
+        """Test get supported formats."""
+        formats = document_service.get_supported_formats()
+        assert isinstance(formats, list)
+&gt;       assert '.pdf' in formats
+E       AssertionError: assert '.pdf' in ['pdf', 'doc', 'docx', 'txt', 'rtf']
+
+tests/test_services_document.py:66: AssertionError</failure></testcase><testcase classname="tests.test_services_document" name="test_extract_text_not_initialized" time="0.001"><failure message="AttributeError: 'DocumentService' object has no attribute 'extract_text'">document_service = &lt;app.services.document_service.DocumentService object at 0x11969b910&gt;
+
+    @pytest.mark.asyncio
+    async def test_extract_text_not_initialized(document_service):
+        """Test text extraction when service not initialized."""
+        document_service.is_initialized = False
+    
+        mock_file = MagicMock()
+    
+        with pytest.raises(RuntimeError, match="Document service not initialized"):
+&gt;           await document_service.extract_text(mock_file)
+E           AttributeError: 'DocumentService' object has no attribute 'extract_text'
+
+tests/test_services_document.py:78: AttributeError</failure></testcase><testcase classname="tests.test_services_document" name="test_extract_text_unsupported_format" time="0.002"><failure message="AttributeError: 'DocumentService' object has no attribute 'extract_text'">document_service = &lt;app.services.document_service.DocumentService object at 0x11964d790&gt;
+
+    @pytest.mark.asyncio
+    async def test_extract_text_unsupported_format(document_service):
+        """Test text extraction with unsupported format."""
+        document_service.is_initialized = True
+    
+        mock_file = MagicMock()
+        mock_file.filename = 'test.xyz'
+    
+        with pytest.raises(ValueError, match="Unsupported file format"):
+&gt;           await document_service.extract_text(mock_file)
+E           AttributeError: 'DocumentService' object has no attribute 'extract_text'
+
+tests/test_services_document.py:90: AttributeError</failure></testcase></testsuite></testsuites>
