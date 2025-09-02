@@ -21,7 +21,7 @@ from app.api import ai
 from app.api.v1 import health
 from app.api.v1.endpoints import chat
 from app.api.v1 import api
-from app.config import settings
+from app.core.config import settings
 from app.core.exceptions import LLBException, LLBHTTPException
 from app.core.logging import get_logger
 from app.services.ai_service import AIService
@@ -109,24 +109,24 @@ def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
 
     app = FastAPI(
-        title=settings.app_name,
+        title=settings.PROJECT_NAME,
         description="Local AI-driven sexual health education system",
-        version=settings.app_version,
-        debug=settings.debug,
+        version=settings.VERSION,
+        debug=settings.LOG_LEVEL == "DEBUG",
         lifespan=lifespan,
     )
 
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_origins,
+        allow_origins=[str(origin) for origin in settings.CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
     # Serve static files
-    static_path = Path(settings.upload_dir).parent / "static"
+    static_path = Path(settings.UPLOAD_DIR).parent / "static"
     static_path.mkdir(exist_ok=True)
     app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 

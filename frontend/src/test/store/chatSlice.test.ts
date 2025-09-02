@@ -5,10 +5,10 @@
 import { describe, it, expect } from 'vitest'
 import { configureStore } from '@reduxjs/toolkit'
 import chatSlice, { 
-  addMessage, 
-  clearMessages, 
-  setLoading, 
-  setError 
+  sendMessageSuccess, 
+  clearChat, 
+  sendMessageStart, 
+  sendMessageFailure 
 } from '../../store/slices/chatSlice'
 
 const createTestStore = () => {
@@ -34,12 +34,12 @@ describe('Chat Slice', () => {
     
     const message = {
       id: '1',
-      text: 'Hello',
-      sender: 'user' as const,
-      timestamp: Date.now()
+      role: 'user' as const,
+      content: 'Hello',
+      timestamp: new Date().toISOString()
     }
     
-    store.dispatch(addMessage(message))
+    store.dispatch(sendMessageSuccess(message))
     
     const state = store.getState().chat
     expect(state.messages).toHaveLength(1)
@@ -50,14 +50,14 @@ describe('Chat Slice', () => {
     const store = createTestStore()
     
     // Add some messages first
-    store.dispatch(addMessage({
+    store.dispatch(sendMessageSuccess({
       id: '1',
-      text: 'Hello',
-      sender: 'user',
-      timestamp: Date.now()
+      role: 'user',
+      content: 'Hello',
+      timestamp: new Date().toISOString()
     }))
     
-    store.dispatch(clearMessages())
+    store.dispatch(clearChat())
     
     const state = store.getState().chat
     expect(state.messages).toHaveLength(0)
@@ -66,7 +66,7 @@ describe('Chat Slice', () => {
   it('should set loading state', () => {
     const store = createTestStore()
     
-    store.dispatch(setLoading(true))
+    store.dispatch(sendMessageStart())
     
     const state = store.getState().chat
     expect(state.isLoading).toBe(true)
@@ -76,7 +76,7 @@ describe('Chat Slice', () => {
     const store = createTestStore()
     
     const error = 'Something went wrong'
-    store.dispatch(setError(error))
+    store.dispatch(sendMessageFailure(error))
     
     const state = store.getState().chat
     expect(state.error).toBe(error)
@@ -87,20 +87,20 @@ describe('Chat Slice', () => {
     
     const message1 = {
       id: '1',
-      text: 'First message',
-      sender: 'user' as const,
-      timestamp: Date.now()
+      role: 'user' as const,
+      content: 'First message',
+      timestamp: new Date().toISOString()
     }
     
     const message2 = {
       id: '2',
-      text: 'Second message',
-      sender: 'ai' as const,
-      timestamp: Date.now() + 1000
+      role: 'assistant' as const,
+      content: 'Second message',
+      timestamp: new Date(Date.now() + 1000).toISOString()
     }
     
-    store.dispatch(addMessage(message1))
-    store.dispatch(addMessage(message2))
+    store.dispatch(sendMessageSuccess(message1))
+    store.dispatch(sendMessageSuccess(message2))
     
     const state = store.getState().chat
     expect(state.messages).toHaveLength(2)

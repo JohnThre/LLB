@@ -46,3 +46,12 @@ class UserPreferences(BaseModel):
     language: str = "en"
     theme: str = "light"
     notifications: bool = True
+
+
+# User settings
+class UserSettings(BaseModel):
+    privacy_mode: bool = False
+    data_retention_days: int = 30
+    auto_delete_chats: bool = False
+    voice_enabled: bool = True
+    file_upload_enabled: bool = True
