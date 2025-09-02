@@ -14,6 +14,13 @@
    cd ../frontend && npm install
    ```
 
+   **Apple Silicon (M1/M2/M3) Users:**
+   ```bash
+   # Use the optimized setup script for Apple Silicon
+   cd backend && ./setup_whisper.sh
+   cd ../frontend && npm install
+   ```
+
 3. Configure environment:
    ```bash
    cp .env.example .env
@@ -36,3 +43,5 @@
 - `make dev` - Start development
 - `make test` - Run tests
 - `make build` - Build for production
+- `make build-arm64` - Build for Apple Silicon (ARM64)
+- `make dev-arm64` - Start development on Apple Silicon

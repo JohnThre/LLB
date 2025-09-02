@@ -1,5 +1,5 @@
 # Multi-stage build for React frontend
-FROM node:18-alpine as builder
+FROM --platform=$BUILDPLATFORM node:18-alpine as builder
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Production stage with nginx
-FROM nginx:alpine as production
+FROM --platform=$TARGETPLATFORM nginx:alpine as production
 
 # Install curl for health checks
 RUN apk add --no-cache curl

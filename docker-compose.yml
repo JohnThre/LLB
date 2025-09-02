@@ -4,6 +4,7 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:15-alpine
+    platform: linux/amd64,linux/arm64
     container_name: llb_db
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-llb_db}
@@ -21,6 +22,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
+    platform: linux/amd64,linux/arm64
     container_name: llb_redis
     ports:
       - "6379:6379"
@@ -35,6 +37,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     container_name: llb_backend
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-llb_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-llb_db}
@@ -66,6 +71,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     container_name: llb_frontend
     environment:
       - REACT_APP_API_URL=http://localhost/api

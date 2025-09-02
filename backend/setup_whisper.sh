@@ -27,7 +27,15 @@ pip install --upgrade pip
 
 # Install PyTorch first (for better compatibility)
 echo "🔥 Installing PyTorch..."
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# Detect architecture for Apple Silicon support
+ARCH=$(uname -m)
+if [[ "$ARCH" == "arm64" ]] && [[ "$(uname -s)" == "Darwin" ]]; then
+    echo "🍎 Detected Apple Silicon (ARM64), installing optimized PyTorch..."
+    pip install torch torchvision torchaudio
+else
+    echo "💻 Installing PyTorch for x86_64..."
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+fi
 
 # Install Whisper and dependencies
 echo "🎵 Installing OpenAI Whisper..."

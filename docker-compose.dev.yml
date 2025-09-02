@@ -4,6 +4,7 @@ services:
   # PostgreSQL Database (Development)
   db:
     image: postgres:15-alpine
+    platform: linux/amd64,linux/arm64
     container_name: llb_db_dev
     environment:
       - POSTGRES_DB=llb_db_dev
@@ -20,6 +21,7 @@ services:
   # Redis Cache (Development)
   redis:
     image: redis:7-alpine
+    platform: linux/amd64,linux/arm64
     container_name: llb_redis_dev
     ports:
       - "6380:6379"
@@ -33,6 +35,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
+      platforms:
+        - linux/amd64
+        - linux/arm64
     container_name: llb_backend_dev
     environment:
       - DATABASE_URL=postgresql://llb_user:llb_password@db:5432/llb_db_dev
@@ -67,6 +72,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+      platforms:
+        - linux/amd64
+        - linux/arm64
     container_name: llb_frontend_dev
     environment:
       - REACT_APP_API_URL=http://localhost:8001/api
