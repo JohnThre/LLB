@@ -7,8 +7,31 @@ dev:
 	wait
 
 test:
-	cd backend && . llb-env/bin/activate && python -m pytest tests/ -v
-	cd frontend && npm test
+	@echo "🧪 Running comprehensive test suite..."
+	@./scripts/run_tests.sh
+
+test-backend:
+	@echo "🧪 Running backend tests..."
+	cd backend && . llb-env/bin/activate && python -m pytest tests/ -v --cov=app
+
+test-frontend:
+	@echo "🧪 Running frontend tests..."
+	cd frontend && npm test -- --run
+
+test-watch:
+	@echo "👀 Running tests in watch mode..."
+	@trap 'kill 0' INT; \
+	(cd backend && . llb-env/bin/activate && python -m pytest tests/ -v --cov=app -f) & \
+	(cd frontend && npm test) & \
+	wait
+
+test-coverage:
+	@echo "📊 Generating test coverage reports..."
+	cd backend && . llb-env/bin/activate && python -m pytest tests/ --cov=app --cov-report=html:htmlcov
+	cd frontend && npm test -- --run --coverage
+	@echo "Coverage reports generated:"
+	@echo "- Backend: backend/htmlcov/index.html"
+	@echo "- Frontend: frontend/coverage/index.html"
 
 build:
 	cd frontend && npm run build
@@ -24,4 +47,5 @@ dev-arm64:
 clean:
 	find . -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -name "*.pyc" -delete 2>/dev/null || true
-	rm -rf backend/htmlcov frontend/dist frontend/coverage
+	rm -rf backend/htmlcov frontend/dist frontend/coverage backend/.pytest_cache frontend/node_modules/.cache
+	@echo "🧹 Cleaned up build artifacts and cache files"

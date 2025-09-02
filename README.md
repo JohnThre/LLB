@@ -37,11 +37,64 @@
 - Frontend: http://localhost:3000
 - Backend: http://localhost:8000
 - API docs: http://localhost:8000/docs
+- Health check: http://localhost:8000/api/v1/health
 
 ## Commands
 
-- `make dev` - Start development
-- `make test` - Run tests
+### Development
+- `make dev` - Start development servers
+- `make dev-arm64` - Start development on Apple Silicon
+
+### Testing
+- `make test` - Run comprehensive test suite
+- `make test-backend` - Run backend tests only
+- `make test-frontend` - Run frontend tests only
+- `make test-watch` - Run tests in watch mode
+- `make test-coverage` - Generate coverage reports
+- `./scripts/run_tests.sh` - Run full test suite with detailed output
+
+### Building
 - `make build` - Build for production
 - `make build-arm64` - Build for Apple Silicon (ARM64)
-- `make dev-arm64` - Start development on Apple Silicon
+- `make clean` - Clean build artifacts
+
+## Testing
+
+The project includes comprehensive test coverage:
+
+### Backend Tests
+- **Unit Tests**: Service layer, API endpoints, core functionality
+- **Integration Tests**: Full workflow testing
+- **Coverage**: Minimum 70% code coverage required
+- **Location**: `backend/tests/`
+
+### Frontend Tests
+- **Component Tests**: React component testing with React Testing Library
+- **Hook Tests**: Custom hook testing
+- **Store Tests**: Redux slice testing
+- **Service Tests**: API service testing
+- **Location**: `frontend/src/test/`
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run with coverage reports
+make test-coverage
+
+# Run backend tests only
+cd backend && source llb-env/bin/activate && pytest tests/ -v
+
+# Run frontend tests only
+cd frontend && npm test
+
+# Watch mode for development
+make test-watch
+```
+
+### Coverage Reports
+After running tests with coverage:
+- Backend: `backend/htmlcov/index.html`
+- Frontend: `frontend/coverage/index.html`
