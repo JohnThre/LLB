@@ -5,7 +5,13 @@
 # Activate virtual environment if not already activated
 if [[ -z "${VIRTUAL_ENV}" ]]; then
     echo "Activating virtual environment..."
-    source llb-env/bin/activate
+    if [[ -f "llb-env/bin/activate" ]]; then
+        # shellcheck source=/dev/null
+        source llb-env/bin/activate
+    else
+        echo "Error: Virtual environment not found at llb-env/bin/activate"
+        exit 1
+    fi
 fi
 
 # Set environment variables

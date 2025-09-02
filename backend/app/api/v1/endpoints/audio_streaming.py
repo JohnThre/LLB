@@ -222,16 +222,22 @@ async def websocket_audio_stream(
                     await handle_control_message(service, session_id, message_data, websocket)
                 
                 else:
+                    # Sanitize message_type to prevent XSS
+                    import html
+                    safe_message_type = html.escape(str(message_type))
                     await websocket.send_text(json.dumps({
                         "type": "error",
-                        "message": f"Unknown message type: {message_type}",
+                        "message": f"Unknown message type: {safe_message_type}",
                         "timestamp": asyncio.get_event_loop().time()
                     }))
             
             except json.JSONDecodeError as e:
+                # Sanitize exception message to prevent XSS
+                import html
+                safe_error = html.escape(str(e))
                 await websocket.send_text(json.dumps({
                     "type": "error",
-                    "message": f"Invalid JSON format: {str(e)}",
+                    "message": f"Invalid JSON format: {safe_error}",
                     "timestamp": asyncio.get_event_loop().time()
                 }))
             
@@ -300,9 +306,12 @@ async def handle_audio_chunk(
         
     except Exception as e:
         logger.error(f"Error handling audio chunk: {e}")
+        # Sanitize exception message to prevent XSS
+        import html
+        safe_error = html.escape(str(e))
         await websocket.send_text(json.dumps({
             "type": "error",
-            "message": f"Audio chunk processing error: {str(e)}",
+            "message": f"Audio chunk processing error: {safe_error}",
             "timestamp": asyncio.get_event_loop().time()
         }))
 

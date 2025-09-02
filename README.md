@@ -6,7 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg)](https://reactjs.org/)
 
-## 🚀 Quick Start Guide for Beginners
+## Quick Start Guide for Beginners
 
 *This guide will help you set up and run LLB (爱学伴) on your computer, even if you're not a programmer!*
 
@@ -18,9 +18,9 @@ Before starting, make sure your computer has:
 - **At least 20GB free disk space**
 - **Internet connection** for downloading dependencies
 
-### 🎯 Step 1: Download the AI Model
+### Step 1: Download the AI Model
 
-**⚠️ Important: You must download the AI model manually before setup!**
+**Important: You must download the AI model manually before setup!**
 
 1. **Create a Kaggle account** at [kaggle.com](https://www.kaggle.com) (free)
 2. **Download the Gemma model**:
@@ -32,12 +32,12 @@ Before starting, make sure your computer has:
    - Extract all files from the download into this folder
    - You should see files like: `config.json`, `model.weights.h5`, `tokenizer.json`, `task.json`, `assets/tokenizer/vocabulary.spm`, etc.
 
-**🔧 For CUDA 12.8 Users**: If you have CUDA 12.8 installed, run the clean setup script after model extraction:
+**For CUDA 12.8 Users**: If you have CUDA 12.8 installed, run the clean setup script after model extraction:
 ```bash
 ./clean_setup_keras.sh
 ```
 
-### 🛠️ Step 2: Install Required Software
+### Step 2: Install Required Software
 
 1. **Install Python 3.11**:
    ```bash
@@ -61,7 +61,7 @@ Before starting, make sure your computer has:
    sudo apt install git
    ```
 
-### 🏗️ Step 3: Set Up the Project
+### Step 3: Set Up the Project
 
 1. **Open terminal** and navigate to the project folder:
    ```bash
@@ -81,7 +81,7 @@ Before starting, make sure your computer has:
    - Set up testing infrastructure
    - When asked "Run comprehensive tests?", type `y` to verify everything works
 
-### ⚙️ Step 4: Configure the Application
+### Step 4: Configure the Application
 
 1. **Update environment files**:
    - Edit `.env` (main settings)
@@ -96,7 +96,7 @@ Before starting, make sure your computer has:
    SUPPORTED_LANGUAGES=en,zh-CN
    ```
 
-### 🚀 Step 5: Start the Application
+### Step 5: Start the Application
 
 1. **Start all services**:
    ```bash
@@ -122,7 +122,7 @@ Before starting, make sure your computer has:
    cd frontend && npm run dev
    ```
 
-### 🌐 Step 6: Use the Application
+### Step 6: Use the Application
 
 1. **Open your web browser** and go to:
    - **Main app**: http://localhost:3000
@@ -133,7 +133,7 @@ Before starting, make sure your computer has:
    - Try voice input (click microphone icon)
    - Upload a PDF document for analysis
 
-### 🧪 Step 7: Run Tests (Optional but Recommended)
+### Step 7: Run Tests (Optional but Recommended)
 
 **Test everything is working correctly**:
 
@@ -154,7 +154,7 @@ make coverage
 - Coverage report: `backend/htmlcov/index.html`
 - Test logs in terminal
 
-### 🛑 Step 8: Stop the Application
+### Step 8: Stop the Application
 
 When you're done:
 ```bash
@@ -165,7 +165,7 @@ Ctrl+C (in the terminal where you ran make dev)
 make stop
 ```
 
-### 🔧 Troubleshooting
+### Troubleshooting
 
 **Common issues and solutions**:
 
@@ -230,14 +230,14 @@ make stop
    ./scripts/setup/setup_project.sh
    ```
 
-### 📞 Getting Help
+### Getting Help
 
 - **Check logs**: Look in `backend/logs/` for error messages
 - **GitHub Issues**: Report bugs at [project repository]
 - **Documentation**: See `docs/` folder for detailed guides
 - **Community**: Join our discussion forums
 
-### 🎉 You're All Set!
+### You're All Set!
 
 Congratulations! You now have LLB (爱学伴) running on your computer. The app provides:
 - ✅ AI-powered sexual health education
@@ -255,15 +255,15 @@ LLB (爱学伴) is a comprehensive, privacy-focused sexual health education web 
 
 ### ✨ Key Features
 
-- 🤖 **Local AI Processing** - Powered by Google's Gemma 3 1B model
-- 🗣️ **Multi-modal Input** - Text, voice, and PDF document support
-- 🌍 **Multi-language Support** - Simplified Chinese, Henan Dialect, American/British English
-- 🔒 **Privacy-First** - All processing done locally, no data transmission
-- 🚀 **GPU Acceleration** - Optimized for NVIDIA RTX 3060+ GPUs
-- 📱 **Progressive Web App** - Modern, responsive design
-- 🛡️ **Safety-First** - Built-in content filtering and safety guidelines
+- **Local AI Processing** - Powered by Google's Gemma 3 1B model
+- **Multi-modal Input** - Text, voice, and PDF document support
+- **Multi-language Support** - Simplified Chinese, Henan Dialect, American/British English
+- **Privacy-First** - All processing done locally, no data transmission
+- **GPU Acceleration** - Optimized for NVIDIA RTX 3060+ GPUs
+- **Progressive Web App** - Modern, responsive design
+- **Safety-First** - Built-in content filtering and safety guidelines
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 LLB/
@@ -275,7 +275,7 @@ LLB/
 └── config/           # Configuration files
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -286,7 +286,7 @@ LLB/
 - **RAM**: 16GB minimum, 32GB recommended
 - **Storage**: 256GB SSD minimum
 
-### 🔧 Automated Setup
+### Automated Setup
 
 Run the automated setup script:
 
@@ -299,7 +299,7 @@ cd llb
 ./scripts/setup/setup_project.sh
 ```
 
-### 🛠️ Manual Setup
+### Manual Setup
 
 1. **Install Dependencies**
    ```bash
@@ -326,7 +326,7 @@ cd llb
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
 
-## 📋 Available Commands
+## Available Commands
 
 Use the Makefile for common tasks:
 
@@ -343,7 +343,7 @@ make clean         # Clean build artifacts
 make status        # Check project status
 ```
 
-## 🏛️ Project Structure
+## Project Structure
 
 ### Backend (`backend/`)
 - **FastAPI** web framework with async support
@@ -367,7 +367,7 @@ make status        # Check project status
 - **Multi-language processing**
 - **Safety and content filtering**
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -388,7 +388,7 @@ Key configuration options:
 - `LLB_SUPPORTED_LANGUAGES`: Supported languages
 - `CUDA_VISIBLE_DEVICES`: GPU configuration
 
-## 🧪 Testing
+## Testing
 
 Run comprehensive tests:
 
@@ -406,7 +406,7 @@ make test-frontend
 make test-ai
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **API Documentation**: Available at `/docs` when running
 - **Architecture**: See `docs/architecture/`
@@ -414,7 +414,7 @@ make test-ai
 - **Deployment Guide**: See `docs/deployment/`
 - **User Guide**: See `docs/user/`
 
-## 🚀 Deployment
+## Deployment
 
 ### Local Deployment
 ```bash
@@ -432,7 +432,7 @@ make docker-build
 make docker-up
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -448,7 +448,7 @@ make docker-up
 - **Testing**: Write tests for new features
 - **Documentation**: Update docs for API changes
 
-## 📊 System Requirements
+## System Requirements
 
 ### Minimum Requirements
 - **CPU**: 8th Gen Intel Mobile i7
@@ -464,20 +464,20 @@ make docker-up
 - **GPU**: NVIDIA RTX 3060 OC 12GB+
 - **OS**: Windows 11 Pro with WSL2
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **Local Processing**: All AI processing happens locally
 - **No Data Transmission**: User data never leaves the device
 - **Content Filtering**: Built-in safety mechanisms
 - **Secure Configuration**: Environment-based secrets management
 
-## 📄 License
+## License
 
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](./LICENSE) file for details.
 
-## 🔄 Recent Updates & Improvements
+## Recent Updates & Improvements
 
-### ✅ **Latest Fixes (December 2024)**
+### **Latest Fixes (December 2024)**
 - **CUDA 12.8 Compatibility**: Fixed TensorFlow/CUDA conflicts with clean setup script
 - **Keras Integration**: Improved Gemma 3 1B model loading with KerasHub
 - **Virtual Environment**: Enhanced setup and activation procedures
@@ -485,13 +485,13 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 - **Memory Optimization**: Improved settings for 16GB RAM systems
 - **Troubleshooting**: Expanded troubleshooting guide with common solutions
 
-### 🛠️ **Available Scripts**
+### **Available Scripts**
 - `./clean_setup_keras.sh` - Clean setup for CUDA 12.8 systems
 - `./setup_keras_env.sh` - Automated Keras environment setup
 - `ai/datasets/test_keras_setup.py` - Verify AI model setup
 - `check_services.sh` - Check running services and ports
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Google** for the Gemma 3 1B AI model
 - **FastAPI** for the excellent web framework
@@ -499,14 +499,14 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 - **Material-UI** for beautiful UI components
 - **NVIDIA** for CUDA support
 
-## 📞 Support
+## Support
 
 For support and questions:
 
-- 📧 **Email**: jnc@freew.org
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-username/llb/issues)
-- 📖 **Documentation**: [Project Wiki](https://github.com/your-username/llb/wiki)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-username/llb/discussions)
+- **Email**: jnc@freew.org
+- **Issues**: [GitHub Issues](https://github.com/your-username/llb/issues)
+- **Documentation**: [Project Wiki](https://github.com/your-username/llb/wiki)
+- **Discussions**: [GitHub Discussions](https://github.com/your-username/llb/discussions)
 
 ---
 

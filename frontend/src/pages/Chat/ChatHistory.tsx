@@ -29,12 +29,40 @@ const ChatHistory: React.FC = () => {
       lastMessage: "Hello, how can I help you?",
       timestamp: new Date(),
     },
-    // Add more mock data as needed
   ]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = React.useCallback((id: string) => {
     setSessions((prev) => prev.filter((session) => session.id !== id));
-  };
+  }, []);
+
+  const renderChatSession = React.useCallback((session: ChatSession, index: number) => (
+    <React.Fragment key={session.id}>
+      <ListItem
+        disablePadding
+        secondaryAction={
+          <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(session.id)}>
+            <DeleteIcon />
+          </IconButton>
+        }
+      >
+        <ListItemButton>
+          <ListItemText
+            primary={session.title}
+            secondary={
+              <>
+                <Typography component="span" variant="body2" color="text.primary">
+                  {session.lastMessage}
+                </Typography>
+                {" — "}
+                {format(session.timestamp, "MMM d, yyyy HH:mm")}
+              </>
+            }
+          />
+        </ListItemButton>
+      </ListItem>
+      {index < sessions.length - 1 && <Divider />}
+    </React.Fragment>
+  ), [handleDelete, sessions.length]);
 
   return (
     <Box>
@@ -43,42 +71,7 @@ const ChatHistory: React.FC = () => {
       </Typography>
 
       <List>
-        {sessions.map((session, index) => (
-          <React.Fragment key={session.id}>
-            <ListItem
-              disablePadding
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleDelete(session.id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <ListItemButton>
-                <ListItemText
-                  primary={session.title}
-                  secondary={
-                    <>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        {session.lastMessage}
-                      </Typography>
-                      {" — "}
-                      {format(session.timestamp, "MMM d, yyyy HH:mm")}
-                    </>
-                  }
-                />
-              </ListItemButton>
-            </ListItem>
-            {index < sessions.length - 1 && <Divider />}
-          </React.Fragment>
-        ))}
+        {sessions.map(renderChatSession)}
       </List>
     </Box>
   );

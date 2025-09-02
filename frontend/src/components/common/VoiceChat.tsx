@@ -77,6 +77,20 @@ const VoiceChat = forwardRef<VoiceChatRef, VoiceChatProps>(({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const theme = useTheme();
 
+  // Memoized audio permissions options to prevent unnecessary re-renders
+  const audioPermissionsOptions = React.useMemo(() => ({
+    autoCheck: true,
+    onPermissionGranted: () => {
+      console.log('Microphone permission granted');
+    },
+    onPermissionDenied: (error: AudioPermissionError) => {
+      const sanitizedError = typeof error === 'string' 
+        ? error.replace(/[\r\n\t]/g, ' ').substring(0, 200)
+        : String(error).replace(/[\r\n\t]/g, ' ').substring(0, 200);
+      console.warn('Microphone permission denied:', sanitizedError);
+    },
+  }), []);
+
   // Audio permissions hook
   const {
     error: permissionError,
@@ -85,15 +99,7 @@ const VoiceChat = forwardRef<VoiceChatRef, VoiceChatProps>(({
     requestPermission,
     clearError,
     retryLastAction,
-  } = useAudioPermissions({
-    autoCheck: true,
-    onPermissionGranted: () => {
-      console.log('Microphone permission granted');
-    },
-    onPermissionDenied: (error) => {
-      console.warn('Microphone permission denied:', error);
-    },
-  });
+  } = useAudioPermissions(audioPermissionsOptions);
 
   // Initialize audio element
   useEffect(() => {

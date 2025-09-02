@@ -10,6 +10,16 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
+interface NotificationOption {
+  key: string;
+  labelKey: string;
+}
+
+interface NotificationSection {
+  titleKey: string;
+  options: NotificationOption[];
+}
+
 const NotificationSettings: React.FC = () => {
   const { t } = useTranslation();
   const [settings, setSettings] = React.useState({
@@ -22,13 +32,42 @@ const NotificationSettings: React.FC = () => {
     marketingNotifications: false,
   });
 
-  const handleChange =
-    (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSettings((prev) => ({
-        ...prev,
-        [name]: event.target.checked,
-      }));
-    };
+  const notificationSections: NotificationSection[] = [
+    {
+      titleKey: "settings.notificationChannels",
+      options: [
+        { key: "emailNotifications", labelKey: "settings.emailNotifications" },
+        { key: "pushNotifications", labelKey: "settings.pushNotifications" },
+        { key: "soundNotifications", labelKey: "settings.soundNotifications" },
+      ],
+    },
+    {
+      titleKey: "settings.notificationTypes",
+      options: [
+        { key: "messageNotifications", labelKey: "settings.messageNotifications" },
+        { key: "mentionNotifications", labelKey: "settings.mentionNotifications" },
+        { key: "updateNotifications", labelKey: "settings.updateNotifications" },
+      ],
+    },
+    {
+      titleKey: "settings.otherNotifications",
+      options: [
+        { key: "marketingNotifications", labelKey: "settings.marketingNotifications" },
+      ],
+    },
+  ];
+
+  const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings((prev) => ({ ...prev, [name]: event.target.checked }));
+  };
+
+  const renderNotificationSwitch = ({ key, labelKey }: NotificationOption) => (
+    <FormControlLabel
+      key={key}
+      control={<Switch checked={settings[key as keyof typeof settings]} onChange={handleChange(key)} />}
+      label={t(labelKey)}
+    />
+  );
 
   return (
     <Box>
@@ -37,100 +76,23 @@ const NotificationSettings: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            {t("settings.notificationChannels")}
-          </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.emailNotifications}
-                  onChange={handleChange("emailNotifications")}
-                />
-              }
-              label={t("settings.emailNotifications")}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.pushNotifications}
-                  onChange={handleChange("pushNotifications")}
-                />
-              }
-              label={t("settings.pushNotifications")}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.soundNotifications}
-                  onChange={handleChange("soundNotifications")}
-                />
-              }
-              label={t("settings.soundNotifications")}
-            />
-          </FormGroup>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Divider sx={{ my: 2 }} />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            {t("settings.notificationTypes")}
-          </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.messageNotifications}
-                  onChange={handleChange("messageNotifications")}
-                />
-              }
-              label={t("settings.messageNotifications")}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.mentionNotifications}
-                  onChange={handleChange("mentionNotifications")}
-                />
-              }
-              label={t("settings.mentionNotifications")}
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.updateNotifications}
-                  onChange={handleChange("updateNotifications")}
-                />
-              }
-              label={t("settings.updateNotifications")}
-            />
-          </FormGroup>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Divider sx={{ my: 2 }} />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            {t("settings.otherNotifications")}
-          </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={settings.marketingNotifications}
-                  onChange={handleChange("marketingNotifications")}
-                />
-              }
-              label={t("settings.marketingNotifications")}
-            />
-          </FormGroup>
-        </Grid>
+        {notificationSections.map((section, index) => (
+          <React.Fragment key={section.titleKey}>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                {t(section.titleKey)}
+              </Typography>
+              <FormGroup>
+                {section.options.map(renderNotificationSwitch)}
+              </FormGroup>
+            </Grid>
+            {index < notificationSections.length - 1 && (
+              <Grid item xs={12}>
+                <Divider sx={{ my: 2 }} />
+              </Grid>
+            )}
+          </React.Fragment>
+        ))}
       </Grid>
     </Box>
   );

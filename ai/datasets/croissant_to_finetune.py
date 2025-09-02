@@ -25,10 +25,19 @@ class CroissantConverter:
     def load_metadata(self, file_path: Path) -> Dict[str, Any]:
         """Load and parse a Croissant metadata JSON file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            # Validate path is within input directory to prevent path traversal
+            resolved_path = file_path.resolve()
+            if not str(resolved_path).startswith(str(self.input_dir.resolve())):
+                logger.error(f"Path traversal attempt detected: {file_path}")
+                return {}
+            
+            with open(resolved_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"Error loading metadata file {file_path}: {e}")
+            # Sanitize file_path and exception message to prevent log injection
+            safe_path = str(file_path).replace('\n', ' ').replace('\r', ' ')
+            safe_error = str(e).replace('\n', ' ').replace('\r', ' ')
+            logger.error(f"Error loading metadata file {safe_path}: {safe_error}")
             return {}
 
     def extract_dataset_info(self, metadata: Dict[str, Any]) -> Dict[str, Any]:

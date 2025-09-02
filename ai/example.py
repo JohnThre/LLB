@@ -104,10 +104,12 @@ def pdf_processing_example(ai_factory: AIFactory, pdf_path: str):
         pdf_path: Path to the PDF file
     """
     if not os.path.exists(pdf_path):
-        logger.error(f"PDF file not found: {pdf_path}")
+        safe_pdf_path = str(pdf_path).replace('\n', ' ').replace('\r', ' ')
+        logger.error(f"PDF file not found: {safe_pdf_path}")
         return
     
-    logger.info(f"Processing PDF: {pdf_path}")
+    safe_pdf_path = str(pdf_path).replace('\n', ' ').replace('\r', ' ')
+    logger.info(f"Processing PDF: {safe_pdf_path}")
     
     result = ai_factory.process_document(pdf_path, is_file_path=True)
     
@@ -138,10 +140,13 @@ def audio_transcription_example(ai_factory: AIFactory, audio_path: str):
         audio_path: Path to the audio file
     """
     if not os.path.exists(audio_path):
-        logger.error(f"Audio file not found: {audio_path}")
+        safe_audio_path = str(audio_path).replace('\n', ' ').replace('\r', ' ')
+        logger.error(f"Audio file not found: {safe_audio_path}")
         return
     
-    logger.info(f"Transcribing audio: {audio_path}")
+    # Sanitize audio_path to prevent log injection
+    safe_audio_path = str(audio_path).replace('\n', ' ').replace('\r', ' ')
+    logger.info(f"Transcribing audio: {safe_audio_path}")
     
     result = ai_factory.transcribe_audio(audio_path, is_file_path=True)
     

@@ -6,9 +6,9 @@ services:
     image: postgres:15-alpine
     container_name: llb_db_dev
     environment:
-      POSTGRES_DB: llb_db_dev
-      POSTGRES_USER: llb_user
-      POSTGRES_PASSWORD: llb_password
+      - POSTGRES_DB=llb_db_dev
+      - POSTGRES_USER=llb_user
+      - POSTGRES_PASSWORD=llb_password
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql

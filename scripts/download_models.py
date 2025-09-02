@@ -51,12 +51,26 @@ def extract_gemma_model(tar_path):
         
         # Extract the tar.gz file
         with tarfile.open(tar_path, "r:gz") as tar:
-            # Get the root directory name
-            root_dir = tar.getmembers()[0].name.split('/')[0]
+            # Validate and sanitize all paths to prevent traversal attacks
+            safe_members = []
+            for member in tar.getmembers():
+                # Check for absolute paths or path traversal attempts
+                if os.path.isabs(member.name) or ".." in member.name or member.name.startswith("/"):
+                    raise ValueError(f"Unsafe path in tar file: {member.name}")
+                
+                # Normalize the path and ensure it's within bounds
+                normalized_path = os.path.normpath(member.name)
+                if normalized_path.startswith("../") or normalized_path == "..":
+                    raise ValueError(f"Path traversal attempt detected: {member.name}")
+                
+                safe_members.append(member)
+            
+            # Get the root directory name from first safe member
+            root_dir = safe_members[0].name.split('/')[0]
             target_dir = os.path.join(MODELS_DIR, "gemma-3-1b")
             
-            # Extract all files
-            tar.extractall(path=MODELS_DIR)
+            # Extract only validated members
+            tar.extractall(path=MODELS_DIR, members=safe_members)
             
             # Rename the extracted directory if needed
             extracted_dir = os.path.join(MODELS_DIR, root_dir)

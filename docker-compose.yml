@@ -6,9 +6,9 @@ services:
     image: postgres:15-alpine
     container_name: llb_db
     environment:
-      POSTGRES_DB: llb_db
-      POSTGRES_USER: llb_user
-      POSTGRES_PASSWORD: llb_password
+      POSTGRES_DB: ${POSTGRES_DB:-llb_db}
+      POSTGRES_USER: ${POSTGRES_USER:-llb_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -37,7 +37,7 @@ services:
       dockerfile: Dockerfile
     container_name: llb_backend
     environment:
-      - DATABASE_URL=postgresql://llb_user:llb_password@db:5432/llb_db
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-llb_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-llb_db}
       - REDIS_URL=redis://redis:6379
       - ENVIRONMENT=production
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}

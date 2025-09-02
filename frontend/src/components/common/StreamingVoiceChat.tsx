@@ -426,12 +426,13 @@ const StreamingVoiceChat = forwardRef<StreamingVoiceChatRef, StreamingVoiceChatP
     }
 
     try {
-      // Convert ArrayBuffer to hex string
+      // Convert ArrayBuffer to hex string (optimized)
       const audioData = await chunk.data;
       const uint8Array = new Uint8Array(audioData);
-      const hexString = Array.from(uint8Array)
-        .map(byte => byte.toString(16).padStart(2, '0'))
-        .join('');
+      let hexString = '';
+      for (let i = 0; i < uint8Array.length; i++) {
+        hexString += uint8Array[i].toString(16).padStart(2, '0');
+      }
 
       const message = {
         type: "audio_chunk",

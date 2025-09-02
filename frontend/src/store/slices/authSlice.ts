@@ -15,9 +15,17 @@ interface AuthState {
   error: string | null;
 }
 
+const getStoredToken = (): string | null => {
+  try {
+    return localStorage.getItem("token");
+  } catch {
+    return null;
+  }
+};
+
 const initialState: AuthState = {
   user: null,
-  token: localStorage.getItem("token"),
+  token: getStoredToken(),
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -40,7 +48,11 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.error = null;
-      localStorage.setItem("token", action.payload.token);
+      try {
+        localStorage.setItem("token", action.payload.token);
+      } catch (error) {
+        console.warn("Failed to save token to localStorage:", error);
+      }
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
@@ -51,7 +63,11 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-      localStorage.removeItem("token");
+      try {
+        localStorage.removeItem("token");
+      } catch (error) {
+        console.warn("Failed to remove token from localStorage:", error);
+      }
     },
     updateUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;

@@ -45,4 +45,4 @@ responses==0.24.1
 
 # Environment Management
 python-decouple==3.8
-environs==10.0.0 
+environs==11.0.0 

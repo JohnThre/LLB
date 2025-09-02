@@ -148,8 +148,8 @@ class AudioService:
             # Stop TTS engine
             try:
                 self.tts_engine.stop()
-            except:
-                pass
+            except Exception as e:
+                logger.warning(f"Error stopping TTS engine: {e}")
             self.tts_engine = None
         
         self.is_initialized = False
@@ -507,6 +507,10 @@ class AudioService:
                 self.tts_engine.save_to_file(text, temp_path)
                 self.tts_engine.runAndWait()
 
+                # Validate path to prevent traversal attacks
+                if not os.path.abspath(temp_path).startswith(tempfile.gettempdir()):
+                    raise AudioTTSException("Invalid file path", {"path": temp_path})
+                
                 # Read audio data
                 with open(temp_path, 'rb') as f:
                     audio_data = f.read()

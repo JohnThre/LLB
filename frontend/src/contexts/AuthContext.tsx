@@ -39,8 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             email: "user@example.com",
             name: "Test User",
           });
-        } else {
-          // Auto-login for development
+        } else if (process.env.NODE_ENV === 'development') {
+          // Auto-login for development only
           localStorage.setItem("auth_token", "dev_token");
           setIsAuthenticated(true);
           setUser({

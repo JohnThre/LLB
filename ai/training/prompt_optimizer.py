@@ -134,10 +134,14 @@ class PromptOptimizer:
                     successful_tests += 1
                     total_quality += quality_score
                 
-                logger.info(f"  Question: {question[:30]}... Quality: {quality_score:.2f}")
+                # Sanitize question to prevent log injection
+                safe_question = str(question).replace('\n', ' ').replace('\r', ' ')
+                logger.info(f"  Question: {safe_question[:30]}... Quality: {quality_score:.2f}")
                 
             except Exception as e:
-                logger.error(f"  Failed for question '{question}': {e}")
+                # Sanitize question to prevent log injection
+                safe_question = str(question).replace('\n', ' ').replace('\r', ' ')
+                logger.error(f"  Failed for question '{safe_question}': {e}")
                 results["test_results"].append({
                     "question": question,
                     "prompt": formatted_prompt if 'formatted_prompt' in locals() else "",
@@ -152,7 +156,9 @@ class PromptOptimizer:
         results["success_rate"] = successful_tests / total_tests if total_tests > 0 else 0.0
         results["average_quality"] = total_quality / successful_tests if successful_tests > 0 else 0.0
         
-        logger.info(f"  Template '{template_name}': Success rate: {results['success_rate']:.2f}, Avg quality: {results['average_quality']:.2f}")
+        # Sanitize template_name to prevent log injection
+        safe_template_name = str(template_name).replace('\n', ' ').replace('\r', ' ')
+        logger.info(f"  Template '{safe_template_name}': Success rate: {results['success_rate']:.2f}, Avg quality: {results['average_quality']:.2f}")
         
         return results
     
@@ -204,8 +210,9 @@ class PromptOptimizer:
         """Optimize prompts for all languages using the main prompt system."""
         logger.info("Starting prompt optimization using main prompt system...")
         
+        import time
         optimization_results = {
-            "timestamp": asyncio.get_event_loop().time(),
+            "timestamp": time.time(),  # Use server-controlled time
             "languages": {},
             "best_templates": {}
         }
@@ -213,7 +220,9 @@ class PromptOptimizer:
         # Get available templates from the main prompt system
         available_templates = self.sexual_health_prompts.get_all_templates()
         
-        for language in ["en", "zh-CN"]:
+        # Validate supported languages to prevent unauthorized access
+        supported_languages = ["en", "zh-CN"]
+        for language in supported_languages:
             logger.info(f"\n🔄 Optimizing prompts for language: {language}")
             
             language_results = {
@@ -250,7 +259,15 @@ class PromptOptimizer:
     async def save_optimized_prompts(self, results: Dict[str, Any], filepath: str = None):
         """Save optimization results to file."""
         if filepath is None:
-            filepath = os.path.join(os.path.dirname(__file__), "optimization_results.json")
+            # Use secure default path within current directory
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            filepath = os.path.join(base_dir, "optimization_results.json")
+        else:
+            # Validate filepath to prevent path traversal
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            filepath = os.path.abspath(filepath)
+            if not filepath.startswith(base_dir):
+                raise ValueError(f"Invalid file path: {filepath}")
         
         # Convert results to JSON-serializable format
         serializable_results = {
@@ -277,6 +294,10 @@ class PromptOptimizer:
                     for t in lang_data["templates"]
                 ]
             }
+        
+        # Final validation before file write
+        if not os.path.basename(filepath).endswith('.json'):
+            raise ValueError("Only JSON files are allowed")
         
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(serializable_results, f, indent=2, ensure_ascii=False)

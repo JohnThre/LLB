@@ -250,8 +250,20 @@ jobs:
         script: |
           cd /opt/llb-production
           
-          # Create backup
-          docker-compose -f docker-compose.yml -f docker-compose.production.yml exec -T db pg_dump -U llb_user llb_db > backup_$(date +%Y%m%d_%H%M%S).sql
+          # Create backup with error handling
+          BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql"
+          if ! docker-compose -f docker-compose.yml -f docker-compose.production.yml exec -T db pg_dump -U ${POSTGRES_USER:-llb_user} ${POSTGRES_DB:-llb_db} > "$BACKUP_FILE"; then
+            echo "Database backup failed. Aborting deployment."
+            exit 1
+          fi
+          
+          # Verify backup file is not empty
+          if [ ! -s "$BACKUP_FILE" ]; then
+            echo "Backup file is empty. Aborting deployment."
+            exit 1
+          fi
+          
+          echo "Database backup created successfully: $BACKUP_FILE"
           
           # Pull latest images
           docker-compose -f docker-compose.yml -f docker-compose.production.yml pull

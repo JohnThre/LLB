@@ -22,19 +22,16 @@ const GeneralSettings: React.FC = () => {
     autoUpdate: true,
   });
 
-  const handleChange =
-    (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSettings((prev) => ({
-        ...prev,
-        [name]: event.target.checked,
-      }));
-    };
+  const handleSettingChange = (name: string, value: string | boolean) => {
+    setSettings((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSwitchChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleSettingChange(name, event.target.checked);
+  };
 
   const handleSelectChange = (name: string) => (event: SelectChangeEvent) => {
-    setSettings((prev) => ({
-      ...prev,
-      [name]: event.target.value,
-    }));
+    handleSettingChange(name, event.target.value);
   };
 
   return (
@@ -60,41 +57,23 @@ const GeneralSettings: React.FC = () => {
           </FormControl>
         </Grid>
 
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={settings.darkMode}
-                onChange={handleChange("darkMode")}
-              />
-            }
-            label={t("settings.darkMode")}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={settings.notifications}
-                onChange={handleChange("notifications")}
-              />
-            }
-            label={t("settings.notifications")}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={settings.autoUpdate}
-                onChange={handleChange("autoUpdate")}
-              />
-            }
-            label={t("settings.autoUpdate")}
-          />
-        </Grid>
+        {[
+          { key: "darkMode", labelKey: "settings.darkMode" },
+          { key: "notifications", labelKey: "settings.notifications" },
+          { key: "autoUpdate", labelKey: "settings.autoUpdate" },
+        ].map(({ key, labelKey }) => (
+          <Grid item xs={12} key={key}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={settings[key as keyof typeof settings] as boolean}
+                  onChange={handleSwitchChange(key)}
+                />
+              }
+              label={t(labelKey)}
+            />
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );

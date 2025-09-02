@@ -43,7 +43,13 @@ class GemmaFineTuner:
             model_path: Path to the Keras Gemma model
             output_dir: Directory to save fine-tuned model
         """
-        self.model_path = Path(model_path)
+        # Validate model path to prevent path traversal
+        model_path_obj = Path(model_path).resolve()
+        expected_base = Path(__file__).parent.parent.resolve() / "models"
+        if not str(model_path_obj).startswith(str(expected_base)):
+            raise ValueError(f"Invalid model path: {model_path}")
+        
+        self.model_path = model_path_obj
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         

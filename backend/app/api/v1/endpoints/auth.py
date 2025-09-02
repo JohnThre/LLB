@@ -24,6 +24,14 @@ def login(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
+    # Validate input to prevent injection attacks
+    if not form_data.username or len(form_data.username) > 254:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not security.verify_password(
         form_data.password, user.hashed_password

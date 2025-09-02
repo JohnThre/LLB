@@ -33,8 +33,13 @@ class DocumentProcessor:
             Extracted content and metadata
         """
         try:
-            if not os.path.exists(file_path):
-                raise FileNotFoundError(f"PDF file not found: {file_path}")
+            # Validate file path to prevent path traversal
+            normalized_path = os.path.normpath(file_path)
+            if '..' in normalized_path or not normalized_path.endswith('.pdf'):
+                raise ValueError(f"Invalid file path: {file_path}")
+            
+            if not os.path.exists(normalized_path):
+                raise FileNotFoundError(f"PDF file not found: {normalized_path}")
             
             # Check file size
             file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
@@ -45,7 +50,7 @@ class DocumentProcessor:
                 )
             
             # Open and read PDF
-            with open(file_path, 'rb') as file:
+            with open(normalized_path, 'rb') as file:
                 reader = PyPDF2.PdfReader(file)
                 
                 # Get metadata
@@ -123,10 +128,15 @@ class DocumentProcessor:
             Extracted content
         """
         try:
-            if not os.path.exists(file_path):
-                raise FileNotFoundError(f"Text file not found: {file_path}")
+            # Validate file path to prevent path traversal
+            normalized_path = os.path.normpath(file_path)
+            if '..' in normalized_path or not normalized_path.endswith('.txt'):
+                raise ValueError(f"Invalid file path: {file_path}")
             
-            with open(file_path, 'r', encoding='utf-8') as file:
+            if not os.path.exists(normalized_path):
+                raise FileNotFoundError(f"Text file not found: {normalized_path}")
+            
+            with open(normalized_path, 'r', encoding='utf-8') as file:
                 content = file.read()
             
             return {

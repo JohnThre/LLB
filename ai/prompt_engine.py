@@ -238,13 +238,16 @@ class PromptEngine:
         if "potential_safety_concern" in safety_flags:
             return self._get_safety_template(request.language)
         
-        # Handle cultural context
+        # Handle cultural context with validation
         if request.cultural_context:
-            template = self.language_prompts.get_culturally_appropriate_template(
-                topic, request.language, request.cultural_context
-            )
-            if template:
-                return template
+            # Validate cultural context against allowed values
+            allowed_contexts = ["chinese", "western", "henan"]
+            if request.cultural_context.lower() in allowed_contexts:
+                template = self.language_prompts.get_culturally_appropriate_template(
+                    topic, request.language, request.cultural_context
+                )
+                if template:
+                    return template
         
         # Get standard sexual health template
         lang_code = "en" if request.language.startswith("zh-CN-") else request.language
@@ -340,12 +343,14 @@ class PromptEngine:
             if topic_score > 0:
                 confidence += min(0.2, topic_score * 0.1)
         
-        # Increase confidence for cultural context match
+        # Increase confidence for cultural context match with validation
         if request.cultural_context and template:
-            confidence += 0.1
+            allowed_contexts = ["chinese", "western", "henan"]
+            if request.cultural_context.lower() in allowed_contexts:
+                confidence += 0.1
         
-        # Decrease confidence for safety flags
-        if request.context and "safety" in request.context:
+        # Decrease confidence based on server-side safety assessment only
+        if template and template.prompt_type == PromptType.SAFETY_CHECK:
             confidence -= 0.1
         
         return min(1.0, max(0.0, confidence))
@@ -357,6 +362,11 @@ class PromptEngine:
         category: str = "sexual_health"
     ) -> None:
         """Add a custom template to the appropriate category."""
+        
+        # Validate category against allowed values
+        allowed_categories = ["sexual_health", "language", "document"]
+        if category not in allowed_categories:
+            raise ValueError(f"Invalid category: {category}. Allowed: {allowed_categories}")
         
         if category == "sexual_health":
             self.sexual_health_prompts.add_custom_template(name, template)

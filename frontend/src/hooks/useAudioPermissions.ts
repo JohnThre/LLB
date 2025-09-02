@@ -61,98 +61,78 @@ export const useAudioPermissions = (
     }
   }, [onError, onPermissionDenied]);
 
-  const refreshCapabilities = useCallback(async () => {
+  const checkBrowserSupport = useCallback(() => {
     if (!isSupported) {
       const error = new AudioPermissionError(
         AudioErrorType.BROWSER_NOT_SUPPORTED,
         'Your browser does not support audio recording'
       );
       handleError(error);
-      return;
+      return false;
     }
+    return true;
+  }, [isSupported, handleError]);
 
+  const executeWithLoading = useCallback(async <T>(
+    action: () => Promise<T>,
+    setLastActionFn?: () => void
+  ): Promise<T | null> => {
     setIsLoading(true);
     setError(null);
+    if (setLastActionFn) setLastActionFn();
 
     try {
-      const caps = await getAudioCapabilities();
-      setCapabilities(caps);
-      
-      if (caps.hasPermission && onPermissionGranted) {
-        onPermissionGranted();
-      }
+      return await action();
     } catch (err) {
       handleError(err as AudioPermissionError | Error);
+      return null;
     } finally {
       setIsLoading(false);
     }
-  }, [isSupported, handleError, onPermissionGranted]);
+  }, [handleError]);
 
-  const requestPermission = useCallback(async (): Promise<boolean> => {
-    if (!isSupported) {
-      const error = new AudioPermissionError(
-        AudioErrorType.BROWSER_NOT_SUPPORTED,
-        'Your browser does not support audio recording'
-      );
-      handleError(error);
-      return false;
-    }
+  const refreshCapabilities = useCallback(async () => {
+    if (!checkBrowserSupport()) return;
 
-    setIsLoading(true);
-    setError(null);
-    setLastAction(() => requestPermission);
-
-    try {
-      const stream = await requestMicrophonePermission();
-      
-      // Stop the stream immediately as we only needed permission
-      stream.getTracks().forEach(track => track.stop());
-      
-      // Refresh capabilities to get updated permission status
-      await refreshCapabilities();
-      
-      if (onPermissionGranted) {
+    const caps = await executeWithLoading(async () => {
+      const result = await getAudioCapabilities();
+      setCapabilities(result);
+      if (result.hasPermission && onPermissionGranted) {
         onPermissionGranted();
       }
-      
+      return result;
+    });
+  }, [checkBrowserSupport, executeWithLoading, onPermissionGranted]);
+
+  const requestPermission = useCallback(async (): Promise<boolean> => {
+    if (!checkBrowserSupport()) return false;
+
+    const result = await executeWithLoading(async () => {
+      const stream = await requestMicrophonePermission();
+      stream.getTracks().forEach(track => track.stop());
+      await refreshCapabilities();
+      if (onPermissionGranted) onPermissionGranted();
       return true;
-    } catch (err) {
-      handleError(err as AudioPermissionError);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isSupported, handleError, onPermissionGranted, refreshCapabilities]);
+    }, () => setLastAction(() => requestPermission));
+
+    return result ?? false;
+  }, [checkBrowserSupport, executeWithLoading, refreshCapabilities, onPermissionGranted]);
 
   const testAudio = useCallback(async (): Promise<boolean> => {
-    if (!isSupported) {
-      const error = new AudioPermissionError(
-        AudioErrorType.BROWSER_NOT_SUPPORTED,
-        'Your browser does not support audio recording'
-      );
-      handleError(error);
-      return false;
-    }
-
+    if (!checkBrowserSupport()) return false;
+    
     if (!hasPermission) {
       const success = await requestPermission();
       if (!success) return false;
     }
 
-    setIsLoading(true);
-    setError(null);
-    setLastAction(() => testAudio);
+    const result = await executeWithLoading(
+      () => testMicrophone(),
+      () => setLastAction(() => testAudio)
+    );
 
-    try {
-      const result = await testMicrophone();
-      return result;
-    } catch (err) {
-      handleError(err as AudioPermissionError);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isSupported, hasPermission, requestPermission, handleError]);
+    return result ?? false;
+  }, [checkBrowserSupport, hasPermission, requestPermission, executeWithLoading]);
 
   const retryLastAction = useCallback(async () => {
     if (lastAction) {

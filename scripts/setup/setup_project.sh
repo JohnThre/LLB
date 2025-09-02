@@ -705,7 +705,12 @@ run_tests() {
     
     # Test AI modules
     cd $AI_DIR
-    source ../$BACKEND_DIR/$VENV_NAME/bin/activate
+    if [[ -f "../$BACKEND_DIR/$VENV_NAME/bin/activate" ]]; then
+        # shellcheck source=/dev/null
+        source "../$BACKEND_DIR/$VENV_NAME/bin/activate"
+    else
+        print_warning "Virtual environment not found for AI tests"
+    fi
     
     if [[ -d "tests" ]]; then
         print_status "Running AI module tests..."
