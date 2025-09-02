@@ -1,3 +1,1 @@
-"""
-AI Package for LLB Application.
-""" 
+# AI module for LLB sexual health education
