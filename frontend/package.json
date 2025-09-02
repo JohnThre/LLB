@@ -1,6 +1,9 @@
 {
   "name": "llb-frontend",
   "version": "0.1.0",
+  "description": "LLB - AI Sexual Health Education Frontend",
+  "author": "LLB Development Team",
+  "homepage": "https://github.com/your-org/LLB",
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
