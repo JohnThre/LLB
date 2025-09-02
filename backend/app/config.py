@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama2"
     
+    whisper_model_path: str = "./models/whisper"
+    
     database_url: str = "sqlite:///./llb.db"
     
     model_config = {
