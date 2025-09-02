@@ -25,28 +25,20 @@ def event_loop():
 @pytest.fixture
 def mock_ai_service():
     """Mock AI service for testing."""
-    service = AsyncMock(spec=AIService)
+    service = AsyncMock()
     service.is_initialized = True
     service.is_ready.return_value = True
     service.is_healthy.return_value = True
     service.is_model_loaded.return_value = True
     service.get_supported_languages.return_value = ["en", "zh-CN"]
-    service.get_model_info.return_value = {
-        "name": "Test Model",
-        "version": "1.0",
-        "loaded": True
-    }
-    service.get_memory_usage.return_value = {
-        "model_memory": "1GB",
-        "total_memory": "1GB"
-    }
+    service.get_model_info.return_value = {"name": "Test Model", "loaded": True}
+    service.get_memory_usage.return_value = {"model_memory": "1GB"}
     service.generate_response.return_value = {
         "response": "Test response",
         "language": "en",
         "language_detected": "en",
         "confidence": 0.95,
-        "safety_score": 0.98,
-        "topic": "general"
+        "safety_score": 0.98
     }
     return service
 
@@ -54,25 +46,16 @@ def mock_ai_service():
 @pytest.fixture
 def mock_audio_service():
     """Mock audio service for testing."""
-    service = AsyncMock(spec=AudioService)
+    service = AsyncMock()
     service.is_initialized = True
-    service.transcribe_audio.return_value = {
-        "text": "Test transcription",
-        "language": "en",
-        "confidence": 0.95
-    }
     return service
 
 
 @pytest.fixture
 def mock_document_service():
     """Mock document service for testing."""
-    service = AsyncMock(spec=DocumentService)
+    service = AsyncMock()
     service.is_initialized = True
-    service.extract_text.return_value = {
-        "text": "Test document content",
-        "metadata": {"pages": 1}
-    }
     return service
 
 

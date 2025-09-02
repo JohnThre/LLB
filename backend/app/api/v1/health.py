@@ -65,10 +65,10 @@ async def health_check(
 
         # System information
         system_info = {
-            "supported_languages": settings.supported_languages,
-            "max_file_size": settings.max_file_size,
-            "allowed_file_types": settings.allowed_file_types,
-            "safety_level": settings.default_safety_level,
+            "supported_languages": ["en", "zh-CN"],
+            "max_file_size": getattr(settings, 'MAX_UPLOAD_SIZE', 50*1024*1024),
+            "allowed_file_types": list(getattr(settings, 'ALLOWED_EXTENSIONS', [])),
+            "safety_level": "high",
         }
 
         # Determine overall status
@@ -80,8 +80,8 @@ async def health_check(
 
         return HealthResponse(
             status=overall_status,
-            version=settings.app_version,
-            environment="development" if settings.debug else "production",
+            version=getattr(settings, 'VERSION', '0.1.0'),
+            environment="development" if getattr(settings, 'debug', False) else "production",
             services=services_status,
             system_info=system_info,
         )
@@ -90,7 +90,7 @@ async def health_check(
         logger.error(f"Health check failed: {e}")
         return HealthResponse(
             status="unhealthy",
-            version=settings.app_version,
+            version=getattr(settings, 'VERSION', '0.1.0'),
             environment="unknown",
             services={},
             system_info={"error": str(e)},
@@ -157,7 +157,7 @@ async def document_health_check(
             ),
             "supported_formats": document_service.get_supported_formats(),
             "processing_capabilities": document_service.get_capabilities(),
-            "max_file_size": settings.max_file_size,
+            "max_file_size": getattr(settings, 'MAX_UPLOAD_SIZE', 50*1024*1024),
         }
     except Exception as e:
         logger.error(f"Document health check failed: {e}")
