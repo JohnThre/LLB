@@ -17,19 +17,62 @@ interface User {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const isDevelopmentAuthEnabled = () => import.meta.env.DEV || import.meta.env.MODE === "test";
+
+const createDevelopmentUser = (): User => ({
+  id: "1",
+  email: "dev@llb.com",
+  name: "Development User",
+});
+
+const getBrowserStorage = (): Storage | null => {
+  if (typeof localStorage === "undefined") return null;
+  return localStorage;
+};
+
+const getInitialAuthState = (): Pick<AuthContextType, "isAuthenticated" | "user"> => {
+  const storage = getBrowserStorage();
+  const token = typeof storage?.getItem === "function" ? storage.getItem("auth_token") : null;
+
+  if (token) {
+    return {
+      isAuthenticated: true,
+      user: {
+        id: "1",
+        email: "user@example.com",
+        name: "Test User",
+      },
+    };
+  }
+
+  if (isDevelopmentAuthEnabled()) {
+    if (typeof storage?.setItem === "function") {
+      storage.setItem("auth_token", "dev_token");
+    }
+    return {
+      isAuthenticated: true,
+      user: createDevelopmentUser(),
+    };
+  }
+
+  return { isAuthenticated: false, user: null };
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const initialAuthState = React.useMemo(() => getInitialAuthState(), []);
+  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthState.isAuthenticated);
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(initialAuthState.user);
   const { t } = useTranslation();
 
   useEffect(() => {
     // Check for existing session
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem("auth_token");
+        const storage = getBrowserStorage();
+        const token = typeof storage?.getItem === "function" ? storage.getItem("auth_token") : null;
         if (token) {
           // TODO: Validate token with backend
           setIsAuthenticated(true);
@@ -39,15 +82,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             email: "user@example.com",
             name: "Test User",
           });
-        } else if (process.env.NODE_ENV === 'development') {
+        } else if (isDevelopmentAuthEnabled()) {
           // Auto-login for development only
-          localStorage.setItem("auth_token", "dev_token");
+          if (typeof storage?.setItem === "function") {
+            storage.setItem("auth_token", "dev_token");
+          }
           setIsAuthenticated(true);
-          setUser({
-            id: "1",
-            email: "dev@llb.com",
-            name: "Development User",
-          });
+          setUser(createDevelopmentUser());
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
         }
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -65,7 +109,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // TODO: Implement actual login API call
       // For now, simulate successful login
       const mockToken = "mock_token";
-      localStorage.setItem("auth_token", mockToken);
+      const storage = getBrowserStorage();
+      if (typeof storage?.setItem === "function") {
+        storage.setItem("auth_token", mockToken);
+      }
       setIsAuthenticated(true);
       setUser({
         id: "1",
@@ -84,7 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       setIsLoading(true);
       // TODO: Implement actual logout API call
-      localStorage.removeItem("auth_token");
+      const storage = getBrowserStorage();
+      if (typeof storage?.removeItem === "function") {
+        storage.removeItem("auth_token");
+      }
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {

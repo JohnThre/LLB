@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database (Development)
   db:
     image: postgres:15-alpine
-    platform: linux/amd64,linux/arm64
     container_name: llb_db_dev
     environment:
       - POSTGRES_DB=llb_db_dev
@@ -12,7 +9,6 @@ services:
       - POSTGRES_PASSWORD=llb_password
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
     networks:
@@ -21,7 +17,6 @@ services:
   # Redis Cache (Development)
   redis:
     image: redis:7-alpine
-    platform: linux/amd64,linux/arm64
     container_name: llb_redis_dev
     ports:
       - "6380:6379"
@@ -60,7 +55,7 @@ services:
       - redis
     networks:
       - llb_dev_network
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
@@ -77,8 +72,8 @@ services:
         - linux/arm64
     container_name: llb_frontend_dev
     environment:
-      - REACT_APP_API_URL=http://localhost:8001/api
-      - REACT_APP_ENVIRONMENT=development
+      - VITE_API_URL=http://localhost:8001
+      - VITE_ENVIRONMENT=development
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     volumes:
@@ -90,7 +85,7 @@ services:
       - backend
     networks:
       - llb_dev_network
-    command: npm start
+    command: npm run dev -- --host 0.0.0.0 --port 3000
     stdin_open: true
     tty: true
 

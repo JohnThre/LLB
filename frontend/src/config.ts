@@ -1,6 +1,10 @@
 // API Configuration
-export const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:8000";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+export const apiUrl = (path: string): string => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE_URL}${normalizedPath}`;
+};
 
 // File Upload Configuration
 export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB

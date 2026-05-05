@@ -18,8 +18,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api import deps
 from app.api import ai
+from app.api import files
 from app.api.v1 import health
-from app.api.v1.endpoints import chat
 from app.api.v1 import api
 from app.core.config import settings
 from app.core.exceptions import LLBException, LLBHTTPException
@@ -134,6 +134,7 @@ def create_app() -> FastAPI:
     app.include_router(api.api_router, prefix="/api/v1")
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
     app.include_router(ai.router, tags=["ai"])
+    app.include_router(files.router)
     app.include_router(voice_router, prefix="/api/v1", tags=["voice"])
     app.include_router(documents_router, prefix="/api/v1", tags=["documents"])
 

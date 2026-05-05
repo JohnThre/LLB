@@ -100,7 +100,7 @@ ai/models/simple_fine_tuned/
 ai/models/gemma3-keras-*/
 ai/cache/
 ai/temp/
-models/
+/models/
 checkpoints/
 
 # Database
@@ -117,6 +117,9 @@ next-env.d.ts
 # Testing
 coverage/
 .nyc_output/
+backend/requirements-freeze.txt
+backend/coverage.xml
+backend/test-results.xml
 
 # Large files and artifacts
 *.tar.gz
@@ -130,10 +133,10 @@ logs/
 # Unusual artifact files (these look like pip install errors)
 =*.*.*
 
-# Prevent test files in root directory
-test_*.py
-*_test.py
-*_test_*.py
+# Prevent ad hoc test files in root directory
+/test_*.py
+/*_test.py
+/*_test_*.py
 
 # Prevent report files in root directory
 *_report.json
@@ -146,3 +149,6 @@ test_*.py
 debug_*.py
 fix_*.py
 temp_*.py 
+
+# Local tooling
+.superpowers/

@@ -34,6 +34,7 @@ import {
   SignalWifiOff,
 } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
+import { API_BASE_URL, apiUrl } from "../../config";
 
 interface StreamingVoiceChatProps {
   onTranscriptionComplete: (text: string) => void;
@@ -118,9 +119,9 @@ const StreamingVoiceChat = forwardRef<StreamingVoiceChatRef, StreamingVoiceChatP
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioChunksRef = useRef<AudioChunk[]>([]);
   const chunkIndexRef = useRef(0);
-  const recordingTimerRef = useRef<number | null>(null);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const reconnectTimeoutRef = useRef<number | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const theme = useTheme();
 
@@ -160,7 +161,7 @@ const StreamingVoiceChat = forwardRef<StreamingVoiceChatRef, StreamingVoiceChatP
       setConnectionError(null);
 
       // Create streaming session
-      const response = await fetch("/api/v1/audio-streaming/sessions", {
+      const response = await fetch(apiUrl("/api/v1/audio-streaming/sessions"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -176,8 +177,9 @@ const StreamingVoiceChat = forwardRef<StreamingVoiceChatRef, StreamingVoiceChatP
       const sessionId = data.session_id;
 
       // Create WebSocket connection
-      const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${wsProtocol}//${window.location.host}/api/v1/audio-streaming/ws/${sessionId}`;
+      const apiBase = new URL(API_BASE_URL);
+      const wsProtocol = apiBase.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${wsProtocol}//${apiBase.host}/api/v1/audio-streaming/ws/${sessionId}`;
       
       const websocket = new WebSocket(wsUrl);
 
@@ -238,7 +240,7 @@ const StreamingVoiceChat = forwardRef<StreamingVoiceChatRef, StreamingVoiceChatP
       }
 
       // Close session on server
-      await fetch(`/api/v1/audio-streaming/sessions/${session.sessionId}`, {
+      await fetch(apiUrl(`/api/v1/audio-streaming/sessions/${session.sessionId}`), {
         method: "DELETE",
       });
 
