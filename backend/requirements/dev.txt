@@ -30,14 +30,13 @@ jupyter==1.0.0
 notebook==7.0.6
 
 # Debugging
-pdb++==0.10.3
 ipdb==0.13.13
 debugpy==1.8.0
 
 # Performance Profiling
 py-spy==0.3.14
 memory-profiler==0.61.0
-line-profiler==4.1.1
+line-profiler==5.0.2
 
 # API Testing
 requests==2.31.0

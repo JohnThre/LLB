@@ -24,6 +24,7 @@ import { Button } from "../common/Button";
 import VoiceInput from "../common/VoiceInput";
 import { useTranslation } from "react-i18next";
 import { bauhausColors } from "../../theme";
+import { apiUrl } from "../../config";
 
 interface Message {
   role: "user" | "assistant";
@@ -41,7 +42,7 @@ export const Chat: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView?.({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export const Chat: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("/api/v1/chat", {
+      const response = await fetch(apiUrl("/api/v1/chat"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,6 +131,7 @@ export const Chat: React.FC = () => {
 
   return (
     <Box 
+      data-testid="chat-container"
       sx={{ 
         height: "100%", 
         display: "flex", 
@@ -210,6 +212,7 @@ export const Chat: React.FC = () => {
 
       {/* Messages Area */}
       <Box
+        data-testid="chat-messages"
         sx={{
           flex: 1,
           overflow: "auto",
@@ -502,6 +505,7 @@ export const Chat: React.FC = () => {
           </Tooltip>
           
           <Button
+            aria-label={t("chat.send", "Send")}
             variant="contained"
             onClick={() => handleSend(input)}
             disabled={isLoading || !input.trim()}
@@ -546,3 +550,5 @@ export const Chat: React.FC = () => {
     </Box>
   );
 };
+
+export default Chat;

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { Mic, Stop, Delete } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
+import { apiUrl } from "../../config";
 
 interface VoiceInputProps {
   onTranscriptionComplete: (text: string) => void;
@@ -53,7 +54,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
         }
 
         // Send to backend
-        fetch("/api/ai/transcribe", {
+        fetch(apiUrl("/api/ai/transcribe"), {
           method: "POST",
           body: formData,
         })

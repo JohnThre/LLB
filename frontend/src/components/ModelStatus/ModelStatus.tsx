@@ -19,8 +19,9 @@ import {
   Warning as WarningIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { apiUrl } from "../../config";
 
-interface ModelStatus {
+interface ModelStatusState {
   status: "loading" | "ready" | "error";
   modelName: string;
   lastUpdated?: string;
@@ -31,7 +32,7 @@ interface ModelStatus {
 
 export const ModelStatus: React.FC = () => {
   const { t } = useTranslation();
-  const [modelStatus, setModelStatus] = useState<ModelStatus>({
+  const [modelStatus, setModelStatus] = useState<ModelStatusState>({
     status: "loading",
     modelName: "Gemma 3 1B",
   });
@@ -40,7 +41,7 @@ export const ModelStatus: React.FC = () => {
   const fetchStatus = async () => {
     try {
       setIsRefreshing(true);
-      const response = await fetch("/api/ai/model/status");
+      const response = await fetch(apiUrl("/api/ai/model/status"));
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

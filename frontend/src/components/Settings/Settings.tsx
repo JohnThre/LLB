@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Button } from "../common/Button";
+import { apiUrl } from "../../config";
 
 interface ModelSettings {
   temperature: number;
@@ -32,7 +33,7 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch("/api/ai/model/settings");
+        const response = await fetch(apiUrl("/api/ai/model/settings"));
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -48,7 +49,7 @@ export const Settings: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch("/api/ai/model/settings", {
+      const response = await fetch(apiUrl("/api/ai/model/settings"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

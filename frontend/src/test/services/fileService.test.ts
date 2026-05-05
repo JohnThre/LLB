@@ -30,7 +30,8 @@ describe('File Service', () => {
 
     it('validates file size limits', () => {
       const smallFile = new File(['x'.repeat(1000)], 'small.pdf', { type: 'application/pdf' })
-      const largeFile = new File(['x'.repeat(60 * 1024 * 1024)], 'large.pdf', { type: 'application/pdf' })
+      const largeFile = new File(['content'], 'large.pdf', { type: 'application/pdf' })
+      Object.defineProperty(largeFile, 'size', { value: 60 * 1024 * 1024 })
       
       expect(validateFile(smallFile)).toBe(true)
       expect(validateFile(largeFile)).toBe(false)

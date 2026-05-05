@@ -5,7 +5,7 @@ Chat endpoints for AI conversations.
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.api.deps import get_ai_service
 from app.core.logging import get_logger
@@ -18,7 +18,7 @@ router = APIRouter()
 class ChatMessage(BaseModel):
     """Chat message model."""
 
-    message: str
+    message: str = Field(..., min_length=1)
     language: Optional[str] = "en"
     context: Optional[Dict[str, Any]] = None
     cultural_context: Optional[str] = None

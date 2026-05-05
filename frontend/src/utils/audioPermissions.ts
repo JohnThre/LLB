@@ -232,45 +232,41 @@ export async function testMicrophone(
   deviceId?: string,
   duration: number = 1000
 ): Promise<boolean> {
-  try {
-    const constraints: MediaStreamConstraints = {
-      audio: deviceId ? { deviceId: { exact: deviceId } } : true
+  const constraints: MediaStreamConstraints = {
+    audio: deviceId ? { deviceId: { exact: deviceId } } : true
+  };
+
+  const stream = await requestMicrophonePermission(constraints);
+  
+  // Test recording for a short duration
+  const mediaRecorder = new MediaRecorder(stream);
+  let hasData = false;
+
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      mediaRecorder.stop();
+      stream.getTracks().forEach(track => track.stop());
+      resolve(hasData);
+    }, duration);
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        hasData = true;
+      }
     };
 
-    const stream = await requestMicrophonePermission(constraints);
-    
-    // Test recording for a short duration
-    const mediaRecorder = new MediaRecorder(stream);
-    let hasData = false;
+    mediaRecorder.onerror = (error) => {
+      clearTimeout(timeout);
+      stream.getTracks().forEach(track => track.stop());
+      reject(new AudioPermissionError(
+        AudioErrorType.HARDWARE_ERROR,
+        'Microphone test failed',
+        error.error
+      ));
+    };
 
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        mediaRecorder.stop();
-        stream.getTracks().forEach(track => track.stop());
-        resolve(hasData);
-      }, duration);
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          hasData = true;
-        }
-      };
-
-      mediaRecorder.onerror = (error) => {
-        clearTimeout(timeout);
-        stream.getTracks().forEach(track => track.stop());
-        reject(new AudioPermissionError(
-          AudioErrorType.HARDWARE_ERROR,
-          'Microphone test failed',
-          error.error
-        ));
-      };
-
-      mediaRecorder.start();
-    });
-  } catch (error) {
-    throw error;
-  }
+    mediaRecorder.start();
+  });
 }
 
 /**

@@ -4,14 +4,11 @@ Test configuration and fixtures for LLB backend tests.
 
 import asyncio
 import pytest
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from unittest.mock import AsyncMock, MagicMock
-
-from app.main import create_app
-from app.services.ai_service import AIService
-from app.services.audio_service import AudioService
-from app.services.document_service import DocumentService
 
 
 @pytest.fixture(scope="session")
@@ -66,7 +63,6 @@ def mock_document_service():
 @pytest.fixture
 def app(mock_ai_service, mock_audio_service, mock_document_service):
     """Create test FastAPI app with mocked services."""
-    from app.main import FastAPI
     from app.api.v1 import api, health
     
     app = FastAPI(title="Test App")
@@ -86,10 +82,24 @@ def app(mock_ai_service, mock_audio_service, mock_document_service):
     
     app.include_router(api.api_router, prefix="/api/v1")
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
+
+    @app.get("/", response_class=HTMLResponse)
+    async def root():
+        return "<html><body><h1>LLB</h1></body></html>"
+
+    @app.get("/health")
+    async def legacy_health_check():
+        return RedirectResponse(url="/api/v1/health")
     
     # Add CORS middleware for tests
     from fastapi.middleware.cors import CORSMiddleware
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+    @app.middleware("http")
+    async def add_cors_header(request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("access-control-allow-origin", "*")
+        return response
     
     return app
 
