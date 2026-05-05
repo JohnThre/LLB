@@ -1,5 +1,5 @@
 # Multi-stage build for Python FastAPI backend
-FROM --platform=$BUILDPLATFORM python:3.11-slim as builder
+FROM --platform=$BUILDPLATFORM python:3.13-slim as builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -21,7 +21,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Production stage
-FROM --platform=$TARGETPLATFORM python:3.11-slim as production
+FROM --platform=$TARGETPLATFORM python:3.13-slim as production
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy Python packages from builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
