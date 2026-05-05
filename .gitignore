@@ -132,10 +132,10 @@ logs/
 # Unusual artifact files (these look like pip install errors)
 =*.*.*
 
-# Prevent test files in root directory
-test_*.py
-*_test.py
-*_test_*.py
+# Prevent ad hoc test files in root directory
+/test_*.py
+/*_test.py
+/*_test_*.py
 
 # Prevent report files in root directory
 *_report.json
