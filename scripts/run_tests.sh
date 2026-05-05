@@ -35,29 +35,18 @@ fi
 
 # Backend Tests
 print_status "Running Backend Tests..."
-cd backend
-
-# Check if virtual environment exists
-if [ ! -d "llb-env" ]; then
-    print_warning "Virtual environment not found. Creating one..."
-    python3.11 -m venv llb-env
-fi
-
-# Activate virtual environment
-source llb-env/bin/activate
-
-# Install test dependencies
-print_status "Installing test dependencies..."
-pip install -r requirements/test.txt > /dev/null 2>&1
+BACKEND_PYTHON=$(./scripts/ensure_backend_env.sh backend/requirements/test.txt)
 
 # Run backend tests
 print_status "Executing backend test suite..."
-python -m pytest tests/ \
+cd backend
+mkdir -p .pytest_cache
+"$BACKEND_PYTHON" -m pytest tests/ \
     --verbose \
     --cov=app \
     --cov-report=term-missing \
     --cov-report=html:htmlcov \
-    --junit-xml=test-results.xml
+    --junit-xml=.pytest_cache/test-results.xml
 
 BACKEND_EXIT_CODE=$?
 
@@ -66,9 +55,6 @@ if [ $BACKEND_EXIT_CODE -eq 0 ]; then
 else
     print_error "❌ Backend tests failed!"
 fi
-
-# Deactivate virtual environment
-deactivate
 
 cd ..
 

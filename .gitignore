@@ -117,6 +117,8 @@ next-env.d.ts
 # Testing
 coverage/
 .nyc_output/
+backend/requirements-freeze.txt
+backend/test-results.xml
 
 # Large files and artifacts
 *.tar.gz
@@ -146,3 +148,6 @@ test_*.py
 debug_*.py
 fix_*.py
 temp_*.py 
+
+# Local tooling
+.superpowers/

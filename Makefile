@@ -1,8 +1,9 @@
 .PHONY: dev test build clean build-arm64 dev-arm64
 
 dev:
+	@./scripts/ensure_backend_env.sh backend/requirements/dev.txt >/dev/null
 	@trap 'kill 0' INT; \
-	(cd backend && . llb-env/bin/activate && python -m uvicorn app.main:app --reload --port 8000) & \
+	(cd backend && ./llb-env/bin/python -m uvicorn app.main:app --reload --port 8000) & \
 	(cd frontend && npm run dev --port 3000) & \
 	wait
 
@@ -12,7 +13,8 @@ test:
 
 test-backend:
 	@echo "🧪 Running backend tests..."
-	cd backend && . llb-env/bin/activate && python -m pytest tests/ -v --cov=app
+	@./scripts/ensure_backend_env.sh backend/requirements/test.txt >/dev/null
+	cd backend && ./llb-env/bin/python -m pytest tests/ -v --cov=app
 
 test-frontend:
 	@echo "🧪 Running frontend tests..."
@@ -20,14 +22,16 @@ test-frontend:
 
 test-watch:
 	@echo "👀 Running tests in watch mode..."
+	@./scripts/ensure_backend_env.sh backend/requirements/test.txt >/dev/null
 	@trap 'kill 0' INT; \
-	(cd backend && . llb-env/bin/activate && python -m pytest tests/ -v --cov=app -f) & \
+	(cd backend && ./llb-env/bin/python -m pytest tests/ -v --cov=app -f) & \
 	(cd frontend && npm test) & \
 	wait
 
 test-coverage:
 	@echo "📊 Generating test coverage reports..."
-	cd backend && . llb-env/bin/activate && python -m pytest tests/ --cov=app --cov-report=html:htmlcov
+	@./scripts/ensure_backend_env.sh backend/requirements/test.txt >/dev/null
+	cd backend && ./llb-env/bin/python -m pytest tests/ --cov=app --cov-report=html:htmlcov
 	cd frontend && npm test -- --run --coverage
 	@echo "Coverage reports generated:"
 	@echo "- Backend: backend/htmlcov/index.html"
@@ -35,7 +39,8 @@ test-coverage:
 
 build:
 	cd frontend && npm run build
-	cd backend && . llb-env/bin/activate && pip freeze > requirements-freeze.txt
+	@./scripts/ensure_backend_env.sh backend/requirements/dev.txt >/dev/null
+	cd backend && ./llb-env/bin/python -m pip freeze > requirements-freeze.txt
 
 build-arm64:
 	docker buildx build --platform linux/arm64 -t llb-backend:arm64 ./backend

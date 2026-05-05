@@ -6,12 +6,13 @@ import os
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from loguru import logger
 
 from ..core.config import Settings
+from ..core.logging import get_logger
 from ..core.storage import StorageService
 
 settings = Settings()
+logger = get_logger(__name__)
 router = APIRouter(prefix="/api/files", tags=["Files"])
 
 # Initialize storage service

@@ -6,13 +6,15 @@ import {
 import { styled } from "@mui/material/styles";
 import { bauhausColors } from "../../theme";
 
-interface ButtonProps extends MuiButtonProps {
-  variant?: "contained" | "outlined" | "text";
+type ButtonVisualVariant = "contained" | "outlined" | "text" | "primary" | "secondary";
+
+interface ButtonProps extends Omit<MuiButtonProps, "variant" | "color" | "size"> {
+  variant?: ButtonVisualVariant;
   color?: "primary" | "secondary" | "success" | "error";
   size?: "small" | "medium" | "large";
 }
 
-const StyledButton = styled(MuiButton)(({ theme, variant, color }) => ({
+const StyledButton = styled(MuiButton)(({ variant, color }) => ({
   borderRadius: 0,
   textTransform: "uppercase",
   fontWeight: 700,
@@ -25,7 +27,6 @@ const StyledButton = styled(MuiButton)(({ theme, variant, color }) => ({
     backgroundColor: color === "secondary" ? bauhausColors.red : bauhausColors.blue,
     color: bauhausColors.white,
     "&:hover": {
-      boxShadow: "none",
       backgroundColor: bauhausColors.black,
       transform: "translate(-2px, -2px)",
       boxShadow: `4px 4px 0px ${bauhausColors.gray[300]}`,
@@ -83,10 +84,21 @@ const Button = ({
   variant = "contained",
   color = "primary",
   size = "medium",
+  className,
   ...props
 }: ButtonProps) => {
+  const semanticColor = variant === "secondary" ? "secondary" : color;
+  const muiVariant = variant === "primary" || variant === "secondary" ? "contained" : variant;
+  const classes = [className, variant, size].filter(Boolean).join(" ");
+
   return (
-    <StyledButton variant={variant} color={color} size={size} {...props}>
+    <StyledButton
+      variant={muiVariant}
+      color={semanticColor}
+      size={size}
+      className={classes}
+      {...props}
+    >
       {children}
     </StyledButton>
   );

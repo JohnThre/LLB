@@ -1,6 +1,20 @@
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 
+// Default network stub for component tests. Individual service tests override this.
+vi.stubGlobal('fetch', vi.fn(async () => ({
+  ok: true,
+  status: 200,
+  json: async () => ({
+    response: 'Test response',
+    status: 'ready',
+    modelName: 'Gemma 3 1B',
+    memoryUsage: 0,
+    responseTime: 0,
+    version: 'test',
+  }),
+})))
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

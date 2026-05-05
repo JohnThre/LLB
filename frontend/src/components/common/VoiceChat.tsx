@@ -27,6 +27,7 @@ import {
   AudioErrorType,
   requestMicrophonePermission,
 } from "../../utils/audioPermissions";
+import { apiUrl } from "../../config";
 
 interface VoiceChatProps {
   onTranscriptionComplete: (text: string) => void;
@@ -84,9 +85,7 @@ const VoiceChat = forwardRef<VoiceChatRef, VoiceChatProps>(({
       console.log('Microphone permission granted');
     },
     onPermissionDenied: (error: AudioPermissionError) => {
-      const sanitizedError = typeof error === 'string' 
-        ? error.replace(/[\r\n\t]/g, ' ').substring(0, 200)
-        : String(error).replace(/[\r\n\t]/g, ' ').substring(0, 200);
+      const sanitizedError = String(error).replace(/[\r\n\t]/g, ' ').substring(0, 200);
       console.warn('Microphone permission denied:', sanitizedError);
     },
   }), []);
@@ -158,7 +157,7 @@ const VoiceChat = forwardRef<VoiceChatRef, VoiceChatProps>(({
         }
 
         // Send to backend for transcription
-        fetch("/api/ai/transcribe", {
+        fetch(apiUrl("/api/ai/transcribe"), {
           method: "POST",
           body: formData,
         })
@@ -232,7 +231,7 @@ const VoiceChat = forwardRef<VoiceChatRef, VoiceChatProps>(({
       setTranscriptionError(null);
       setIsGeneratingTTS(true);
 
-      const response = await fetch("/api/ai/text-to-speech", {
+      const response = await fetch(apiUrl("/api/ai/text-to-speech"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
