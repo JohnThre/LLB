@@ -100,7 +100,7 @@ ai/models/simple_fine_tuned/
 ai/models/gemma3-keras-*/
 ai/cache/
 ai/temp/
-models/
+/models/
 checkpoints/
 
 # Database
@@ -118,6 +118,7 @@ next-env.d.ts
 coverage/
 .nyc_output/
 backend/requirements-freeze.txt
+backend/coverage.xml
 backend/test-results.xml
 
 # Large files and artifacts
