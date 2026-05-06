@@ -1,6 +1,6 @@
 """
 LLB Backend API - Main FastAPI application
-Provides REST API endpoints for sexual health education with Gemma 3 1B
+Provides REST API endpoints for source-backed sexual health education with a Gemma 4-derived model
 """
 
 import os
@@ -267,4 +267,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
         log_level="info"
-    ) 
+    )

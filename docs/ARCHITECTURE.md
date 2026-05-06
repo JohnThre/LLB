@@ -2,7 +2,7 @@
 
 ## System Overview
 
-LLB (爱学伴) is a local AI-driven sexual health education system built with privacy-first principles. The system uses Google's Gemma 3 1B model for natural language processing while maintaining complete data privacy through local processing.
+LLB (爱学伴) is a local AI-driven sexual health education system built with privacy-first principles. The system uses a configurable health-tuned model based on Google Gemma 4 and gates answers through approved, reviewable literature.
 
 ## Architecture Diagram
 
@@ -27,7 +27,8 @@ graph TB
     end
     
     subgraph "AI Processing Layer"
-        AI --> GEMMA[Gemma 3 1B Model]
+        AI --> GEMMA[Gemma 4 Health-Tuned Model]
+        CHAT --> LIT[Approved Literature Registry]
         AI --> WHISPER[Whisper ASR]
         AI --> PROMPT[Prompt Engineering]
         AUDIO --> WHISPER
@@ -56,7 +57,7 @@ graph TB
 - **State Management**: Redux Toolkit
 - **UI Library**: Material-UI (MUI)
 - **Styling**: Emotion + Bauhaus Design System
-- **Internationalization**: i18next (English/Chinese)
+- **Internationalization**: i18next (English/Simplified Chinese)
 - **Testing**: Vitest + React Testing Library
 
 ### Backend (FastAPI + Python)
@@ -68,7 +69,8 @@ graph TB
 - **API Documentation**: OpenAPI/Swagger
 
 ### AI Processing
-- **Primary Model**: Google Gemma 3 1B (local)
+- **Primary Model**: Google Gemma 4 health-tuned model (local configurable artifact)
+- **Answer Grounding**: Approved literature registry with citations
 - **Speech Recognition**: OpenAI Whisper
 - **Document Processing**: PyPDF2, pdfplumber
 - **Fallback APIs**: OpenAI, Anthropic, Google Gemini

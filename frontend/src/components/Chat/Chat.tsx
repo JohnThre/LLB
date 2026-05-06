@@ -12,6 +12,9 @@ import {
   Tooltip,
   Chip,
   LinearProgress,
+  Drawer,
+  Divider,
+  Link,
 } from "@mui/material";
 import {
   Send as SendIcon,
@@ -30,6 +33,19 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  citations?: Citation[];
+}
+
+interface Citation {
+  id: string;
+  title: string;
+  publisher: string;
+  language: string;
+  source_type: string;
+  url: string;
+  excerpt: string;
+  doi?: string | null;
+  pmid?: string | null;
 }
 
 export const Chat: React.FC = () => {
@@ -38,6 +54,8 @@ export const Chat: React.FC = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [activeCitations, setActiveCitations] = useState<Citation[]>([]);
+  const [sourceDrawerOpen, setSourceDrawerOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -48,6 +66,8 @@ export const Chat: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const chatLanguage = () => ((i18n.language || "en").startsWith("zh") ? "zh-CN" : "en");
 
   const handleSend = async (messageContent: string) => {
     if (!messageContent.trim()) return;
@@ -69,9 +89,9 @@ export const Chat: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message: messageContent.trim(),
-          language: i18n.language,
+          language: chatLanguage(),
           cultural_context: "mainland_china"
         }),
       });
@@ -88,6 +108,7 @@ export const Chat: React.FC = () => {
           role: "assistant",
           content: data.response,
           timestamp: new Date(),
+          citations: data.citations || [],
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
@@ -127,6 +148,18 @@ export const Chat: React.FC = () => {
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const citationLabel = (citation: Citation) => {
+    if (citation.publisher.includes("Centers for Disease Control")) return "CDC";
+    if (citation.publisher.includes("国家卫生健康")) return "国家卫健委";
+    if (citation.publisher.includes("中国疾病预防")) return "中国疾控";
+    return citation.publisher;
+  };
+
+  const openSources = (citations: Citation[]) => {
+    setActiveCitations(citations);
+    setSourceDrawerOpen(true);
   };
 
   return (
@@ -326,6 +359,25 @@ export const Chat: React.FC = () => {
                   >
                     {formatTime(message.timestamp)}
                   </Typography>
+                  {message.role === "assistant" && message.citations && message.citations.length > 0 && (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+                      {message.citations.map((citation) => (
+                        <Chip
+                          key={citation.id}
+                          label={citationLabel(citation)}
+                          size="small"
+                          onClick={() => openSources(message.citations || [])}
+                          sx={{
+                            borderRadius: 0,
+                            border: `1px solid ${bauhausColors.black}`,
+                            backgroundColor: bauhausColors.yellow,
+                            color: bauhausColors.black,
+                            fontWeight: 700,
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  )}
                 </Paper>
               </Box>
 
@@ -547,6 +599,53 @@ export const Chat: React.FC = () => {
           </Button>
         </Box>
       </Paper>
+
+      <Drawer
+        anchor="right"
+        open={sourceDrawerOpen}
+        onClose={() => setSourceDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            width: { xs: "100%", sm: 420 },
+            p: 3,
+            borderLeft: `4px solid ${bauhausColors.blue}`,
+          },
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+          {t("chat.sources", "Sources")}
+        </Typography>
+        {activeCitations.map((citation, index) => (
+          <Box key={citation.id} sx={{ mb: 3 }}>
+            {index > 0 && <Divider sx={{ mb: 3 }} />}
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              {citation.title}
+            </Typography>
+            <Typography variant="body2" sx={{ color: bauhausColors.gray[700], mb: 1 }}>
+              {citation.publisher}
+            </Typography>
+            <Typography variant="caption" sx={{ color: bauhausColors.gray[700], mb: 1, display: "block" }}>
+              {citation.source_type}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.6 }}>
+              {citation.excerpt}
+            </Typography>
+            {citation.pmid && (
+              <Typography variant="caption" sx={{ display: "block", mb: 0.5 }}>
+                PMID: {citation.pmid}
+              </Typography>
+            )}
+            {citation.doi && (
+              <Typography variant="caption" sx={{ display: "block", mb: 0.5 }}>
+                DOI: {citation.doi}
+              </Typography>
+            )}
+            <Link href={citation.url} target="_blank" rel="noopener noreferrer">
+              {citation.url}
+            </Link>
+          </Box>
+        ))}
+      </Drawer>
     </Box>
   );
 };

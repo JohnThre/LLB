@@ -179,14 +179,14 @@ async def get_model_status():
         # Return mock status for now
         return ModelStatusResponse(
             status="ready",
-            modelName="Gemma 3 1B",
+            modelName="Gemma 4 Health Tuned",
             lastUpdated=None
         )
     except Exception as e:
         logger.error(f"Model status check error: {str(e)}")
         return ModelStatusResponse(
             status="error",
-            modelName="Gemma 3 1B",
+            modelName="Gemma 4 Health Tuned",
             lastUpdated=None
         )
 

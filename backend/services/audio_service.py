@@ -180,8 +180,6 @@ class AudioService:
     def get_supported_languages(self) -> list:
         """Get supported languages for speech recognition."""
         return [
-            {"code": "en-US", "name": "English (US)"},
-            {"code": "en-GB", "name": "English (UK)"},
+            {"code": "en", "name": "English"},
             {"code": "zh-CN", "name": "Chinese (Simplified)"},
-            {"code": "zh-TW", "name": "Chinese (Traditional)"}
-        ] 
+        ]

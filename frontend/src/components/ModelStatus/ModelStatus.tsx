@@ -34,7 +34,7 @@ export const ModelStatus: React.FC = () => {
   const { t } = useTranslation();
   const [modelStatus, setModelStatus] = useState<ModelStatusState>({
     status: "loading",
-    modelName: "Gemma 3 1B",
+    modelName: "Gemma 4 Health Tuned",
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
 

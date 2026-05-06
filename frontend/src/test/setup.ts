@@ -8,7 +8,7 @@ vi.stubGlobal('fetch', vi.fn(async () => ({
   json: async () => ({
     response: 'Test response',
     status: 'ready',
-    modelName: 'Gemma 3 1B',
+    modelName: 'Gemma 4 Health Tuned',
     memoryUsage: 0,
     responseTime: 0,
     version: 'test',

@@ -22,6 +22,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PaletteIcon from "@mui/icons-material/Palette";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Layout from "../Layout";
@@ -72,6 +73,11 @@ const DashboardLayout: React.FC = () => {
           icon: <SettingsIcon />,
         },
       ],
+    },
+    {
+      title: t("nav.literature"),
+      path: "/dashboard/literature",
+      icon: <LibraryBooksIcon />,
     },
     { type: "divider" },
     {

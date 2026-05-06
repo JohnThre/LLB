@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import ChatIcon from "@mui/icons-material/Chat";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@mui/icons-material/Menu";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import { useAuth } from "../contexts/AuthContext";
 import { bauhausColors } from "../theme";
 
@@ -31,6 +32,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   const navItems = [
     { path: "/dashboard/chat", label: t("nav.chat"), icon: <ChatIcon /> },
+    {
+      path: "/dashboard/literature",
+      label: t("nav.literature"),
+      icon: <LibraryBooksIcon />,
+    },
     {
       path: "/dashboard/settings",
       label: t("nav.settings"),
