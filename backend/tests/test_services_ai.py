@@ -123,8 +123,40 @@ def test_get_model_info(ai_service):
     info = ai_service.get_model_info()
     assert isinstance(info, dict)
     assert "name" in info
+    assert info["name"] == "Gemma 4 Health Tuned"
+    assert info["prompt_system"] == "source_backed_sexual_health"
     assert "version" in info
     assert "loaded" in info
+
+
+@pytest.mark.asyncio
+async def test_generate_fallback_response_uses_source_backed_english_prompt(ai_service):
+    """Fallback generation keeps the source-backed English instruction."""
+    ai_service.model_service = AsyncMock()
+    ai_service.model_service.generate_response_with_language.return_value = "Fallback"
+
+    response = await ai_service._generate_fallback_response(
+        "How do condoms help prevent STIs?", "en", "en"
+    )
+
+    prompt = ai_service.model_service.generate_response_with_language.call_args.args[0]
+    assert "provided approved literature" in prompt
+    assert response["prompt_used"] == "basic_fallback"
+
+
+@pytest.mark.asyncio
+async def test_generate_fallback_response_uses_source_backed_chinese_prompt(ai_service):
+    """Fallback generation keeps the source-backed Simplified Chinese instruction."""
+    ai_service.model_service = AsyncMock()
+    ai_service.model_service.generate_response_with_language.return_value = "兜底回答"
+
+    response = await ai_service._generate_fallback_response(
+        "安全套如何帮助预防艾滋？", "zh-CN", "zh-CN"
+    )
+
+    prompt = ai_service.model_service.generate_response_with_language.call_args.args[0]
+    assert "已提供的资料" in prompt
+    assert response["language"] == "zh-CN"
 
 
 def test_get_available_topics(ai_service):

@@ -41,6 +41,21 @@ describe('Literature page', () => {
     expect(screen.getByText('approved')).toBeInTheDocument()
   })
 
+  it('clears loading state when source loading fails', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({}),
+    } as Response)
+
+    render(<Literature />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Literature')).toBeInTheDocument()
+    })
+    expect(screen.queryByText('Condom Use and STI Prevention')).not.toBeInTheDocument()
+  })
+
   it('submits a source for admin review', async () => {
     render(<Literature />)
 

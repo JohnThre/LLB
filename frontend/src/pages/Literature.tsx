@@ -41,7 +41,8 @@ const Literature: React.FC = () => {
     try {
       const response = await fetch(apiUrl(`/api/v1/literature/sources?status=${status}`));
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        setSources([]);
+        return;
       }
       const data = await response.json();
       setSources(data.sources || []);
