@@ -96,6 +96,16 @@ class ModelService:
         if language == "zh-CN":
             return "我是您的性健康教育助手，请告诉我您想了解什么。"
         return "I'm your sexual health education assistant. How can I help you?"
+
+    def get_model_info(self):
+        """Return provider metadata for status endpoints."""
+        if self.provider_manager:
+            return self.provider_manager.get_provider_info()
+        return {
+            "provider": None,
+            "model": None,
+            "available_providers": [],
+        }
     
     def is_loaded(self) -> bool:
         return self._loaded
