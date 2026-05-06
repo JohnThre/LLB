@@ -192,11 +192,21 @@ SECRET_KEY=your-secret-key-here
 JWT_SECRET_KEY=your-jwt-secret
 
 # AI Providers (optional)
+AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini
+GITHUB_MODELS_TOKEN=github_pat_with_models_read
+GITHUB_MODELS_MODELS=openai/gpt-4.1
+GITHUB_MODELS_API_VERSION=2026-03-10
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GOOGLE_API_KEY=...
 OLLAMA_ENABLED=false
 ```
+
+Provider fallback is free-first by default: Ollama/local models, GitHub Models,
+then direct OpenAI, Anthropic, and Gemini API keys. GitHub Models requires a
+GitHub token with `models:read` permission and uses GitHub's free, rate-limited
+Models API for prototyping. See GitHub's Models REST API docs:
+https://docs.github.com/en/rest/models/inference.
 
 ## 🤝 Contributing
 
