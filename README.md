@@ -5,7 +5,7 @@
 [![React 18](https://img.shields.io/badge/react-18-blue.svg)](https://reactjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
 
-A privacy-first, local AI-driven sexual health education system powered by Google's Gemma 3 1B model. Provides culturally sensitive, age-appropriate sexual health education in multiple languages.
+A privacy-first, local AI-driven sexual health education system powered by a configurable health-tuned model based on Google Gemma 4. Answers are limited to English and Simplified Chinese and are backed by reviewable literature.
 
 ## 🚀 Quick Start
 
@@ -60,7 +60,8 @@ A privacy-first, local AI-driven sexual health education system powered by Googl
 ## ✨ Features
 
 - 🔒 **Privacy-First**: Local AI processing, no data leaves your system
-- 🌍 **Multi-Language**: English and Chinese support
+- 🌍 **Supported Languages**: English and Simplified Chinese
+- 📚 **Source-Backed Answers**: Inline citations and a literature review workflow
 - 🎤 **Voice Input**: Speech recognition with Whisper
 - 📄 **Document Analysis**: PDF processing and knowledge extraction
 - 🎨 **Modern UI**: Bauhaus-inspired design system
@@ -152,7 +153,7 @@ After running tests with coverage:
 - **Pytest** for testing
 
 ### AI & ML
-- **Google Gemma 3 1B** (primary model)
+- **Google Gemma 4 health-tuned model** (configurable local artifact)
 - **OpenAI Whisper** for speech recognition
 - **Transformers** library
 - **PyTorch** for model inference
@@ -213,7 +214,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## 🙏 Acknowledgments
 
-- Google for the Gemma 3 1B model
+- Google for the Gemma model family
 - OpenAI for Whisper speech recognition
 - The open-source community for the amazing tools and libraries
 

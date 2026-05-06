@@ -181,7 +181,7 @@ class AIService:
                 "topic": topic,
                 "confidence": 0.95,
                 "safety_score": 0.98,
-                "prompt_used": "comprehensive_sexual_health"
+                "prompt_used": "source_backed_sexual_health"
             }
 
             logger.info("Response generated successfully using prompt system")
@@ -203,11 +203,12 @@ class AIService:
         
         # Create basic language-aware prompt
         if response_language == "zh-CN":
-            basic_prompt = f"你是性健康专家。回答问题：{message}\n\n答案："
-        elif response_language == "zh-CN-henan":
-            basic_prompt = f"你是性健康专家。用简单中文回答：{message}\n\n答案："
+            basic_prompt = f"你是性健康教育助手。仅基于已提供的资料回答：{message}\n\n答案："
         else:
-            basic_prompt = f"You are a health expert. Answer: {message}\n\nResponse:"
+            basic_prompt = (
+                "You are a sexual health education assistant. Answer only from "
+                f"the provided approved literature: {message}\n\nResponse:"
+            )
         
         try:
             ai_response = await self.model_service.generate_response_with_language(
@@ -241,16 +242,16 @@ class AIService:
 
     def get_supported_languages(self) -> List[str]:
         """Get list of supported languages."""
-        return ["en", "zh-CN", "zh-TW", "zh-CN-henan"]
+        return ["en", "zh-CN"]
 
     def get_model_info(self) -> Dict[str, Any]:
         """Get AI model information."""
         base_info = {
-            "name": "Gemma 3 1B",
+            "name": "Gemma 4 Health Tuned",
             "version": "1.0",
-            "parameters": "1B",
+            "parameters": "small",
             "loaded": self.is_initialized,
-            "prompt_system": "comprehensive_sexual_health"
+            "prompt_system": "source_backed_sexual_health"
         }
         
         if self.model_service:
@@ -272,10 +273,10 @@ class AIService:
         """Get list of available sexual health topics."""
         return [
             "basic_education",
-            "anatomy", 
+            "anatomy",
             "contraception",
             "sti_prevention",
             "consent_education",
             "relationship",
             "safety_education"
-        ] 
+        ]

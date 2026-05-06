@@ -9,7 +9,7 @@ from app.core.dependencies import get_ai_service, get_audio_service, get_documen
 
 def get_current_active_user() -> User:
     """Get current active user (stub for testing)."""
-    return User(id=1, email="test@example.com", is_active=True)
+    return User(id=1, email="test@example.com", is_active=True, role="admin")
 
 
 def get_db():

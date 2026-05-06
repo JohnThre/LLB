@@ -18,6 +18,7 @@ import SecuritySettings from "../pages/Profile/SecuritySettings";
 import GeneralSettings from "../pages/Settings/GeneralSettings";
 import AppearanceSettings from "../pages/Settings/AppearanceSettings";
 import NotificationSettings from "../pages/Settings/NotificationSettings";
+import Literature from "../pages/Literature";
 
 import AnimatedPage from "../components/AnimatedPage";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -53,6 +54,9 @@ const AppRoutes: React.FC = () => {
         <Route path="chat" element={<Chat />} />
         <Route path="chat/history" element={<ChatHistory />} />
         <Route path="chat/settings" element={<ChatSettings />} />
+
+        {/* Literature Routes */}
+        <Route path="literature" element={<Literature />} />
 
         {/* Profile Routes */}
         <Route path="profile" element={<Profile />} />

@@ -5,3 +5,4 @@ class User(BaseModel):
     id: int
     email: str
     is_active: bool = True
+    role: str = "user"

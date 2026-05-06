@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     
     # AI Model Settings
-    MODEL_PATH: str = "models/gemma-2b-it"
+    MODEL_PATH: str = "models/gemma-4-health-tuned"
     MODEL_DEVICE: str = "cuda"  # or "cpu"
     MAX_LENGTH: int = 2048
     TEMPERATURE: float = 0.7

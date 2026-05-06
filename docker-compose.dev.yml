@@ -40,7 +40,7 @@ services:
       - ENVIRONMENT=development
       - DEBUG=true
       - SECRET_KEY=dev-secret-key-not-for-production
-      - GEMMA_MODEL_PATH=/app/models/gemma-3-1b
+      - GEMMA_MODEL_PATH=/app/models/gemma-4-health-tuned
       - WHISPER_MODEL_PATH=/app/models/whisper
       - PYTHONPATH=/app
     volumes:
