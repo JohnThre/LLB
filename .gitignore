@@ -152,3 +152,7 @@ temp_*.py
 
 # Local tooling
 .superpowers/
+
+# Codex
+AGENTS.md
+docs/superpowers/
