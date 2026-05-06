@@ -41,7 +41,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - ENVIRONMENT=production
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
-      - GEMMA_MODEL_PATH=/app/models/gemma-3-1b
+      - GEMMA_MODEL_PATH=/app/models/gemma-4-health-tuned
       - WHISPER_MODEL_PATH=/app/models/whisper
     volumes:
       - ./ai/models:/app/models:ro

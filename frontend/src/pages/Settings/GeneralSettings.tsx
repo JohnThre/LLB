@@ -32,6 +32,9 @@ const GeneralSettings: React.FC = () => {
 
   const handleSelectChange = (name: string) => (event: SelectChangeEvent) => {
     handleSettingChange(name, event.target.value);
+    if (name === "language") {
+      i18n.changeLanguage(event.target.value);
+    }
   };
 
   return (
@@ -49,10 +52,8 @@ const GeneralSettings: React.FC = () => {
               onChange={handleSelectChange("language")}
               label={t("settings.language")}
             >
-              <MenuItem value="en">English</MenuItem>
-              <MenuItem value="es">Español</MenuItem>
-              <MenuItem value="fr">Français</MenuItem>
-              <MenuItem value="de">Deutsch</MenuItem>
+              <MenuItem value="en-US">English</MenuItem>
+              <MenuItem value="zh-CN">简体中文</MenuItem>
             </Select>
           </FormControl>
         </Grid>

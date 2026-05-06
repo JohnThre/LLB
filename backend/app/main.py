@@ -1,6 +1,6 @@
 """
 LLB Backend API - Main FastAPI application
-Provides REST API endpoints for sexual health education with Gemma 3 1B
+Provides REST API endpoints for source-backed sexual health education with a Gemma 4-derived model
 """
 
 import sys
@@ -258,7 +258,7 @@ def create_app() -> FastAPI:
                 <div class="header">
                     <h1>LLB - 爱学伴</h1>
                     <p>Local AI-Driven Sexual Health Education</p>
-                    <p>Powered by Google's Gemma 3 1B Model</p>
+                    <p>Powered by a health-tuned model based on Google Gemma 4</p>
                 </div>
                 
                 <div class="status">
