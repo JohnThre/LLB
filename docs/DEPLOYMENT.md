@@ -69,10 +69,19 @@ SECRET_KEY=your-secret-key-here
 JWT_SECRET_KEY=your-jwt-secret
 
 # AI Providers (Optional)
+AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini
+GITHUB_MODELS_TOKEN=github_pat_with_models_read
+GITHUB_MODELS_MODELS=openai/gpt-4.1
+GITHUB_MODELS_API_VERSION=2026-03-10
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GOOGLE_API_KEY=...
 ```
+
+`GITHUB_MODELS_TOKEN` must have `models:read` permission. GitHub Models free API
+usage is rate-limited and intended for prototyping; keep production traffic on a
+paid or self-hosted provider when needed. The default provider order tries
+Ollama/local and GitHub Models before direct paid API providers.
 
 ## Health Monitoring
 

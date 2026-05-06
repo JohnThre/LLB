@@ -73,8 +73,9 @@ graph TB
 - **Answer Grounding**: Approved literature registry with citations
 - **Speech Recognition**: OpenAI Whisper
 - **Document Processing**: PyPDF2, pdfplumber
-- **Fallback APIs**: OpenAI, Anthropic, Google Gemini
+- **Fallback APIs**: GitHub Models, OpenAI, Anthropic, Google Gemini
 - **Local Inference**: Ollama support
+- **Provider Order**: Free-first by default: Ollama/local, GitHub Models, then direct paid APIs
 
 ## Service Architecture
 
