@@ -52,7 +52,6 @@ yarn-error.log*
 *~
 .DS_Store
 Thumbs.db
-.cursor/
 
 # Project specific
 *.log
@@ -152,3 +151,28 @@ temp_*.py
 
 # Local tooling
 .superpowers/
+
+# Local AI coding tools
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.ai-local-history/
+.aider*
+.augment/
+.claude/
+.codeium/
+.codex/
+.continue/
+.copilot/
+.cursor/
+.cursorignore
+.cursorrules
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.kilocode/
+.roo/
+.tabnine/
+.windsurf/
+docs/superpowers/
