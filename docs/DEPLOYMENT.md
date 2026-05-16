@@ -1,74 +1,97 @@
 # LLB Deployment Guide
 
-## Quick Start
+Last updated: 2026-05-16
 
-### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL 15+
-- Redis 7+
+## Prerequisites
 
-### Development Setup
+- Python 3.11+ for local backend development.
+- Node.js 18+ for frontend development; CI also tests Node 20.
+- Docker and Docker Compose for container deployments.
+- PostgreSQL 15+ and Redis 7+ for the full production-style stack.
+- GPG for signing release artifacts.
+
+## Local Development
+
 ```bash
-# Clone and setup
-git clone <repository>
+git clone git@github.com:JohnThre/LLB.git
 cd LLB
+cp .env.example .env
+make dev
+```
 
-# Backend setup
+`make dev` starts:
+
+- Backend: `http://localhost:8000`
+- Frontend: `http://localhost:3000`
+- API docs: `http://localhost:8000/docs`
+
+Manual backend/frontend setup:
+
+```bash
 cd backend
 python3.11 -m venv llb-env
 source llb-env/bin/activate
 pip install -r requirements.txt
 
-# Frontend setup
 cd ../frontend
 npm install
-
-# Start development
-make dev
+npm run dev -- --port 3000
 ```
 
-## Production Deployment
+In a second shell:
 
-### Docker Deployment (Recommended)
 ```bash
-# Build and start all services
-docker-compose up -d
-
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f
-```
-
-### Manual Deployment
-```bash
-# Build frontend
-cd frontend && npm run build
-
-# Setup backend
-cd ../backend
+cd backend
 source llb-env/bin/activate
-pip install -r requirements.txt
-
-# Start services
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --port 8000
 ```
 
-## Environment Configuration
+## Docker Deployment
 
-### Required Environment Variables
+Development containers with hot reload:
+
 ```bash
-# Database
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Development container access points:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8001`
+- PostgreSQL: host port `5433`
+- Redis: host port `6380`
+
+Production-style containers:
+
+```bash
+docker compose up -d
+docker compose ps
+docker compose logs -f
+```
+
+Production-style container access points:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:8000`
+- PostgreSQL: host port `5432`
+- Redis: host port `6379`
+
+## Environment
+
+Copy `.env.example` to `.env` and provide deployment-specific values. Keep secrets in environment variables, CI secrets, or a secret manager; do not commit them.
+
+Core variables:
+
+```bash
 DATABASE_URL=postgresql://user:pass@localhost:5432/llb_db
 REDIS_URL=redis://localhost:6379
+SECRET_KEY=replace-me
+JWT_SECRET_KEY=replace-me
+```
 
-# Security
-SECRET_KEY=your-secret-key-here
-JWT_SECRET_KEY=your-jwt-secret
+Provider variables:
 
-# AI Providers (Optional)
+```bash
 AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini,mistral
 GITHUB_MODELS_TOKEN=github_pat_with_models_read
 GITHUB_MODELS_MODELS=openai/gpt-5.2
@@ -81,36 +104,78 @@ GOOGLE_API_KEY=...
 GOOGLE_MODEL=gemini-3-pro-preview
 MISTRAL_API_KEY=...
 MISTRAL_MODEL=mistral-medium-3.5
+OLLAMA_ENABLED=false
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
 ```
 
-`GITHUB_MODELS_TOKEN` must have `models:read` permission. GitHub Models free API
-usage is rate-limited and intended for prototyping; keep production traffic on a
-paid or self-hosted provider when needed. The default provider order tries
-Ollama/local and GitHub Models before direct paid API providers.
+GitHub Models requires a token with `models:read` access. Use production-grade paid or self-hosted providers when rate limits or data policy require it.
 
-### Desktop Releases
-
-The Electron desktop app packages the React frontend and starts the FastAPI
-backend locally from inside the app. Final macOS, Windows, and GNU/Linux
-artifacts must receive detached GPG signatures with the default GPG key:
+## Manual Production Build
 
 ```bash
-scripts/sign_release_artifacts.sh desktop/dist
+cd frontend
+npm ci
+npm run build
+
+cd ../backend
+python3.11 -m venv llb-env
+source llb-env/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-macOS artifacts also require Apple Developer ID signing and notarization. Keep
-Apple credentials in local environment variables or CI secrets, not in tracked
-files.
+For a real production host, place a TLS-terminating reverse proxy in front of the backend/frontend, set strict CORS origins, rotate secrets, and configure database backups.
 
-## Health Monitoring
+## Desktop Releases
 
-### Health Check Endpoints
-- Backend: `http://localhost:8000/api/v1/health`
-- Frontend: `http://localhost:3000`
-- API Docs: `http://localhost:8000/docs`
+Desktop releases are built from tags by `.github/workflows/desktop-installers.yml`.
 
-### System Requirements
-- **CPU**: 4+ cores recommended
-- **RAM**: 8GB minimum, 16GB recommended
-- **Storage**: 50GB+ for models and data
-- **GPU**: Optional, improves AI performance
+Workflow targets:
+
+- macOS DMG on `macos-latest`.
+- Windows NSIS installer on `windows-latest`.
+- Linux AppImage, deb, and rpm on `ubuntu-latest`.
+
+Release process:
+
+1. Commit release-ready changes to `main`.
+2. Push `main`.
+3. Create and push an annotated tag such as `v0.1.0`.
+4. Let the `Desktop Installers` workflow build artifacts.
+5. Download workflow artifacts.
+6. Sign artifacts and checksums:
+
+   ```bash
+   scripts/sign_release_artifacts.sh <artifact-directory>
+   ```
+
+7. Upload installers, `.sha256`, and `.asc` files to the draft GitHub release.
+
+macOS public releases should also use Apple Developer ID signing and notarization credentials configured outside the repository.
+
+## Health Checks
+
+- Full backend: `GET /api/v1/health`
+- AI health: `GET /api/v1/health/ai`
+- Audio health: `GET /api/v1/health/audio`
+- Document health: `GET /api/v1/health/documents`
+- Desktop backend: `GET /api/v1/health`
+
+## Verification
+
+Run these before publishing deployment or release changes:
+
+```bash
+make test-backend
+make test-frontend
+make test-desktop
+```
+
+For release changes, also verify:
+
+```bash
+git diff --check
+gh auth status
+gh release view v0.1.0
+```
