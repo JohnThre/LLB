@@ -1,0 +1,34 @@
+appId: com.llb.desktop
+productName: LLB
+directories:
+  output: dist
+files:
+  - src/**/*
+  - package.json
+extraResources:
+  - from: ../backend/dist/llb-backend
+    to: backend
+    filter:
+      - "**/*"
+  - from: ../frontend/dist
+    to: frontend/dist
+    filter:
+      - "**/*"
+mac:
+  target:
+    - dmg
+  category: public.app-category.education
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  notarize: true
+dmg:
+  sign: true
+win:
+  target:
+    - nsis
+linux:
+  target:
+    - AppImage
+    - deb
+    - rpm
+  category: Education

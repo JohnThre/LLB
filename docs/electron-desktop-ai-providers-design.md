@@ -92,7 +92,7 @@ Initial provider set:
 
 Verified current defaults as of 2026-05-07:
 
-- OpenAI: `gpt-5.5` as the flagship default, with `gpt-5.4-mini` or `gpt-5.4-nano` for lower-cost workloads.
+- OpenAI: `gpt-5.2` as the flagship default, with `gpt-5-mini` or `gpt-5-nano` for lower-cost workloads.
 - Anthropic: Claude Opus 4.7 for complex tasks, Claude Sonnet 4.6 for speed/intelligence balance, Claude Haiku 4.5 for fastest low-cost use.
 - Google Gemini: `gemini-3-pro-preview` and `gemini-3-flash-preview` are current Gemini 3 preview choices; `gemini-2.5-pro` remains a stable production option.
 - Mistral: Mistral Medium 3.5, Mistral Small 4, and Mistral Large 3 are current prominent choices.

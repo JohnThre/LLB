@@ -13,9 +13,10 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     google_api_key: str = ""
+    mistral_api_key: str = ""
     ollama_enabled: bool = False
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama2"
+    ollama_model: str = "llama3.2"
     
     whisper_model_path: str = "./models/whisper"
     

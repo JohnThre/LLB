@@ -21,8 +21,15 @@ from app.schemas.ai import (
     TextSummarizationRequest,
     TextSummarizationResponse,
 )
+from services import ai_providers
 
 router = APIRouter()
+
+
+@router.get("/providers")
+async def get_ai_providers() -> dict[str, Any]:
+    """Return public AI provider and model metadata."""
+    return {"providers": ai_providers.get_provider_catalog()}
 
 
 @router.post("/generate", response_model=TextGenerationResponse)

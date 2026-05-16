@@ -69,19 +69,38 @@ SECRET_KEY=your-secret-key-here
 JWT_SECRET_KEY=your-jwt-secret
 
 # AI Providers (Optional)
-AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini
+AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini,mistral
 GITHUB_MODELS_TOKEN=github_pat_with_models_read
-GITHUB_MODELS_MODELS=openai/gpt-4.1
+GITHUB_MODELS_MODELS=openai/gpt-5.2
 GITHUB_MODELS_API_VERSION=2026-03-10
 OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-5.2
 ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-opus-4-7
 GOOGLE_API_KEY=...
+GOOGLE_MODEL=gemini-3-pro-preview
+MISTRAL_API_KEY=...
+MISTRAL_MODEL=mistral-medium-3.5
 ```
 
 `GITHUB_MODELS_TOKEN` must have `models:read` permission. GitHub Models free API
 usage is rate-limited and intended for prototyping; keep production traffic on a
 paid or self-hosted provider when needed. The default provider order tries
 Ollama/local and GitHub Models before direct paid API providers.
+
+### Desktop Releases
+
+The Electron desktop app packages the React frontend and starts the FastAPI
+backend locally from inside the app. Final macOS, Windows, and GNU/Linux
+artifacts must receive detached GPG signatures with the default GPG key:
+
+```bash
+scripts/sign_release_artifacts.sh desktop/dist
+```
+
+macOS artifacts also require Apple Developer ID signing and notarization. Keep
+Apple credentials in local environment variables or CI secrets, not in tracked
+files.
 
 ## Health Monitoring
 

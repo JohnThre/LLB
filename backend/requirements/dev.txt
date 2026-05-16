@@ -28,6 +28,7 @@ mkdocs-material==9.4.8
 ipython==8.17.2
 jupyter==1.0.0
 notebook==7.0.6
+pyinstaller==6.11.1
 
 # Debugging
 ipdb==0.13.13

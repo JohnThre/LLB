@@ -3,7 +3,7 @@
 import pytest
 
 from services import ai_providers
-from services.ai_providers import AIProviderManager, GitHubModelsProvider
+from services.ai_providers import AIProviderManager, GitHubModelsProvider, MistralProvider
 from services.model_service import ModelService
 
 
@@ -69,8 +69,97 @@ def clear_provider_env(monkeypatch):
         "OLLAMA_ENABLED",
         "OLLAMA_BASE_URL",
         "OLLAMA_MODEL",
+        "MISTRAL_API_KEY",
+        "MISTRAL_MODEL",
     ):
         monkeypatch.delenv(key, raising=False)
+    ai_providers.clear_desktop_provider_credentials()
+    yield
+    ai_providers.clear_desktop_provider_credentials()
+
+
+def test_provider_catalog_uses_current_defaults_without_secrets():
+    """Provider catalog exposes current model defaults, not credentials."""
+    catalog = ai_providers.get_provider_catalog()
+    providers = {provider["name"]: provider for provider in catalog}
+
+    assert providers["openai"]["default_model"] == "gpt-5.2"
+    assert "gpt-5-mini" in providers["openai"]["models"]
+    assert providers["anthropic"]["default_model"] == "claude-opus-4-7"
+    assert providers["gemini"]["default_model"] == "gemini-3-pro-preview"
+    assert providers["mistral"]["default_model"] == "mistral-medium-3.5"
+
+    for provider in catalog:
+        assert "api_key" not in provider
+        assert "token" not in provider
+
+
+@pytest.mark.asyncio
+async def test_mistral_provider_posts_chat_completion_request():
+    """Mistral provider sends OpenAI-compatible chat completion requests."""
+    FakeAsyncClient.responses = [
+        FakeResponse(
+            200,
+            {"choices": [{"message": {"content": "Hello from Mistral"}}]},
+        )
+    ]
+    provider = MistralProvider(
+        api_key="mistral-key",
+        model="mistral-medium-3.5",
+    )
+
+    result = await provider.generate_response(
+        "Say hello",
+        max_tokens=321,
+        temperature=0.1,
+    )
+
+    assert result == "Hello from Mistral"
+    method, url, kwargs = FakeAsyncClient.requests[0]
+    assert method == "POST"
+    assert url == "https://api.mistral.ai/v1/chat/completions"
+    assert kwargs["headers"]["Authorization"] == "Bearer mistral-key"
+    assert kwargs["json"] == {
+        "model": "mistral-medium-3.5",
+        "messages": [{"role": "user", "content": "Say hello"}],
+        "max_tokens": 321,
+        "temperature": 0.1,
+    }
+
+
+def test_provider_manager_prefers_desktop_credentials_over_environment(monkeypatch):
+    """Desktop BYOK credentials override process-level environment values."""
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai-key")
+    monkeypatch.setenv("OPENAI_MODEL", "env-model")
+    ai_providers.set_desktop_provider_credentials(
+        {"openai": {"api_key": "desktop-openai-key", "model": "desktop-model"}}
+    )
+
+    manager = AIProviderManager()
+
+    assert len(manager.providers) == 1
+    provider = manager.providers[0]
+    assert provider.name == "openai"
+    assert provider.api_key == "desktop-openai-key"
+    assert provider.model == "desktop-model"
+
+
+def test_provider_manager_masks_configured_provider_status(monkeypatch):
+    """Provider status reports key presence without exposing key material."""
+    monkeypatch.setenv("MISTRAL_API_KEY", "mistral-secret")
+    manager = AIProviderManager()
+
+    status = manager.get_configured_provider_status()
+
+    assert status == [
+        {
+            "name": "mistral",
+            "model": "mistral-medium-3.5",
+            "has_api_key": True,
+            "credential_source": "environment",
+        }
+    ]
+    assert "mistral-secret" not in str(status)
 
 
 @pytest.mark.asyncio
@@ -134,7 +223,7 @@ def test_provider_manager_uses_free_first_order(monkeypatch):
         "gemini",
     ]
     assert [provider.model for provider in manager.providers[:3]] == [
-        "llama2",
+        "llama3.2",
         "openai/gpt-4.1",
         "microsoft/phi-4",
     ]

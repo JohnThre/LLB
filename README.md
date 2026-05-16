@@ -86,6 +86,7 @@ A privacy-first, local AI-driven sexual health education system powered by a con
 ### Building
 - `make build` - Build for production
 - `make build-arm64` - Build for Apple Silicon (ARM64)
+- `make test-desktop` - Run Electron helper and release-signing tests
 - `make clean` - Clean build artifacts
 
 ## Testing
@@ -192,21 +193,42 @@ SECRET_KEY=your-secret-key-here
 JWT_SECRET_KEY=your-jwt-secret
 
 # AI Providers (optional)
-AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini
+AI_PROVIDER_ORDER=ollama,github,openai,anthropic,gemini,mistral
 GITHUB_MODELS_TOKEN=github_pat_with_models_read
-GITHUB_MODELS_MODELS=openai/gpt-4.1
+GITHUB_MODELS_MODELS=openai/gpt-5.2
 GITHUB_MODELS_API_VERSION=2026-03-10
 OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-5.2
 ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-opus-4-7
 GOOGLE_API_KEY=...
+GOOGLE_MODEL=gemini-3-pro-preview
+MISTRAL_API_KEY=...
+MISTRAL_MODEL=mistral-medium-3.5
 OLLAMA_ENABLED=false
+OLLAMA_MODEL=llama3.2
 ```
 
 Provider fallback is free-first by default: Ollama/local models, GitHub Models,
-then direct OpenAI, Anthropic, and Gemini API keys. GitHub Models requires a
+then direct OpenAI, Anthropic, Gemini, and Mistral API keys. GitHub Models requires a
 GitHub token with `models:read` permission and uses GitHub's free, rate-limited
 Models API for prototyping. See GitHub's Models REST API docs:
 https://docs.github.com/en/rest/models/inference.
+
+### Desktop Packaging
+
+The Electron desktop scaffold lives in `desktop/`. It is designed to start the
+FastAPI backend as an internal local process so users do not manage a separate
+server.
+
+Release artifacts must be signed with detached GPG signatures:
+
+```bash
+scripts/sign_release_artifacts.sh desktop/dist
+```
+
+macOS release builds should also use Apple Developer ID signing and
+notarization through `electron-builder` credentials supplied outside the repo.
 
 ## 🤝 Contributing
 

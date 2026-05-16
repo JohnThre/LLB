@@ -1,5 +1,26 @@
 // API Configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+export interface LlbRuntimeWindow {
+  llbDesktop?: {
+    apiBaseUrl?: string;
+    providerCredentials?: {
+      save: (
+        credentials: Record<string, Record<string, string>>,
+      ) => Promise<void>;
+    };
+  };
+}
+
+export const resolveApiBaseUrl = (
+  runtimeWindow: LlbRuntimeWindow = window,
+): string => {
+  return (
+    runtimeWindow.llbDesktop?.apiBaseUrl ||
+    import.meta.env.VITE_API_URL ||
+    "http://localhost:8000"
+  );
+};
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 export const apiUrl = (path: string): string => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;

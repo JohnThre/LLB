@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Button } from "../common/Button";
 import { apiUrl } from "../../config";
+import AIProviderSettings from "./AIProviderSettings";
 
 interface ModelSettings {
   temperature: number;
@@ -56,7 +57,7 @@ export const Settings: React.FC = () => {
         },
         body: JSON.stringify(settings),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -159,6 +160,10 @@ export const Settings: React.FC = () => {
       <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
         <Button onClick={handleSave}>{t("settings.save")}</Button>
       </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      <AIProviderSettings />
     </Paper>
   );
 };

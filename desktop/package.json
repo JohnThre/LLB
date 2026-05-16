@@ -1,0 +1,17 @@
+{
+  "name": "llb-desktop",
+  "version": "0.1.0",
+  "description": "LLB desktop app",
+  "private": true,
+  "license": "GPL-3.0",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "electron .",
+    "dist": "electron-builder --config electron-builder.yml"
+  },
+  "devDependencies": {
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12"
+  }
+}

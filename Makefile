@@ -1,4 +1,4 @@
-.PHONY: dev test build clean build-arm64 dev-arm64
+.PHONY: dev test build clean build-arm64 dev-arm64 test-desktop build-desktop-backend sign-release
 
 dev:
 	@./scripts/ensure_backend_env.sh backend/requirements/dev.txt >/dev/null
@@ -19,6 +19,15 @@ test-backend:
 test-frontend:
 	@echo "🧪 Running frontend tests..."
 	cd frontend && npm test -- --run
+
+test-desktop:
+	@echo "🧪 Running desktop tests..."
+	node --test desktop/test/*.test.js
+	bash scripts/test/sign_release_artifacts_test.sh
+
+build-desktop-backend:
+	@echo "📦 Building desktop backend executable..."
+	bash scripts/build_desktop_backend.sh
 
 test-watch:
 	@echo "👀 Running tests in watch mode..."
@@ -41,6 +50,10 @@ build:
 	cd frontend && npm run build
 	@./scripts/ensure_backend_env.sh backend/requirements/dev.txt >/dev/null
 	cd backend && ./llb-env/bin/python -m pip freeze > requirements-freeze.txt
+
+sign-release:
+	@test -n "$(ARTIFACT_DIR)" || (echo "Set ARTIFACT_DIR=/path/to/artifacts" >&2; exit 2)
+	scripts/sign_release_artifacts.sh "$(ARTIFACT_DIR)"
 
 build-arm64:
 	docker buildx build --platform linux/arm64 -t llb-backend:arm64 ./backend
