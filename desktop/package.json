@@ -2,6 +2,11 @@
   "name": "llb-desktop",
   "version": "0.1.0",
   "description": "LLB desktop app",
+  "homepage": "https://github.com/JohnThre/LLB",
+  "author": {
+    "name": "Pengfan Chang",
+    "email": "developer@jpfchang.org"
+  },
   "private": true,
   "license": "GPL-3.0",
   "main": "src/main.js",
