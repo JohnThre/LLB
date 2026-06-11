@@ -51,6 +51,9 @@ yarn-error.log*
 *.swo
 *~
 .DS_Store
+._*
+.AppleDouble/
+.LSOverride
 Thumbs.db
 
 # Project specific
